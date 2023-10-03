@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="DayTheme" parent="DashTheme.Day">
+        <item name="text_color_accent">@color/accent</item>
+        <item name="text_color_links">@color/accent</item>
+        <item name="button_color_primary">@color/accent</item>
+        <item name="border_color_accent">@color/accent</item>
+        <item name="icon_color_accent">@color/accent</item>
+        <item name="guidance_color_primary">@color/accent</item>
+        <item name="search_pin_color_accent">@color/accent</item>
+        <item name="destination_pin_color_secondary">@color/accent</item>
+    </style>
+
+    <style name="DayThemeRed" parent="DashTheme.Day">
+        <item name="text_color_accent">@color/color_red_day</item>
+        <item name="text_color_links">@color/color_red_day</item>
+        <item name="button_color_primary">@color/color_red_day</item>
+        <item name="border_color_accent">@color/color_red_day</item>
+        <item name="icon_color_accent">@color/color_red_day</item>
+        <item name="guidance_color_primary">@color/color_red_day</item>
+        <item name="search_pin_color_accent">@color/color_red_day</item>
+        <item name="destination_pin_color_secondary">@color/color_red_day</item>
+    </style>
+
+    <style name="NightTheme" parent="DashTheme.Night">
+        <item name="text_color_accent">@color/accent</item>
+        <item name="text_color_links">@color/accent</item>
+        <item name="button_color_primary">@color/accent</item>
+        <item name="border_color_accent">@color/accent</item>
+        <item name="icon_color_accent">@color/accent</item>
+        <item name="guidance_color_primary">@color/accent</item>
+        <item name="search_pin_color_accent">@color/accent</item>
+        <item name="destination_pin_color_secondary">@color/accent</item>
+    </style>
+
+    <style name="ProgressIndicator" parent="Widget.MaterialComponents.CircularProgressIndicator">
+        <item name="trackThickness">2.5dp</item>
+        <item name="indicatorSize">20dp</item>
+        <item name="indicatorInset">2dp</item>
+    </style>
+</resources>
