@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:layout_width="300dp"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_blue_dark"
+        android:paddingHorizontal="15dp"
+        android:paddingTop="100dp"
+        android:paddingBottom="10dp"
+        android:text="Dash Customizations"
+        android:textColor="#fff"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:stretchColumns="1"
+        >
+
+        <TableRow>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/toggleDebugLogs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Enable DEBUG logcat"
+                android:textAllCaps="true"
+                />
+        </TableRow>
+
+        <TableRow>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/toggleTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Update default theme"
+                android:textAllCaps="true"
+                />
+        </TableRow>
+
+        <TableRow>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="MapGPT Avatar"
+                    />
+
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/avatarsSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+
+            </LinearLayout>
+        </TableRow>
+
+        <TableRow>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/setNightMapStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="SET NIGHT MAP style"
+                android:textAllCaps="true"
+                />
+        </TableRow>
+
+        <TableRow>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/setSatelliteMapStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="SET SATELLITE MAP style"
+                android:textAllCaps="true"
+                />
+        </TableRow>
+
+        <TableRow>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="Coordination api"
+                    />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSetDestination"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@android:color/holo_blue_dark"
+                    android:text="Set destination"
+                    android:textAllCaps="true"
+                    />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnStopNavigation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@android:color/holo_blue_dark"
+                    android:text="Stop navigation"
+                    android:textAllCaps="true"
+                    />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </TableRow>
+    </TableLayout>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
