@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import com.mapbox.dash.app.Dash
 import com.mapbox.dash.app.DashNavigationFragment
 import com.mapbox.dash.app.config.api.DashMapStyleConfig
+import com.mapbox.dash.app.config.api.NullableConfigUpdate
 import com.mapbox.dash.app.coordination.PointDestination
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
@@ -112,7 +113,7 @@ class MainActivity : DrawerActivity() {
                     // you can create your own avatar using Lottie animations by instantiating `LottieMapGptAvatar` class
                     Dash.applyUpdate {
                         mapGptConfig {
-                            avatar(avatarUpdate)
+                            avatar = NullableConfigUpdate(avatarUpdate)
                         }
                     }
                 }
