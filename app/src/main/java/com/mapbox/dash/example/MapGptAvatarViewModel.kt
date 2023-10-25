@@ -3,7 +3,7 @@ package com.mapbox.dash.example
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.mapbox.dash.app.Dash
+import com.mapbox.dash.sdk.Dash
 import com.mapbox.navigation.mapgpt.useroutput.PrebuiltMapGptAvatars
 import kotlinx.coroutines.flow.map
 
