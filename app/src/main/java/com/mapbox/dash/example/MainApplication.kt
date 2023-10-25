@@ -3,8 +3,8 @@ package com.mapbox.dash.example
 import android.app.Application
 import android.location.Location
 import android.location.LocationManager
-import com.mapbox.dash.app.Dash
-import com.mapbox.dash.app.config.api.DashConfig
+import com.mapbox.dash.sdk.Dash
+import com.mapbox.dash.sdk.config.api.DashConfig
 
 class MainApplication : Application() {
 
