@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.activity.viewModels
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
@@ -28,11 +29,19 @@ class MainActivity : DrawerActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var menuBinding: LayoutCustomizationMenuBinding
 
-    private val viewModel: MapGptAvatarViewModel by viewModels()
+    private val mapGptVM: MapGptViewModel by viewModels()
+    private val themeVM: ThemeViewModel by viewModels()
+
+    private val headlessMode = MutableStateFlow(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
+
+        // Start trip session to enable Navigation SDK
+        Dash.controller.startTripSession().onFailure {
+            Toast.makeText(this, "Failed to start trip session", Toast.LENGTH_SHORT).show()
+        }
 
         if (savedInstanceState == null) {
             // After initializing in your `MainApplication` class,
@@ -44,6 +53,16 @@ class MainActivity : DrawerActivity() {
 
         initCustomizationMenu()
         registerEventsObservers()
+        headlessMode.observeWhenStarted(this) { enabled ->
+            val fragment = if (enabled) {
+                HeadlessModeFragment.newInstance()
+            } else {
+                DashNavigationFragment.newInstance()
+            }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.container, fragment)
+                .commitNow()
+        }
     }
 
     override fun onCreateContentView(): View {
@@ -57,19 +76,35 @@ class MainActivity : DrawerActivity() {
     }
 
     // storage for configuration mutations
-    private var showDebugLogs = MutableStateFlow(false)
+    private var showDebugLogs = MutableStateFlow(true)
     private var useCustomTheme = MutableStateFlow(false)
     private var setNightMapStyle =
         MutableStateFlow(Dash.config.mapStyleConfig.nightStyleUri.isNotBlank())
     private var setSatelliteMapStyle =
         MutableStateFlow(Dash.config.mapStyleConfig.satelliteStyleUri.isNotBlank())
+    private var setMap3dStyle = MutableStateFlow(Dash.config.mapStyleConfig.map3dStyleUri.isNotBlank())
+    private var setOfflineTts = MutableStateFlow(Dash.config.preferLocalTts)
+    private var showRouteOptionsInSettings = MutableStateFlow(Dash.config.uiSettingsConfig.showRouteOptions)
+    private var useCustomVoicePlayerMiddleware = MutableStateFlow(false)
 
     private fun initCustomizationMenu() {
+        headlessModeCustomization()
         logsCustomization()
         themeCustomization()
         mapGptCustomization()
         mapStyleCustomization()
+        settingCustomization()
+        offlineTtsCustomization()
         dashCoordination()
+    }
+
+    private fun headlessModeCustomization() {
+        bindSwitch(
+            switch = menuBinding.toggleHeadlessMode,
+            state = headlessMode,
+        ) { enabled ->
+            headlessMode.value = enabled
+        }
     }
 
     private fun logsCustomization() {
@@ -99,18 +134,16 @@ class MainActivity : DrawerActivity() {
     }
 
     private fun mapGptCustomization() {
-        val avatarNames = viewModel.availableAvatarNames
+        val avatarNames = mapGptVM.availableAvatarNames
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, avatarNames)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         menuBinding.avatarsSpinner.adapter = adapter
-        menuBinding.avatarsSpinner.setSelection(avatarNames.indexOf(viewModel.mapGptAvatarName.value))
+        menuBinding.avatarsSpinner.setSelection(avatarNames.indexOf(mapGptVM.mapGptAvatarName.value))
         bindSpinner(
             spinner = menuBinding.avatarsSpinner,
-            liveData = viewModel.mapGptAvatarName,
+            liveData = mapGptVM.mapGptAvatarName,
             onSelected = { avatarName ->
-                viewModel.sampleAvatars[avatarName].let { avatarUpdate ->
-                    // mutate config to change the MapGPT avatar
-                    // you can create your own avatar using Lottie animations by instantiating `LottieMapGptAvatar` class
+                mapGptVM.sampleAvatars[avatarName]?.let { avatarUpdate ->
                     Dash.applyUpdate {
                         mapGptConfig {
                             avatar = NullableConfigUpdate(avatarUpdate)
@@ -119,9 +152,39 @@ class MainActivity : DrawerActivity() {
                 }
             },
         )
+        bindSwitch(
+            switch = menuBinding.enableMapGpt,
+            liveData = mapGptVM.isMapGptEnabled,
+        ) { isChecked ->
+            Dash.applyUpdate {
+                mapGptConfig {
+                    isEnabled = isChecked
+                }
+            }
+        }
+        bindSwitch(
+            switch = menuBinding.enableKeyboardMode,
+            liveData = mapGptVM.isMapGptKeyboardModeEnabled,
+        ) { isChecked ->
+            Dash.applyUpdate {
+                mapGptConfig {
+                    isKeyboardModeEnabled = isChecked
+                }
+            }
+        }
     }
 
     private fun mapStyleCustomization() {
+        bindSwitch(
+            switch = menuBinding.set3dMapStyle,
+            state = setMap3dStyle,
+        ) { enabled ->
+            Dash.applyUpdate {
+                mapStyleConfig {
+                    map3dStyleUri = if (enabled) DashMapStyleConfig.create().map3dStyleUri else ""
+                }
+            }
+        }
         bindSwitch(
             switch = menuBinding.setNightMapStyle,
             state = setNightMapStyle,
@@ -143,6 +206,50 @@ class MainActivity : DrawerActivity() {
                     satelliteStyleUri =
                         if (enabled) DashMapStyleConfig.create().satelliteStyleUri else ""
                 }
+            }
+        }
+        menuBinding.spinnerNavPuck.adapter = ArrayAdapter(
+            this,
+            R.layout.item_spinner,
+            CustomLocationPuck.names(),
+        ).apply {
+            setDropDownViewResource(R.layout.item_spinner)
+        }
+        bindSpinner(
+            menuBinding.spinnerNavPuck,
+            themeVM.locationPuck,
+        ) {
+            if (it != null) {
+                val puck = CustomLocationPuck.valueOf(it).getLocationPuck(this)
+                Dash.applyUpdate {
+                    themeConfig {
+                        locationPuck = puck
+                    }
+                }
+            }
+        }
+    }
+
+    private fun settingCustomization() {
+        bindSwitch(
+            switch = menuBinding.showRouteOptions,
+            state = showRouteOptionsInSettings,
+        ) { showRouteOptions ->
+            Dash.applyUpdate {
+                uiSettingsConfig {
+                    this.showRouteOptions = showRouteOptions
+                }
+            }
+        }
+    }
+
+    private fun offlineTtsCustomization() {
+        bindSwitch(
+            switch = menuBinding.setTtsOfflineMode,
+            state = setOfflineTts,
+        ) { setOfflineTts ->
+            Dash.applyUpdate {
+                preferLocalTts = setOfflineTts
             }
         }
     }
@@ -188,6 +295,15 @@ class MainActivity : DrawerActivity() {
             val routes = event.routes
             val activeRoute = routes.firstOrNull()?.id
             Log.d(TAG, ">> Routes | routes = ${routes.map { it.id }}; activeRoute = $activeRoute")
+        }
+        Dash.controller.observeNavigationState().observeWhenStarted(this) {
+            println(">> NavigationState | $it")
+        }
+        Dash.controller.observeNextManeuver().observeWhenStarted(this) {
+            println(">> Maneuver | $it")
+        }
+        Dash.controller.observeNavigationEvents().observeWhenStarted(this) {
+            println(">> NavigationEvent | $it")
         }
     }
 

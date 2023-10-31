@@ -30,6 +30,17 @@
         <TableRow>
 
             <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/toggleHeadlessMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Headless mode"
+                android:textAllCaps="true" />
+        </TableRow>
+
+        <TableRow>
+
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/toggleDebugLogs"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -49,6 +60,29 @@
                 android:text="Update default theme"
                 android:textAllCaps="true"
                 />
+        </TableRow>
+
+        <TableRow>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/enableMapGpt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="enable mapgpt"
+                android:textAllCaps="true" />
+        </TableRow>
+
+        <TableRow>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/enableKeyboardMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="enable keyboard mode"
+                android:textAllCaps="true" />
         </TableRow>
 
         <TableRow>
@@ -79,6 +113,17 @@
         <TableRow>
 
             <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/set3dMapStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="SET 3D MAP style"
+                android:textAllCaps="true" />
+        </TableRow>
+
+        <TableRow>
+
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/setNightMapStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -98,6 +143,52 @@
                 android:text="SET SATELLITE MAP style"
                 android:textAllCaps="true"
                 />
+        </TableRow>
+
+        <TableRow>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/setTtsOfflineMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="OFFLINE TTS"
+                android:textAllCaps="true" />
+        </TableRow>
+
+        <TableRow>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="UserInputOwnerMiddleware"
+                    />
+
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/spinnerUserInputOwnerMiddleware"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </TableRow>
+
+        <TableRow>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/showRouteOptions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Settings: Show Route Options"
+                android:textAllCaps="true" />
         </TableRow>
 
         <TableRow>
@@ -133,6 +224,34 @@
                     android:text="Stop navigation"
                     android:textAllCaps="true"
                     />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </TableRow>
+
+        <TableRow>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:paddingVertical="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Location Puck"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorOnSurface" />
+
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/spinnerNavPuck"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:spinnerMode="dropdown"
+                    android:textSize="12sp" />
+
             </androidx.appcompat.widget.LinearLayoutCompat>
         </TableRow>
     </TableLayout>
