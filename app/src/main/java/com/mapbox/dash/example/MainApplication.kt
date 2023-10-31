@@ -29,6 +29,14 @@ class MainApplication : Application() {
                 // Example of a debug option that teleports the user to a specific location at each app launch.
                 defaultLocation = MAPBOX_DC_OFFICE
             }
+            routeOptionsConfig {
+                avoidHighways = true
+                avoidFerries = true
+                avoidTolls = true
+            }
+            uiSettingsConfig {
+                showRouteOptions = true
+            }
         }
 
         // Finally, initialize Dash SDK which loads all necessary runtime modules.
