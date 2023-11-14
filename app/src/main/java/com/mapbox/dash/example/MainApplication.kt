@@ -19,7 +19,7 @@ class MainApplication : Application() {
         ) {
             themeConfig {
                 // Example of providing a custom theme to change the look-and-feel of Dash's UI components.
-                dayStyleRes = R.style.DayTheme
+                dayStyleRes = R.style.MyDashTheme_Day
             }
             mapGptConfig {
                 // Example of managing the visibility of user-accessible settings for MapGPT.

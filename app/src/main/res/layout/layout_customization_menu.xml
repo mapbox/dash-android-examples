@@ -51,15 +51,27 @@
         </TableRow>
 
         <TableRow>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/toggleTheme"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Update default theme"
-                android:textAllCaps="true"
-                />
+                android:orientation="vertical"
+                android:padding="8dp"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="Dash Theme"
+                    />
+
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/themeSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+
+            </LinearLayout>
         </TableRow>
 
         <TableRow>

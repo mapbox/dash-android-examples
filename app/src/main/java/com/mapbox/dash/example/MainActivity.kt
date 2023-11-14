@@ -77,7 +77,6 @@ class MainActivity : DrawerActivity() {
 
     // storage for configuration mutations
     private var showDebugLogs = MutableStateFlow(true)
-    private var useCustomTheme = MutableStateFlow(false)
     private var setNightMapStyle =
         MutableStateFlow(Dash.config.mapStyleConfig.nightStyleUri.isNotBlank())
     private var setSatelliteMapStyle =
@@ -120,14 +119,22 @@ class MainActivity : DrawerActivity() {
     }
 
     private fun themeCustomization() {
-        bindSwitch(
-            switch = menuBinding.toggleTheme,
-            state = useCustomTheme,
-        ) { isChecked ->
-            // mutate config to change the theme
-            Dash.applyUpdate {
-                themeConfig {
-                    dayStyleRes = if (isChecked) R.style.DayThemeRed else R.style.DayTheme
+        val themes = CustomDashTheme.names()
+        menuBinding.themeSpinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, themes).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+        menuBinding.themeSpinner.setSelection(themes.indexOf(themeVM.dashTheme.value))
+        bindSpinner(
+            menuBinding.themeSpinner,
+            themeVM.dashTheme,
+        ) {
+            it?.also { name ->
+                Dash.applyUpdate {
+                    themeConfig {
+                        val t = CustomDashTheme.valueOf(name)
+                        dayStyleRes = t.dayResId
+                        nightStyleRes = t.nightResId
+                    }
                 }
             }
         }
@@ -320,6 +327,20 @@ class MainActivity : DrawerActivity() {
         // Adjust the x-coordinate for the shrinking of the east-west distances
         val newX = x / cos(Math.toRadians(latitude))
         return PointDestination(longitude = longitude + newX, latitude = latitude + y)
+    }
+
+    internal enum class CustomDashTheme(
+        val dayResId: Int,
+        val nightResId: Int,
+    ) {
+        DEFAULT(com.mapbox.dash.themes.R.style.DashTheme_Day, com.mapbox.dash.themes.R.style.DashTheme_Night),
+        CUSTOM(R.style.MyDashTheme_Day, R.style.MyDashTheme_Night),
+        RED(R.style.MyDashThemeRed_Day, R.style.MyDashThemeRed_Night),
+        ;
+
+        companion object {
+            fun names() = values().map { it.name }
+        }
     }
 
     private companion object {
