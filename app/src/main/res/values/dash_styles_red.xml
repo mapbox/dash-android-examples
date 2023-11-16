@@ -14,8 +14,6 @@
         <item name="dash_style_map_action_button">@style/MyMapActionButton</item>
         <item name="dash_style_map_search_panel">@style/MyMapSearchPanel</item>
         <item name="dash_style_map_eta_panel">@style/MyEtaPanel</item>
-        <item name="dash_style_map_eta_panel_search_button">@style/MyEtaPanelButton</item>
-        <item name="dash_style_map_eta_panel_end_button">@style/MyEtaPanelButton</item>
         <item name="dash_style_map_remove_stop_button">@style/MyRemoveStopButton</item>
         <item name="dash_style_map_end_nav_button">@style/MyEndNavButton</item>
         <item name="dash_style_map_resume_guidance">@style/MyResumeGuidance</item>
@@ -42,8 +40,6 @@
         <item name="dash_style_map_action_button">@style/MyMapActionButton</item>
         <item name="dash_style_map_search_panel">@style/MyMapSearchPanel</item>
         <item name="dash_style_map_eta_panel">@style/MyEtaPanel</item>
-        <item name="dash_style_map_eta_panel_search_button">@style/MyEtaPanelButton</item>
-        <item name="dash_style_map_eta_panel_end_button">@style/MyEtaPanelButton</item>
         <item name="dash_style_map_remove_stop_button">@style/MyRemoveStopButton</item>
         <item name="dash_style_map_end_nav_button">@style/MyEndNavButton</item>
         <item name="dash_style_map_resume_guidance">@style/MyResumeGuidance</item>
@@ -66,10 +62,6 @@
     </style>
 
     <style name="MyEtaPanel" parent="Widget.Dash.Map.EtaPanel">
-        <item name="dashShape">full</item>
-    </style>
-
-    <style name="MyEtaPanelButton" parent="Widget.Dash.Map.EtaPanel.Button">
         <item name="dashShape">full</item>
     </style>
 
