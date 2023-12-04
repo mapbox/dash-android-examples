@@ -16,7 +16,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicatorSpec
 import com.google.android.material.progressindicator.IndeterminateDrawable
 import com.mapbox.dash.example.databinding.ActivityDrawerBinding
-import com.mapbox.nav.gm.base.flow.observeWhenStarted
+import com.mapbox.dash.sdk.base.flow.observeWhenStarted
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch

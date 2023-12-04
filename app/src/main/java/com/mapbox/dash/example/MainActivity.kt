@@ -13,10 +13,10 @@ import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
 import com.mapbox.dash.logging.LogsExtra
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.DashNavigationFragment
+import com.mapbox.dash.sdk.base.flow.observeWhenStarted
 import com.mapbox.dash.sdk.config.api.DashMapStyleConfig
 import com.mapbox.dash.sdk.config.api.NullableConfigUpdate
 import com.mapbox.dash.sdk.coordination.PointDestination
-import com.mapbox.nav.gm.base.flow.observeWhenStarted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import java.util.Random
