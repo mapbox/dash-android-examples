@@ -1,10 +1,10 @@
 @file:SuppressWarnings("MagicNumber")
 package com.mapbox.dash.example
 
-import android.location.Location
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicatorSpec
 import com.google.android.material.progressindicator.IndeterminateDrawable
+import com.mapbox.common.location.Location
 import com.mapbox.dash.sdk.coordination.PointDestination
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch

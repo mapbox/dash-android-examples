@@ -1,8 +1,8 @@
 package com.mapbox.dash.example
 
 import android.app.Application
-import android.location.Location
 import android.location.LocationManager
+import com.mapbox.common.location.Location
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.config.api.DashConfig
 
@@ -44,9 +44,10 @@ class MainApplication : Application() {
     }
 
     internal companion object {
-        val MAPBOX_DC_OFFICE = Location(LocationManager.PASSIVE_PROVIDER).apply {
-            latitude = 38.899929
-            longitude = -77.03394
-        }
+        val MAPBOX_DC_OFFICE = Location.Builder()
+            .source(LocationManager.PASSIVE_PROVIDER)
+            .latitude(38.899929)
+            .longitude(-77.03394)
+            .build()
     }
 }

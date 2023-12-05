@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import com.mapbox.dash.example.databinding.FragmentHeadlessModeBinding
 import com.mapbox.dash.logging.extension.className
 import com.mapbox.dash.sdk.Dash
+import com.mapbox.dash.sdk.base.flow.observeWhenStarted
 import com.mapbox.dash.sdk.event.NavigationState
-import com.mapbox.nav.gm.base.flow.observeWhenStarted
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

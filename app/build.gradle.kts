@@ -64,20 +64,8 @@ android {
     }
 }
 
-configurations.all {
-    resolutionStrategy.eachDependency {
-        if (requested.group == "com.mapbox.maps" &&
-            requested.name == "android" &&
-            requested.version?.endsWith("-private") != true
-        ) {
-            useVersion("${requested.version}-private")
-            because("get private variant of Maps SDK that offers additional features (like 3D)")
-        }
-    }
-}
-
 dependencies {
-    implementation("com.mapbox.dash:android:1.0.0-beta.13")
+    implementation("com.mapbox.dash:android:1.0.0-beta.14")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
