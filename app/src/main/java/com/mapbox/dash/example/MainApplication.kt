@@ -25,6 +25,9 @@ class MainApplication : Application() {
                 // Example of managing the visibility of user-accessible settings for MapGPT.
                 isSettingsMenuEnabled = true
             }
+            mapStyleConfig {
+                pixelRatio = 1.0f
+            }
             locationSimulation {
                 // Example of a debug option that teleports the user to a specific location at each app launch.
                 defaultLocation = MAPBOX_DC_OFFICE
@@ -36,6 +39,7 @@ class MainApplication : Application() {
             }
             uiSettingsConfig {
                 showRouteOptions = true
+                useSidebar = true
             }
         }
 
