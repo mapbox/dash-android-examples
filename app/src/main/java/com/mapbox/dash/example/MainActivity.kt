@@ -84,6 +84,7 @@ class MainActivity : DrawerActivity() {
     private var setMap3dStyle = MutableStateFlow(Dash.config.mapStyleConfig.map3dStyleUri.isNotBlank())
     private var setOfflineTts = MutableStateFlow(Dash.config.preferLocalTts)
     private var showRouteOptionsInSettings = MutableStateFlow(Dash.config.uiSettingsConfig.showRouteOptions)
+    private var showSpeedLimitsOptionsInSettings = MutableStateFlow(Dash.config.uiSettingsConfig.showSpeedLimitsOptions)
     private var useCustomVoicePlayerMiddleware = MutableStateFlow(false)
 
     private fun initCustomizationMenu() {
@@ -248,6 +249,19 @@ class MainActivity : DrawerActivity() {
                 }
             }
         }
+
+        bindSwitch(
+            switch = menuBinding.showSpeedLimitsOptions,
+            state = showSpeedLimitsOptionsInSettings,
+        ) { showSpeedLimitsOptions ->
+            Dash.applyUpdate {
+                uiSettingsConfig {
+                    this.showSpeedLimitsOptions = showSpeedLimitsOptions
+                }
+            }
+        }
+
+
     }
 
     private fun offlineTtsCustomization() {

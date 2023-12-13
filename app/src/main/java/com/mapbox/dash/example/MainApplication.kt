@@ -37,8 +37,13 @@ class MainApplication : Application() {
                 avoidFerries = true
                 avoidTolls = true
             }
+            speedLimitsOptionsConfig {
+                showSpeedLimits = true
+                showSpeedWarnings = true
+            }
             uiSettingsConfig {
                 showRouteOptions = true
+                showSpeedLimitsOptions = true
                 useSidebar = true
             }
         }
