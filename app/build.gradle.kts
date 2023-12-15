@@ -66,7 +66,7 @@ android {
 }
 
 dependencies {
-    implementation("com.mapbox.dash:android:1.0.0-beta.15")
+    implementation("com.mapbox.dash:android:1.0.0-beta.16")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
