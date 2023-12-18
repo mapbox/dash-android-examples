@@ -17,6 +17,10 @@ import com.mapbox.dash.sdk.base.flow.observeWhenStarted
 import com.mapbox.dash.sdk.config.api.DashMapStyleConfig
 import com.mapbox.dash.sdk.config.api.NullableConfigUpdate
 import com.mapbox.dash.sdk.coordination.PointDestination
+import com.mapbox.dash.sdk.search.DashFavoriteType
+import com.mapbox.dash.sdk.search.DashSearchResult
+import com.mapbox.dash.sdk.search.DashSearchResultType
+import com.mapbox.geojson.Point
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import java.util.Random
@@ -33,6 +37,22 @@ class MainActivity : DrawerActivity() {
     private val themeVM: ThemeViewModel by viewModels()
 
     private val headlessMode = MutableStateFlow(false)
+
+    private val searchItem = buildSearchItem()
+    private val favoriteItem = buildSearchItem(DashFavoriteType.HOME)
+
+    private fun buildSearchItem(@DashFavoriteType.Type favoriteType: String? = null) = object : DashSearchResult {
+        override val address = null
+        override val coordinate = Point.fromLngLat(-77.0342, 38.9044)
+        override val etaMinutes = null
+        override val id = "customHistoryItemId1122334455"
+        override val name = "1123 15th Street Northwest"
+        override val type = DashSearchResultType.ADDRESS
+        override val categories = listOf("some category")
+        override val description = null
+        override val distanceMeters = null
+        override val favoriteType = favoriteType
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,7 +105,6 @@ class MainActivity : DrawerActivity() {
     private var setOfflineTts = MutableStateFlow(Dash.config.preferLocalTts)
     private var showRouteOptionsInSettings = MutableStateFlow(Dash.config.uiSettingsConfig.showRouteOptions)
     private var showSpeedLimitsOptionsInSettings = MutableStateFlow(Dash.config.uiSettingsConfig.showSpeedLimitsOptions)
-    private var useCustomVoicePlayerMiddleware = MutableStateFlow(false)
 
     private fun initCustomizationMenu() {
         headlessModeCustomization()
@@ -289,6 +308,25 @@ class MainActivity : DrawerActivity() {
             val controller = Dash.controller
             controller.stopNavigation()
         }
+
+        menuBinding.cleanHistory.bindAction {
+            Dash.controller.cleanHistory()
+        }
+        menuBinding.addToHistory.bindAction {
+            Dash.controller.addHistoryItem(searchItem)
+        }
+        menuBinding.removeFromHistory.bindAction {
+            Dash.controller.removeHistoryItem(searchItem)
+        }
+        menuBinding.addToFavorites.bindAction {
+            Dash.controller.addFavoriteItem(favoriteItem)
+        }
+        menuBinding.removeFromFavorites.bindAction {
+            Dash.controller.removeFavoriteItem(favoriteItem)
+        }
+        menuBinding.btnSearchApi.bindAction {
+            Dash.controller.search(menuBinding.etSearchApi.text.toString())
+        }
     }
 
     private fun registerEventsObservers() {
@@ -325,6 +363,30 @@ class MainActivity : DrawerActivity() {
         }
         Dash.controller.observeNavigationEvents().observeWhenStarted(this) {
             println(">> NavigationEvent | $it")
+        }
+        Dash.controller.observeHistory().observeWhenStarted(this) { history ->
+            println(">> History. Items count = ${history.size}")
+            history.forEach {
+                println(">> History item | $it")
+            }
+        }
+        Dash.controller.observeFavorites().observeWhenStarted(this) { favorites ->
+            println(">> Favorites. Items count = ${favorites.size}")
+            favorites.forEach {
+                println(">> Favorite item | $it")
+            }
+        }
+        Dash.controller.observeSearchResults().observeWhenStarted(this) { results ->
+            println(">> Search results. Items count = ${results.size}")
+            results.forEach {
+                println(">> Search result | $it")
+            }
+        }
+        Dash.controller.observeSearchSuggestions().observeWhenStarted(this) { suggestions ->
+            println(">> Search suggestions. Items count = ${suggestions.size}")
+            suggestions.forEach {
+                println(">> Search suggestion | $it")
+            }
         }
     }
 

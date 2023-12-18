@@ -248,6 +248,94 @@
                     android:text="Stop navigation"
                     android:textAllCaps="true"
                     />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="History api"
+                    />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/cleanHistory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@android:color/holo_blue_dark"
+                    android:text="Clean history"
+                    android:textAllCaps="true"
+                    />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/addToHistory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@android:color/holo_blue_dark"
+                    android:text="Add to history"
+                    android:textAllCaps="true"
+                    />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/removeFromHistory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@android:color/holo_blue_dark"
+                    android:text="Remove from history"
+                    android:textAllCaps="true"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="Favorites api"
+                    />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/addToFavorites"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@android:color/holo_blue_dark"
+                    android:text="Add to favorites"
+                    android:textAllCaps="true"
+                    />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/removeFromFavorites"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@android:color/holo_blue_dark"
+                    android:text="Remove from favorites"
+                    android:textAllCaps="true"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="Search api"
+                    />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/etSearchApi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Search api query"
+                    />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSearchApi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@android:color/holo_blue_dark"
+                    android:text="Search query"
+                    android:textAllCaps="true"
+                    />
             </androidx.appcompat.widget.LinearLayoutCompat>
         </TableRow>
 

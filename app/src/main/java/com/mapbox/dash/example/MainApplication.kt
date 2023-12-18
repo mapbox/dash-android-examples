@@ -47,6 +47,9 @@ class MainApplication : Application() {
                 showSpeedLimitsOptions = true
                 useSidebar = true
             }
+            searchConfig {
+                resultsAdapter = ShowcaseSearchResultsAdapter()
+            }
             engineType = EngineType.ELECTRIC
         }
 
