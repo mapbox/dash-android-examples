@@ -5,6 +5,7 @@ import android.location.LocationManager
 import com.mapbox.common.location.Location
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.config.api.DashConfig
+import com.mapbox.dash.sdk.config.api.EngineType
 
 class MainApplication : Application() {
 
@@ -41,6 +42,7 @@ class MainApplication : Application() {
                 showRouteOptions = true
                 useSidebar = true
             }
+            engineType = EngineType.ELECTRIC
         }
 
         // Finally, initialize Dash SDK which loads all necessary runtime modules.
