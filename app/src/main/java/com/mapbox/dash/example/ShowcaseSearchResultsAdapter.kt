@@ -1,6 +1,7 @@
 package com.mapbox.dash.example
 
 import android.util.Log
+import com.mapbox.dash.sdk.search.DashSearchRequest
 import com.mapbox.dash.sdk.search.DashSearchResult
 import com.mapbox.dash.sdk.search.DashSearchResultType
 import com.mapbox.dash.sdk.search.DashSearchResultsAdapter
@@ -35,15 +36,21 @@ class ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
         override val favoriteType = null
     }
 
-    override suspend fun searchResults(results: List<DashSearchResult>): List<DashSearchResult> {
-        Log.d(TAG, "Adapt search results: $results")
+    override suspend fun searchResults(
+        request: DashSearchRequest,
+        results: List<DashSearchResult>,
+    ): List<DashSearchResult> {
+        Log.d(TAG, "Adapt requested $request search results: $results Coming soon.")
         val adaptedResults = results.toMutableList()
         adaptedResults.add(0, customSearchResult)
         return adaptedResults
     }
 
-    override suspend fun searchSuggestions(suggestions: List<DashSearchSuggestion>): List<DashSearchSuggestion> {
-        Log.d(TAG, "Adapt suggestions: $suggestions")
+    override suspend fun searchSuggestions(
+        request: DashSearchRequest,
+        suggestions: List<DashSearchSuggestion>,
+    ): List<DashSearchSuggestion> {
+        Log.d(TAG, "Adapt requested $request suggestions: $suggestions.")
         val adaptedSuggestions = suggestions.toMutableList()
         adaptedSuggestions.add(0, customSuggestion)
         return adaptedSuggestions
