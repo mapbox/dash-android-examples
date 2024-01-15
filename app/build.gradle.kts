@@ -45,6 +45,7 @@ android {
     packagingOptions {
         resources {
             excludes += setOf(
+                "dash-sdk.properties",
                 "META-INF/proguard/androidx-annotations.pro",
                 "META-INF/DEPENDENCIES",
                 "META-INF/LICENSE",
@@ -66,8 +67,8 @@ android {
 }
 
 dependencies {
-    implementation("com.mapbox.navigationux:android:1.0.0-beta.20")
-    implementation("com.mapbox.navigationux:search-api:1.0.0-beta.20")
+    implementation("com.mapbox.navigationux:android:1.0.0-beta.21")
+    implementation("com.mapbox.navigationux:search-api:1.0.0-beta.21")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
