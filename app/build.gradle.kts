@@ -67,8 +67,8 @@ android {
 }
 
 dependencies {
-    implementation("com.mapbox.navigationux:android:1.0.0-beta.22")
-    implementation("com.mapbox.navigationux:search-api:1.0.0-beta.22")
+    implementation("com.mapbox.navigationux:android:1.0.0-beta.22-SNAPSHOT.0119T1723Z.e8a0b8f")
+    implementation("com.mapbox.navigationux:search-api:1.0.0-beta.22-SNAPSHOT.0119T1723Z.e8a0b8f")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")

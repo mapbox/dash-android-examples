@@ -15,6 +15,7 @@ class ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
 
     private val customSuggestion = object : DashSearchSuggestion {
         override val id: String = "customSuggestionId1234567890"
+        override val mapboxId: String? = null
         override val name: String = "Custom suggestion"
         override val descriptionText = "Suggestion provided by a third-party service"
         override val address = null
@@ -28,6 +29,7 @@ class ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
         override val coordinate = Point.fromLngLat(-77.0342, 38.9044)
         override val etaMinutes = null
         override val id = "customSearchResultId1122334455"
+        override val mapboxId: String? = null
         override val name = "The search result for the custom suggestion"
         override val type = DashSearchResultType.ADDRESS
         override val categories = listOf("Food")
