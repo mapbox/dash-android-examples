@@ -45,7 +45,6 @@ class MainApplication : Application() {
             uiSettingsConfig {
                 showRouteOptions = true
                 showSpeedLimitsOptions = true
-                useSidebar = true
             }
             searchConfig {
                 resultsAdapter = ShowcaseSearchResultsAdapter()
