@@ -103,7 +103,7 @@ class MainActivity : DrawerActivity() {
     private var setSatelliteMapStyle =
         MutableStateFlow(Dash.config.mapStyleConfig.satelliteStyleUri.isNotBlank())
     private var setMap3dStyle = MutableStateFlow(Dash.config.mapStyleConfig.map3dStyleUri.isNotBlank())
-    private var setOfflineTts = MutableStateFlow(Dash.config.preferLocalTts)
+    private var setOfflineTts = MutableStateFlow(Dash.config.voicesConfig.preferLocalTts)
     private var showRouteOptionsInSettings = MutableStateFlow(Dash.config.uiSettingsConfig.showRouteOptions)
     private var showSpeedLimitsOptionsInSettings = MutableStateFlow(Dash.config.uiSettingsConfig.showSpeedLimitsOptions)
 
@@ -290,7 +290,9 @@ class MainActivity : DrawerActivity() {
             state = setOfflineTts,
         ) { setOfflineTts ->
             Dash.applyUpdate {
-                preferLocalTts = setOfflineTts
+                voices {
+                    preferLocalTts = setOfflineTts
+                }
             }
         }
     }
