@@ -13,7 +13,7 @@ class MainApplication : Application() {
         super.onCreate()
 
         // Start by initializing the Dash SDK by providing a configuration instance.
-        // You can read more about configuration in https://docs.mapbox.com/android/dash/guides/configuration/.
+        // You can read more about configuration in https://docs.mapbox.com/android/navigation/build-with-uxframework/configuration/.
         val config = DashConfig.create(
             applicationContext = applicationContext,
             accessToken = getString(R.string.mapbox_access_token),
