@@ -1,8 +1,8 @@
-> Before using the Software, developers must contact Mapbox as described at https://docs.mapbox.com/android/dash/guides/install/ to request access to the Dash SDK.  Both the Software and the Dash SDK are in private preview and are made available to developers for the limited purpose of evaluating Dash SDK in internal, non-production environments only.  
+> Before using the Software, developers must contact Mapbox as described at https://docs.mapbox.com/android/navigation/build-with-uxframework/installation/ to request access to the Dash SDK.  Both the Software and the Dash SDK are in private preview and are made available to developers for the limited purpose of evaluating Dash SDK in internal, non-production environments only.  
 
 # Mapbox Dash Android SDK Examples
 
-The repository is a collection of examples showing off the [Mapbox Dash Android SDK](https://docs.mapbox.com/android/dash).
+The repository is a collection of examples showing off the [Mapbox Dash Android SDK](https://docs.mapbox.com/android/navigation/build-with-uxframework/).
 
 <div align="center">
   <img align="center" src=".github/dash-sdk-overview.png" width="640"/>
@@ -10,7 +10,7 @@ The repository is a collection of examples showing off the [Mapbox Dash Android 
 
 ## Installation
 
-Make sure you follow the steps under the [Installation](https://docs.mapbox.com/android/dash/guides/install/) guide. Once you have your **public and secret access tokens ready**, do the following:
+Make sure you follow the steps under the [Installation](https://docs.mapbox.com/android/navigation/build-with-uxframework/installation/) guide. Once you have your **public and secret access tokens ready**, do the following:
 
 ### Build the project
 
