@@ -38,7 +38,6 @@ class MainApplication : Application() {
                 avoidHighways = true
                 avoidFerries = true
                 avoidTolls = true
-                user = "gm-pre-production"
             }
             speedLimitsOptionsConfig {
                 showSpeedLimits = true
@@ -50,7 +49,6 @@ class MainApplication : Application() {
             }
             searchConfig {
                 resultsAdapter = ShowcaseSearchResultsAdapter()
-                evSearchDataSource = "GM"
             }
             engineType = EngineType.ELECTRIC
             device = DashDeviceType.Automobile
