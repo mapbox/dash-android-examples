@@ -4,6 +4,7 @@ import android.app.Application
 import android.location.LocationManager
 import com.mapbox.common.location.Location
 import com.mapbox.dash.sdk.Dash
+import com.mapbox.dash.sdk.base.device.DashDeviceType
 import com.mapbox.dash.sdk.config.api.DashConfig
 import com.mapbox.dash.sdk.config.api.EngineType
 
@@ -50,6 +51,7 @@ class MainApplication : Application() {
                 resultsAdapter = ShowcaseSearchResultsAdapter()
             }
             engineType = EngineType.ELECTRIC
+            device = DashDeviceType.Automobile
         }
 
         // Finally, initialize Dash SDK which loads all necessary runtime modules.
