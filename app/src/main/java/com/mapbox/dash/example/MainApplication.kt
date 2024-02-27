@@ -55,6 +55,7 @@ class MainApplication : Application() {
             device = DashDeviceType.Automobile
 
             customValues[CustomKeys.SINGLE_CHARGER_MANUAL_SELECTION] = true
+            customValues[CustomKeys.ENABLE_QUICK_SEARCH_SUGGESTIONS_IN_ACTIVE_GUIDANCE] = false
         }
 
         // Finally, initialize Dash SDK which loads all necessary runtime modules.
