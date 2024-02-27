@@ -5,6 +5,7 @@ import android.location.LocationManager
 import com.mapbox.common.location.Location
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.base.device.DashDeviceType
+import com.mapbox.dash.sdk.config.api.CustomKeys
 import com.mapbox.dash.sdk.config.api.DashConfig
 import com.mapbox.dash.sdk.config.api.EngineType
 
@@ -52,6 +53,8 @@ class MainApplication : Application() {
             }
             engineType = EngineType.ELECTRIC
             device = DashDeviceType.Automobile
+
+            customValues[CustomKeys.SINGLE_CHARGER_MANUAL_SELECTION] = true
         }
 
         // Finally, initialize Dash SDK which loads all necessary runtime modules.
