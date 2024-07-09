@@ -14,8 +14,10 @@ import com.mapbox.dash.logging.LogsExtra
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.DashNavigationFragment
 import com.mapbox.dash.sdk.base.flow.observeWhenStarted
-import com.mapbox.dash.sdk.config.api.DashMapStyleConfig
-import com.mapbox.dash.sdk.config.api.NullableConfigUpdate
+import com.mapbox.dash.sdk.config.dsl.mapStyle
+import com.mapbox.dash.sdk.config.dsl.theme
+import com.mapbox.dash.sdk.config.dsl.uiSettings
+import com.mapbox.dash.sdk.config.dsl.voices
 import com.mapbox.dash.sdk.coordination.PointDestination
 import com.mapbox.dash.sdk.search.DashFavoriteType
 import com.mapbox.dash.sdk.search.DashSearchResult
@@ -33,7 +35,6 @@ class MainActivity : DrawerActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var menuBinding: LayoutCustomizationMenuBinding
 
-    private val mapGptVM: MapGptViewModel by viewModels()
     private val themeVM: ThemeViewModel by viewModels()
 
     private val headlessMode = MutableStateFlow(false)
@@ -41,19 +42,20 @@ class MainActivity : DrawerActivity() {
     private val searchItem = buildSearchItem()
     private val favoriteItem = buildSearchItem(DashFavoriteType.HOME)
 
-    private fun buildSearchItem(@DashFavoriteType.Type favoriteType: String? = null) = object : DashSearchResult {
-        override val address = null
-        override val coordinate = Point.fromLngLat(-77.0342, 38.9044)
-        override val etaMinutes = null
-        override val id = "customHistoryItemId1122334455"
-        override val mapboxId: String? = null
-        override val name = "1123 15th Street Northwest"
-        override val type = DashSearchResultType.ADDRESS
-        override val categories = listOf("some category")
-        override val description = null
-        override val distanceMeters = null
-        override val favoriteType = favoriteType
-    }
+    private fun buildSearchItem(@DashFavoriteType.Type favoriteType: String? = null) =
+        object : DashSearchResult {
+            override val address = null
+            override val coordinate = Point.fromLngLat(-77.0342, 38.9044)
+            override val etaMinutes = null
+            override val id = "customHistoryItemId1122334455"
+            override val mapboxId: String? = null
+            override val name = "1123 15th Street Northwest"
+            override val type = DashSearchResultType.ADDRESS
+            override val categories = listOf("some category")
+            override val description = null
+            override val distanceMeters = null
+            override val favoriteType = favoriteType
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,20 +100,15 @@ class MainActivity : DrawerActivity() {
 
     // storage for configuration mutations
     private var showDebugLogs = MutableStateFlow(true)
-    private var setNightMapStyle =
-        MutableStateFlow(Dash.config.mapStyleConfig.nightStyleUri.isNotBlank())
-    private var setSatelliteMapStyle =
-        MutableStateFlow(Dash.config.mapStyleConfig.satelliteStyleUri.isNotBlank())
-    private var setMap3dStyle = MutableStateFlow(Dash.config.mapStyleConfig.map3dStyleUri.isNotBlank())
-    private var setOfflineTts = MutableStateFlow(Dash.config.voicesConfig.preferLocalTts)
-    private var showRouteOptionsInSettings = MutableStateFlow(Dash.config.uiSettingsConfig.showRouteOptions)
-    private var showSpeedLimitsOptionsInSettings = MutableStateFlow(Dash.config.uiSettingsConfig.showSpeedLimitsOptions)
+    private var setMap3dStyle = MutableStateFlow(true)
+    private var setOfflineTts = MutableStateFlow(false)
+    private var showRouteOptionsInSettings = MutableStateFlow(false)
+    private var showSpeedLimitsOptionsInSettings = MutableStateFlow(false)
 
     private fun initCustomizationMenu() {
         headlessModeCustomization()
         logsCustomization()
         themeCustomization()
-        mapGptCustomization()
         mapStyleCustomization()
         settingCustomization()
         offlineTtsCustomization()
@@ -141,9 +138,10 @@ class MainActivity : DrawerActivity() {
 
     private fun themeCustomization() {
         val themes = CustomDashTheme.names()
-        menuBinding.themeSpinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, themes).apply {
-            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        }
+        menuBinding.themeSpinner.adapter =
+            ArrayAdapter(this, android.R.layout.simple_spinner_item, themes).apply {
+                setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            }
         menuBinding.themeSpinner.setSelection(themes.indexOf(themeVM.dashTheme.value))
         bindSpinner(
             menuBinding.themeSpinner,
@@ -151,52 +149,11 @@ class MainActivity : DrawerActivity() {
         ) {
             it?.also { name ->
                 Dash.applyUpdate {
-                    themeConfig {
+                    theme {
                         val t = CustomDashTheme.valueOf(name)
                         dayStyleRes = t.dayResId
                         nightStyleRes = t.nightResId
                     }
-                }
-            }
-        }
-    }
-
-    private fun mapGptCustomization() {
-        val avatarNames = mapGptVM.availableAvatarNames
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, avatarNames)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        menuBinding.avatarsSpinner.adapter = adapter
-        menuBinding.avatarsSpinner.setSelection(avatarNames.indexOf(mapGptVM.mapGptAvatarName.value))
-        bindSpinner(
-            spinner = menuBinding.avatarsSpinner,
-            liveData = mapGptVM.mapGptAvatarName,
-            onSelected = { avatarName ->
-                mapGptVM.sampleAvatars[avatarName]?.let { avatarUpdate ->
-                    Dash.applyUpdate {
-                        mapGptConfig {
-                            avatar = NullableConfigUpdate(avatarUpdate)
-                        }
-                    }
-                }
-            },
-        )
-        bindSwitch(
-            switch = menuBinding.enableMapGpt,
-            liveData = mapGptVM.isMapGptEnabled,
-        ) { isChecked ->
-            Dash.applyUpdate {
-                mapGptConfig {
-                    isEnabled = isChecked
-                }
-            }
-        }
-        bindSwitch(
-            switch = menuBinding.enableKeyboardMode,
-            liveData = mapGptVM.isMapGptKeyboardModeEnabled,
-        ) { isChecked ->
-            Dash.applyUpdate {
-                mapGptConfig {
-                    isKeyboardModeEnabled = isChecked
                 }
             }
         }
@@ -208,31 +165,8 @@ class MainActivity : DrawerActivity() {
             state = setMap3dStyle,
         ) { enabled ->
             Dash.applyUpdate {
-                mapStyleConfig {
-                    map3dStyleUri = if (enabled) DashMapStyleConfig.create().map3dStyleUri else ""
-                }
-            }
-        }
-        bindSwitch(
-            switch = menuBinding.setNightMapStyle,
-            state = setNightMapStyle,
-        ) { enabled ->
-            // mutate the config to enable/disable Night Map Style
-            Dash.applyUpdate {
-                mapStyleConfig {
-                    nightStyleUri = if (enabled) DashMapStyleConfig.create().nightStyleUri else ""
-                }
-            }
-        }
-        bindSwitch(
-            switch = menuBinding.setSatelliteMapStyle,
-            state = setSatelliteMapStyle,
-        ) { enabled ->
-            // mutate the config to enable/disable Satellite Map Style
-            Dash.applyUpdate {
-                mapStyleConfig {
-                    satelliteStyleUri =
-                        if (enabled) DashMapStyleConfig.create().satelliteStyleUri else ""
+                mapStyle {
+                    map3dStyleUri = if (enabled) DEFAULT_3D_STYLE else ""
                 }
             }
         }
@@ -250,7 +184,7 @@ class MainActivity : DrawerActivity() {
             if (it != null) {
                 val puck = CustomLocationPuck.valueOf(it).getLocationPuck(this)
                 Dash.applyUpdate {
-                    themeConfig {
+                    theme {
                         locationPuck = puck
                     }
                 }
@@ -264,7 +198,7 @@ class MainActivity : DrawerActivity() {
             state = showRouteOptionsInSettings,
         ) { showRouteOptions ->
             Dash.applyUpdate {
-                uiSettingsConfig {
+                uiSettings {
                     this.showRouteOptions = showRouteOptions
                 }
             }
@@ -275,12 +209,11 @@ class MainActivity : DrawerActivity() {
             state = showSpeedLimitsOptionsInSettings,
         ) { showSpeedLimitsOptions ->
             Dash.applyUpdate {
-                uiSettingsConfig {
+                uiSettings {
                     this.showSpeedLimitsOptions = showSpeedLimitsOptions
                 }
             }
         }
-
 
     }
 
@@ -412,12 +345,17 @@ class MainActivity : DrawerActivity() {
         val dayResId: Int,
         val nightResId: Int,
     ) {
-        DEFAULT(com.mapbox.dash.themes.R.style.DashTheme_Day, com.mapbox.dash.themes.R.style.DashTheme_Night),
+
+        DEFAULT(
+            com.mapbox.dash.themes.R.style.DashTheme_Day,
+            com.mapbox.dash.themes.R.style.DashTheme_Night
+        ),
         CUSTOM(R.style.MyDashTheme_Day, R.style.MyDashTheme_Night),
         RED(R.style.MyDashThemeRed_Day, R.style.MyDashThemeRed_Night),
         ;
 
         companion object {
+
             fun names() = values().map { it.name }
         }
     }
@@ -425,5 +363,15 @@ class MainActivity : DrawerActivity() {
     private companion object {
 
         const val TAG = "MainActivity"
+
+        /**
+         * Default satellite style.
+         */
+        const val DEFAULT_SATELLITE_STYLE = "mapbox://styles/mapbox-dash/standard-satellite-navigation"
+
+        /**
+         * Default 3D style.
+         */
+        const val DEFAULT_3D_STYLE = "mapbox://styles/mapbox-dash/standard-navigation"
     }
 }
