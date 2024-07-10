@@ -17,6 +17,7 @@ class ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
         override val id: String = "customSuggestionId1234567890"
         override val mapboxId: String? = null
         override val name: String = "Custom suggestion"
+        override val poweredByAi = false
         override val descriptionText = "Suggestion provided by a third-party service"
         override val address = null
         override val distanceMeters = 3200.0

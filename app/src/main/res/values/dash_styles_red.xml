@@ -21,7 +21,6 @@
         <item name="dash_style_map_settings">@style/MySettings</item>
         <item name="dash_style_map_guidance_banner">@style/MyGuidanceBanner</item>
         <item name="dash_style_map_maneuvers_list">@style/MyManeuversList</item>
-        <item name="dash_style_map_arrival_poi_card">@style/MyArrivalPoiCard</item>
         <item name="dash_style_map_rate_trip_panel">@style/MyRateTripPanel</item>
         <item name="dash_style_map_continue_nav_panel">@style/MyContinueNavPanel</item>
         <item name="dash_style_map_street_title">@style/MyStreetTitle</item>
@@ -47,7 +46,6 @@
         <item name="dash_style_map_settings">@style/MySettings</item>
         <item name="dash_style_map_guidance_banner">@style/MyGuidanceBanner</item>
         <item name="dash_style_map_maneuvers_list">@style/MyManeuversList</item>
-        <item name="dash_style_map_arrival_poi_card">@style/MyArrivalPoiCard</item>
         <item name="dash_style_map_rate_trip_panel">@style/MyRateTripPanel</item>
         <item name="dash_style_map_continue_nav_panel">@style/MyContinueNavPanel</item>
         <item name="dash_style_map_street_title">@style/MyStreetTitle</item>
@@ -89,10 +87,6 @@
     </style>
 
     <style name="MyManeuversList" parent="Widget.Dash.Map.ManeuversList">
-        <item name="dashShape">extra_small</item>
-    </style>
-
-    <style name="MyArrivalPoiCard" parent="Widget.Dash.Map.ArrivalPoiCard">
         <item name="dashShape">extra_small</item>
     </style>
 

@@ -35,7 +35,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Headless mode"
-                android:textAllCaps="true" />
+                android:textAllCaps="true"
+                />
         </TableRow>
 
         <TableRow>
@@ -51,6 +52,7 @@
         </TableRow>
 
         <TableRow>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -77,49 +79,13 @@
         <TableRow>
 
             <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/enableMapGpt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="true"
-                android:text="enable mapgpt"
-                android:textAllCaps="true" />
-        </TableRow>
-
-        <TableRow>
-
-            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/enableKeyboardMode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="enable keyboard mode"
-                android:textAllCaps="true" />
-        </TableRow>
-
-        <TableRow>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:text="MapGPT Avatar"
-                    />
-
-                <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/avatarsSpinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    />
-
-            </LinearLayout>
+                android:textAllCaps="true"
+                />
         </TableRow>
 
         <TableRow>
@@ -130,29 +96,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="SET 3D MAP style"
-                android:textAllCaps="true" />
-        </TableRow>
-
-        <TableRow>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/setNightMapStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="SET NIGHT MAP style"
-                android:textAllCaps="true"
-                />
-        </TableRow>
-
-        <TableRow>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/setSatelliteMapStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="SET SATELLITE MAP style"
                 android:textAllCaps="true"
                 />
         </TableRow>
@@ -165,31 +108,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="OFFLINE TTS"
-                android:textAllCaps="true" />
-        </TableRow>
-
-        <TableRow>
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:text="UserInputOwnerMiddleware"
-                    />
-
-                <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/spinnerUserInputOwnerMiddleware"
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
+                android:textAllCaps="true"
+                />
         </TableRow>
 
         <TableRow>
@@ -200,7 +120,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Settings: Show Route Options"
-                android:textAllCaps="true" />
+                android:textAllCaps="true"
+                />
         </TableRow>
 
         <TableRow>
@@ -223,12 +144,14 @@
                 android:layout_weight="1"
                 android:orientation="vertical"
                 >
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:text="Coordination api"
                     />
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSetDestination"
                     android:layout_width="match_parent"
@@ -346,7 +269,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="horizontal"
-                android:paddingVertical="10dp">
+                android:paddingVertical="10dp"
+                >
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -354,7 +278,8 @@
                     android:layout_weight="1"
                     android:text="Location Puck"
                     android:textAllCaps="true"
-                    android:textColor="@color/colorOnSurface" />
+                    android:textColor="@color/colorOnSurface"
+                    />
 
                 <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/spinnerNavPuck"
@@ -362,7 +287,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:spinnerMode="dropdown"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
         </TableRow>
