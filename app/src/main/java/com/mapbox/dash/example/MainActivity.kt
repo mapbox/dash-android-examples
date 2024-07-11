@@ -1,6 +1,6 @@
 package com.mapbox.dash.example
 
-import android.location.Location
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,32 +8,37 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.widget.AppCompatSpinner
+import com.google.android.material.slider.Slider
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
 import com.mapbox.dash.logging.LogsExtra
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.DashNavigationFragment
-import com.mapbox.dash.sdk.base.flow.observeWhenStarted
+import com.mapbox.dash.sdk.config.api.DashSidebarControl
+import com.mapbox.dash.sdk.config.dsl.DashSidebarUpdate
+import com.mapbox.dash.sdk.config.dsl.DashUiUpdate
+import com.mapbox.dash.sdk.config.dsl.leftSidebar
 import com.mapbox.dash.sdk.config.dsl.mapStyle
+import com.mapbox.dash.sdk.config.dsl.rightSidebar
 import com.mapbox.dash.sdk.config.dsl.theme
+import com.mapbox.dash.sdk.config.dsl.ui
 import com.mapbox.dash.sdk.config.dsl.uiSettings
 import com.mapbox.dash.sdk.config.dsl.voices
-import com.mapbox.dash.sdk.coordination.PointDestination
 import com.mapbox.dash.sdk.search.DashFavoriteType
 import com.mapbox.dash.sdk.search.DashSearchResult
 import com.mapbox.dash.sdk.search.DashSearchResultType
+import com.mapbox.dash.theming.ThemeManager
 import com.mapbox.geojson.Point
+import com.mapbox.maps.MapboxExperimental
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import java.util.Random
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
+import kotlin.math.roundToInt
 
 class MainActivity : DrawerActivity() {
 
-    private lateinit var binding: ActivityMainBinding
-    private lateinit var menuBinding: LayoutCustomizationMenuBinding
+    private val binding by lazy { ActivityMainBinding.inflate(LayoutInflater.from(this)) }
+    private val menuBinding by lazy { LayoutCustomizationMenuBinding.inflate(LayoutInflater.from(this)) }
 
     private val themeVM: ThemeViewModel by viewModels()
 
@@ -89,21 +94,22 @@ class MainActivity : DrawerActivity() {
     }
 
     override fun onCreateContentView(): View {
-        binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         return binding.root
     }
 
     override fun onCreateMenuView(): View {
-        menuBinding = LayoutCustomizationMenuBinding.inflate(LayoutInflater.from(this))
         return menuBinding.root
     }
 
     // storage for configuration mutations
-    private var showDebugLogs = MutableStateFlow(true)
-    private var setMap3dStyle = MutableStateFlow(true)
-    private var setOfflineTts = MutableStateFlow(false)
-    private var showRouteOptionsInSettings = MutableStateFlow(false)
-    private var showSpeedLimitsOptionsInSettings = MutableStateFlow(false)
+    private val showDebugLogs = MutableStateFlow(value = true)
+    private val setMap3dStyle = MutableStateFlow(value = true)
+    private val setOfflineTts = MutableStateFlow(value = false)
+    private val showRouteOptionsInSettings = MutableStateFlow(value = false)
+    private val showSpeedLimitsOptionsInSettings = MutableStateFlow(value = false)
+    private val leftSidebarMode = MutableStateFlow(SidebarMode.Transparent.name)
+    private val rightSidebarMode = MutableStateFlow(SidebarMode.Transparent.name)
+    private val swapSidebars = MutableStateFlow(value = false)
 
     private fun initCustomizationMenu() {
         headlessModeCustomization()
@@ -146,19 +152,18 @@ class MainActivity : DrawerActivity() {
         bindSpinner(
             menuBinding.themeSpinner,
             themeVM.dashTheme,
-        ) {
-            it?.also { name ->
-                Dash.applyUpdate {
-                    theme {
-                        val t = CustomDashTheme.valueOf(name)
-                        dayStyleRes = t.dayResId
-                        nightStyleRes = t.nightResId
-                    }
+        ) { name ->
+            Dash.applyUpdate {
+                theme {
+                    val t = CustomDashTheme.valueOf(name)
+                    dayStyleRes = t.dayResId
+                    nightStyleRes = t.nightResId
                 }
             }
         }
     }
 
+    @OptIn(MapboxExperimental::class)
     private fun mapStyleCustomization() {
         bindSwitch(
             switch = menuBinding.set3dMapStyle,
@@ -181,12 +186,10 @@ class MainActivity : DrawerActivity() {
             menuBinding.spinnerNavPuck,
             themeVM.locationPuck,
         ) {
-            if (it != null) {
-                val puck = CustomLocationPuck.valueOf(it).getLocationPuck(this)
-                Dash.applyUpdate {
-                    theme {
-                        locationPuck = puck
-                    }
+            val puck = CustomLocationPuck.valueOf(it).getLocationPuck(this)
+            Dash.applyUpdate {
+                theme {
+                    locationPuck = puck
                 }
             }
         }
@@ -263,6 +266,40 @@ class MainActivity : DrawerActivity() {
         menuBinding.btnSearchApi.bindAction {
             Dash.controller.search(menuBinding.etSearchApi.text.toString())
         }
+
+        val density = resources.displayMetrics.density
+        val paddingSliderChangeListener = Slider.OnChangeListener { _, _, _ ->
+            (supportFragmentManager.findFragmentById(R.id.container) as? DashNavigationFragment)?.setSafeAreaPaddings(
+                (menuBinding.leftPaddingSlider.value * density).roundToInt(),
+                (menuBinding.topPaddingSlider.value * density).roundToInt(),
+                (menuBinding.rightPaddingSlider.value * density).roundToInt(),
+                (menuBinding.bottomPaddingSlider.value * density).roundToInt(),
+            )
+        }
+        menuBinding.leftPaddingSlider.addOnChangeListener(paddingSliderChangeListener)
+        menuBinding.topPaddingSlider.addOnChangeListener(paddingSliderChangeListener)
+        menuBinding.rightPaddingSlider.addOnChangeListener(paddingSliderChangeListener)
+        menuBinding.bottomPaddingSlider.addOnChangeListener(paddingSliderChangeListener)
+
+        bindSidebarSpinner(menuBinding.spinnerLeftSidebar, leftSidebarMode, DashUiUpdate::leftSidebar)
+        bindSidebarSpinner(menuBinding.spinnerRightSidebar, rightSidebarMode, DashUiUpdate::rightSidebar)
+
+        bindSwitch(
+            switch = menuBinding.toggleSwapSidebars,
+            state = swapSidebars,
+        ) { enabled ->
+            Dash.applyUpdate {
+                ui {
+                    if (enabled) {
+                        leftSidebar { controls = DashSidebarControl.defaultRightSidebarControls }
+                        rightSidebar { controls = DashSidebarControl.defaultLeftSidebarControls }
+                    } else {
+                        leftSidebar { controls = DashSidebarControl.defaultLeftSidebarControls }
+                        rightSidebar { controls = DashSidebarControl.defaultRightSidebarControls }
+                    }
+                }
+            }
+        }
     }
 
     private fun registerEventsObservers() {
@@ -326,21 +363,6 @@ class MainActivity : DrawerActivity() {
         }
     }
 
-    private fun Location.getRandomDestinationAround(): PointDestination {
-        val radiusInDegrees: Double = 2000.0 / 111000.0
-        val random = Random()
-        val u: Double = random.nextDouble()
-        val v: Double = random.nextDouble()
-        val w = radiusInDegrees * sqrt(u)
-        val t = 2 * Math.PI * v
-        val x = w * cos(t)
-        val y = w * sin(t)
-
-        // Adjust the x-coordinate for the shrinking of the east-west distances
-        val newX = x / cos(Math.toRadians(latitude))
-        return PointDestination(longitude = longitude + newX, latitude = latitude + y)
-    }
-
     internal enum class CustomDashTheme(
         val dayResId: Int,
         val nightResId: Int,
@@ -358,6 +380,36 @@ class MainActivity : DrawerActivity() {
 
             fun names() = values().map { it.name }
         }
+    }
+
+    private fun bindSidebarSpinner(
+        spinner: AppCompatSpinner,
+        sidebarMode: MutableStateFlow<String>,
+        updateSidebarConfig: DashUiUpdate.(DashSidebarUpdate.() -> Unit) -> Unit,
+    ) {
+        spinner.adapter = ArrayAdapter(this, R.layout.item_spinner, SidebarMode.values().map { it.name })
+        bindSpinner(
+            spinner,
+            sidebarMode,
+        ) { name ->
+            val mode = SidebarMode.valueOf(name)
+            Dash.applyUpdate {
+                ui {
+                    updateSidebarConfig {
+                        visible = mode != SidebarMode.Hidden
+                        background = if (mode == SidebarMode.Transparent) {
+                            Color.TRANSPARENT
+                        } else {
+                            ThemeManager.theme.backgroundColor.sidebar.color
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private enum class SidebarMode {
+        Transparent, Background, Hidden,
     }
 
     private companion object {

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:paddingBottom="40dp"
     tools:layout_width="300dp"
     >
 
@@ -20,278 +21,365 @@
         android:textStyle="bold"
         />
 
-    <TableLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="10dp"
-        android:stretchColumns="1"
         >
 
-        <TableRow>
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleHeadlessMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Headless mode"
+            android:textAllCaps="true"
+            />
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/toggleHeadlessMode"
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleDebugLogs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enable DEBUG logcat"
+            android:textAllCaps="true"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            >
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Headless mode"
-                android:textAllCaps="true"
+                android:layout_gravity="start"
+                android:text="Dash Theme"
                 />
-        </TableRow>
 
-        <TableRow>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/toggleDebugLogs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Enable DEBUG logcat"
-                android:textAllCaps="true"
-                />
-        </TableRow>
-
-        <TableRow>
-
-            <LinearLayout
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/themeSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp"
-                >
+                />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:text="Dash Theme"
-                    />
+        </LinearLayout>
 
-                <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/themeSpinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    />
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/enableKeyboardMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="enable keyboard mode"
+            android:textAllCaps="true"
+            />
 
-            </LinearLayout>
-        </TableRow>
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/set3dMapStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SET 3D MAP style"
+            android:textAllCaps="true"
+            />
 
-        <TableRow>
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/setTtsOfflineMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="OFFLINE TTS"
+            android:textAllCaps="true"
+            />
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/enableKeyboardMode"
-                android:layout_width="wrap_content"
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/showRouteOptions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Settings: Show Route Options"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/showSpeedLimitsOptions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Settings: Show Speed Limits Options"
+            android:textAllCaps="true"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="Coordination api"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSetDestination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Set destination"
+            android:textAllCaps="true"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnStopNavigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Stop navigation"
+            android:textAllCaps="true"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="History api"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cleanHistory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Clean history"
+            android:textAllCaps="true"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/addToHistory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Add to history"
+            android:textAllCaps="true"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/removeFromHistory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Remove from history"
+            android:textAllCaps="true"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="Favorites api"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/addToFavorites"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Add to favorites"
+            android:textAllCaps="true"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/removeFromFavorites"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Remove from favorites"
+            android:textAllCaps="true"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="Search api"
+            />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etSearchApi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Search api query"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSearchApi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Search query"
+            android:textAllCaps="true"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="10dp"
+            >
+
+            <TextView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="enable keyboard mode"
+                android:text="Location Puck"
                 android:textAllCaps="true"
+                android:textColor="@color/colorOnSurface"
                 />
-        </TableRow>
 
-        <TableRow>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/set3dMapStyle"
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spinnerNavPuck"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="SET 3D MAP style"
-                android:textAllCaps="true"
+                android:layout_marginStart="5dp"
+                android:spinnerMode="dropdown"
+                android:textSize="12sp"
                 />
-        </TableRow>
 
-        <TableRow>
+        </LinearLayout>
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/setTtsOfflineMode"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Safe area"
+            />
+
+        <LinearLayout
+            android:padding="8dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="OFFLINE TTS"
+                android:text="Left padding"
                 android:textAllCaps="true"
                 />
-        </TableRow>
 
-        <TableRow>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/showRouteOptions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Settings: Show Route Options"
-                android:textAllCaps="true"
-                />
-        </TableRow>
-
-        <TableRow>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/showSpeedLimitsOptions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Settings: Show Speed Limits Options"
-                android:textAllCaps="true"
-                />
-        </TableRow>
-
-        <TableRow>
-
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <com.google.android.material.slider.Slider
+                android:id="@+id/leftPaddingSlider"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                >
+                android:valueFrom="0"
+                android:valueTo="100" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:text="Coordination api"
-                    />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Top padding"
+                android:textAllCaps="true"
+                />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSetDestination"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:backgroundTint="@android:color/holo_blue_dark"
-                    android:text="Set destination"
-                    android:textAllCaps="true"
-                    />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnStopNavigation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:backgroundTint="@android:color/holo_blue_dark"
-                    android:text="Stop navigation"
-                    android:textAllCaps="true"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:text="History api"
-                    />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/cleanHistory"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:backgroundTint="@android:color/holo_blue_dark"
-                    android:text="Clean history"
-                    android:textAllCaps="true"
-                    />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/addToHistory"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:backgroundTint="@android:color/holo_blue_dark"
-                    android:text="Add to history"
-                    android:textAllCaps="true"
-                    />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/removeFromHistory"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:backgroundTint="@android:color/holo_blue_dark"
-                    android:text="Remove from history"
-                    android:textAllCaps="true"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:text="Favorites api"
-                    />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/addToFavorites"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:backgroundTint="@android:color/holo_blue_dark"
-                    android:text="Add to favorites"
-                    android:textAllCaps="true"
-                    />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/removeFromFavorites"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:backgroundTint="@android:color/holo_blue_dark"
-                    android:text="Remove from favorites"
-                    android:textAllCaps="true"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:text="Search api"
-                    />
-
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/etSearchApi"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Search api query"
-                    />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSearchApi"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:backgroundTint="@android:color/holo_blue_dark"
-                    android:text="Search query"
-                    android:textAllCaps="true"
-                    />
-            </androidx.appcompat.widget.LinearLayoutCompat>
-        </TableRow>
-
-        <TableRow>
-
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <com.google.android.material.slider.Slider
+                android:id="@+id/topPaddingSlider"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:valueFrom="0"
+                android:valueTo="100" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Right padding"
+                android:textAllCaps="true"
+                />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/rightPaddingSlider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:valueFrom="0"
+                android:valueTo="100" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bottom padding"
+                android:textAllCaps="true"
+                />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/bottomPaddingSlider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:valueFrom="0"
+                android:valueTo="100" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="10dp"
+            >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:paddingVertical="10dp"
-                >
+                android:text="Left sidebar"
+                android:textAllCaps="true"
+                android:textColor="@color/colorOnSurface"
+                />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Location Puck"
-                    android:textAllCaps="true"
-                    android:textColor="@color/colorOnSurface"
-                    />
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spinnerLeftSidebar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:spinnerMode="dropdown"
+                android:textSize="12sp"
+                />
 
-                <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/spinnerNavPuck"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:spinnerMode="dropdown"
-                    android:textSize="12sp"
-                    />
+        </LinearLayout>
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
-        </TableRow>
-    </TableLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="10dp"
+            >
 
-</androidx.appcompat.widget.LinearLayoutCompat>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Right sidebar"
+                android:textAllCaps="true"
+                android:textColor="@color/colorOnSurface"
+                />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spinnerRightSidebar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:spinnerMode="dropdown"
+                android:textSize="12sp"
+                />
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleSwapSidebars"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Swap sidebars"
+            android:textAllCaps="true"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

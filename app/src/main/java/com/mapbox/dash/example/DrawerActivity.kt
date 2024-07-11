@@ -10,25 +10,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.GravityCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicatorSpec
 import com.google.android.material.progressindicator.IndeterminateDrawable
 import com.mapbox.dash.example.databinding.ActivityDrawerBinding
-import com.mapbox.dash.sdk.base.flow.observeWhenStarted
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 abstract class DrawerActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityDrawerBinding
+    private val binding by lazy { ActivityDrawerBinding.inflate(layoutInflater) }
 
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityDrawerBinding.inflate(layoutInflater)
         binding.drawerContent.addView(
             onCreateContentView(),
             0,
@@ -57,38 +59,15 @@ abstract class DrawerActivity : AppCompatActivity() {
 
     protected fun bindSwitch(
         switch: SwitchCompat,
-        getValue: () -> Boolean,
-        setValue: (v: Boolean) -> Unit,
-    ) {
-        switch.isChecked = getValue()
-        switch.setOnCheckedChangeListener { _, isChecked -> setValue(isChecked) }
-    }
-
-    protected fun bindSwitch(
-        switch: SwitchCompat,
         state: MutableStateFlow<Boolean>,
         onChange: (value: Boolean) -> Unit,
     ) {
-        state.observeWhenStarted(this) {
-            switch.isChecked = it
-            onChange(it)
+        state.observeWhenStarted(lifecycleOwner = this) { isChecked ->
+            switch.isChecked = isChecked
         }
         switch.setOnCheckedChangeListener { _, isChecked ->
             state.value = isChecked
-        }
-    }
-
-    protected fun bindSwitch(
-        switch: SwitchCompat,
-        liveData: MutableLiveData<Boolean>,
-        onChange: (value: Boolean) -> Unit,
-    ) {
-        liveData.observe(this) {
-            switch.isChecked = it
-            onChange(it)
-        }
-        switch.setOnCheckedChangeListener { _, isChecked ->
-            liveData.value = isChecked
+            onChange(isChecked)
         }
     }
 
@@ -99,7 +78,7 @@ abstract class DrawerActivity : AppCompatActivity() {
         val spec = CircularProgressIndicatorSpec(this, null, 0, R.style.ProgressIndicator)
         val progressIndicatorDrawable = IndeterminateDrawable.createCircularDrawable(this, spec)
         button.setOnClickListener {
-            MainScope().launch {
+            lifecycleScope.launch {
                 val originalIcon = button.icon
                 val originalText = button.text
                 button.icon = progressIndicatorDrawable
@@ -115,13 +94,12 @@ abstract class DrawerActivity : AppCompatActivity() {
 
     protected fun bindSpinner(
         spinner: AppCompatSpinner,
-        liveData: LiveData<String>,
-        onSelected: (value: String?) -> Unit,
+        state: MutableStateFlow<String>,
+        onSelected: (value: String) -> Unit,
     ) {
-        liveData.observe(this) { selection ->
+        state.observeWhenStarted(lifecycleOwner = this) { selection ->
             if (spinner.selectedItem != selection) {
-                val position = spinner.adapter.findItemPosition(selection)
-                position?.let { spinner.setSelection(it) }
+                spinner.adapter.findItemPosition(selection)?.let { spinner.setSelection(it) }
             }
         }
         spinner.onItemSelectedListener =
@@ -132,8 +110,10 @@ abstract class DrawerActivity : AppCompatActivity() {
                     position: Int,
                     id: Long,
                 ) {
-                    val selection = parent.getItemAtPosition(position) as? String
-                    selection?.let { onSelected(it) }
+                    (parent.getItemAtPosition(position) as? String)?.let { selection ->
+                        state.value = selection
+                        onSelected(selection)
+                    }
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) = Unit
@@ -145,5 +125,13 @@ abstract class DrawerActivity : AppCompatActivity() {
             if (item == getItem(pos)) return pos
         }
         return null
+    }
+
+    protected fun <T> Flow<T>.observeWhenStarted(lifecycleOwner: LifecycleOwner, action: FlowCollector<T>): Job {
+        return lifecycleOwner.lifecycleScope.launch {
+            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                collect(action)
+            }
+        }
     }
 }
