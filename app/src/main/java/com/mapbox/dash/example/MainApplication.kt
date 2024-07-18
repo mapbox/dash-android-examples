@@ -57,6 +57,7 @@ class MainApplication : Application() {
             }
             search {
                 resultsAdapter = ShowcaseSearchResultsAdapter()
+                searchEngine = ShowcaseSearchEngine()
             }
             engineType = EngineType.ELECTRIC
             device = DashDeviceType.Automobile
