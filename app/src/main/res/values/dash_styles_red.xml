@@ -8,8 +8,6 @@
         <item name="border_color_accent">@color/color_red</item>
         <item name="icon_color_accent">@color/color_red</item>
         <item name="guidance_color_primary">@color/color_red</item>
-        <item name="search_pin_color_accent">@color/color_red</item>
-        <item name="destination_pin_color_secondary">@color/color_red</item>
 
         <item name="dash_style_map_action_button">@style/MyMapActionButton</item>
         <item name="dash_style_map_search_panel">@style/MyMapSearchPanel</item>
@@ -33,8 +31,6 @@
         <item name="border_color_accent">@color/color_red</item>
         <item name="icon_color_accent">@color/color_red</item>
         <item name="guidance_color_primary">@color/color_red</item>
-        <item name="search_pin_color_accent">@color/color_red</item>
-        <item name="destination_pin_color_secondary">@color/color_red</item>
 
         <item name="dash_style_map_action_button">@style/MyMapActionButton</item>
         <item name="dash_style_map_search_panel">@style/MyMapSearchPanel</item>
