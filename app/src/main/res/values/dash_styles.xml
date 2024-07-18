@@ -8,8 +8,6 @@
         <item name="border_color_accent">@color/accent</item>
         <item name="icon_color_accent">@color/accent</item>
         <item name="guidance_color_primary">@color/accent</item>
-        <item name="search_pin_color_accent">@color/accent</item>
-        <item name="destination_pin_color_secondary">@color/accent</item>
     </style>
 
     <style name="MyDashTheme.Night" parent="DashTheme.Night">
@@ -19,8 +17,6 @@
         <item name="border_color_accent">@color/accent</item>
         <item name="icon_color_accent">@color/accent</item>
         <item name="guidance_color_primary">@color/accent</item>
-        <item name="search_pin_color_accent">@color/accent</item>
-        <item name="destination_pin_color_secondary">@color/accent</item>
     </style>
 
 </resources>
