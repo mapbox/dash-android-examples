@@ -77,7 +77,7 @@ class SampleMarkerFactory(
                 )
 
                 else -> checkNotNull(
-                    ContextCompat.getDrawable(context, R.drawable.ic_destination)
+                    ContextCompat.getDrawable(context, R.drawable.ic_waypoint)
                 )
             }.let { MarkerOptions.Image.Bitmap(it.toBitmap()) }
 
