@@ -255,10 +255,11 @@
             />
 
         <LinearLayout
-            android:padding="8dp"
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -272,7 +273,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:valueFrom="0"
-                android:valueTo="100" />
+                android:valueTo="100"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -286,7 +288,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:valueFrom="0"
-                android:valueTo="100" />
+                android:valueTo="100"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -300,7 +303,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:valueFrom="0"
-                android:valueTo="100" />
+                android:valueTo="100"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -314,7 +318,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:valueFrom="0"
-                android:valueTo="100" />
+                android:valueTo="100"
+                />
 
         </LinearLayout>
 
@@ -412,6 +417,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Override search panel buttons"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomMarkerFactory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enable custom marker factory"
             android:textAllCaps="true"
             />
 
