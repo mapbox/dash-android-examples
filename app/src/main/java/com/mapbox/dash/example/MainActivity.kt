@@ -9,18 +9,30 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatSpinner
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Text
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.unit.dp
 import com.google.android.material.slider.Slider
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
 import com.mapbox.dash.logging.LogsExtra
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.DashNavigationFragment
+import com.mapbox.dash.sdk.config.api.DashSearchPanelButton
 import com.mapbox.dash.sdk.config.api.DashSidebarControl
+import com.mapbox.dash.sdk.config.api.PersonalLocations
+import com.mapbox.dash.sdk.config.api.SearchCategory
 import com.mapbox.dash.sdk.config.dsl.DashSidebarUpdate
 import com.mapbox.dash.sdk.config.dsl.DashUiUpdate
 import com.mapbox.dash.sdk.config.dsl.leftSidebar
 import com.mapbox.dash.sdk.config.dsl.mapStyle
 import com.mapbox.dash.sdk.config.dsl.rightSidebar
+import com.mapbox.dash.sdk.config.dsl.searchPanel
 import com.mapbox.dash.sdk.config.dsl.theme
 import com.mapbox.dash.sdk.config.dsl.ui
 import com.mapbox.dash.sdk.config.dsl.uiSettings
@@ -109,7 +121,9 @@ class MainActivity : DrawerActivity() {
     private val showSpeedLimitsOptionsInSettings = MutableStateFlow(value = false)
     private val leftSidebarMode = MutableStateFlow(SidebarMode.Transparent.name)
     private val rightSidebarMode = MutableStateFlow(SidebarMode.Transparent.name)
-    private val swapSidebars = MutableStateFlow(value = false)
+    private val overrideSidebarControls = MutableStateFlow(value = false)
+    private val searchPanelPosition = MutableStateFlow(SearchPanelPosition.BottomLeft.name)
+    private val overrideSearchPanelButtons = MutableStateFlow(value = false)
 
     private fun initCustomizationMenu() {
         headlessModeCustomization()
@@ -285,17 +299,99 @@ class MainActivity : DrawerActivity() {
         bindSidebarSpinner(menuBinding.spinnerRightSidebar, rightSidebarMode, DashUiUpdate::rightSidebar)
 
         bindSwitch(
-            switch = menuBinding.toggleSwapSidebars,
-            state = swapSidebars,
+            switch = menuBinding.toggleSidebarControls,
+            state = overrideSidebarControls,
         ) { enabled ->
             Dash.applyUpdate {
                 ui {
-                    if (enabled) {
-                        leftSidebar { controls = DashSidebarControl.defaultRightSidebarControls }
-                        rightSidebar { controls = DashSidebarControl.defaultLeftSidebarControls }
-                    } else {
-                        leftSidebar { controls = DashSidebarControl.defaultLeftSidebarControls }
-                        rightSidebar { controls = DashSidebarControl.defaultRightSidebarControls }
+                    rightSidebar {
+                        controls = if (enabled) {
+                            listOf(
+                                DashSidebarControl.Custom(
+                                    content = { modifier ->
+                                        Text(
+                                            modifier = modifier
+                                                .shadow(8.dp, shape = CircleShape)
+                                                .border(
+                                                    width = 2.dp,
+                                                    color = androidx.compose.ui.graphics.Color.Black,
+                                                    shape = CircleShape,
+                                                )
+                                                .background(androidx.compose.ui.graphics.Color.White)
+                                                .clickable {
+                                                    Toast.makeText(
+                                                        this@MainActivity,
+                                                        "This text was brought to you by Dash",
+                                                        Toast.LENGTH_LONG,
+                                                    ).show()
+                                                }
+                                                .padding(all = 20.dp),
+                                            text = "Custom sidebar button",
+                                            color = androidx.compose.ui.graphics.Color.Black,
+                                        )
+                                    },
+                                ),
+                                DashSidebarControl.Speed,
+                                DashSidebarControl.Space(),
+                                DashSidebarControl.Button(
+                                    iconId = R.drawable.ic_waving_hand,
+                                    onClick = {
+                                        Toast.makeText(this@MainActivity, "Hey, Dash!", Toast.LENGTH_SHORT).show()
+                                    },
+                                ),
+                                DashSidebarControl.Debug,
+                            )
+                        } else {
+                            DashSidebarControl.defaultRightSidebarControls
+                        }
+                    }
+                }
+            }
+        }
+
+        menuBinding.spinnerSearchPanelPosition.adapter =
+            ArrayAdapter(this, R.layout.item_spinner, SearchPanelPosition.values().map { it.name })
+        bindSpinner(
+            menuBinding.spinnerSearchPanelPosition,
+            searchPanelPosition,
+        ) { name ->
+            val position = SearchPanelPosition.valueOf(name)
+            Dash.applyUpdate {
+                ui {
+                    searchPanel {
+                        visible = position != SearchPanelPosition.Nowhere
+                        this.position = if (position == SearchPanelPosition.TopLeft) {
+                            com.mapbox.dash.sdk.config.api.SearchPanelPosition.TOP_LEFT
+                        } else {
+                            com.mapbox.dash.sdk.config.api.SearchPanelPosition.BOTTOM_LEFT
+                        }
+                    }
+                }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleSearchPanelButtons,
+            state = overrideSearchPanelButtons,
+        ) { enabled ->
+            Dash.applyUpdate {
+                ui {
+                    searchPanel {
+                        buttons = if (enabled) {
+                            listOf(
+                                DashSearchPanelButton.Category(SearchCategory.Airport),
+                                DashSearchPanelButton.Favorite(PersonalLocations.Home),
+                                DashSearchPanelButton.Custom(
+                                    id = "hello",
+                                    iconId = R.drawable.ic_waving_hand,
+                                    onClick = {
+                                        Toast.makeText(this@MainActivity, "Hey, Dash!", Toast.LENGTH_SHORT).show()
+                                    },
+                                ),
+                            )
+                        } else {
+                            DashSearchPanelButton.defaultSearchPanelButtons
+                        }
                     }
                 }
             }
@@ -410,6 +506,10 @@ class MainActivity : DrawerActivity() {
 
     private enum class SidebarMode {
         Transparent, Background, Hidden,
+    }
+
+    private enum class SearchPanelPosition {
+        BottomLeft, TopLeft, Nowhere,
     }
 
     private companion object {

@@ -373,10 +373,45 @@
         </LinearLayout>
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/toggleSwapSidebars"
+            android:id="@+id/toggleSidebarControls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Swap sidebars"
+            android:text="Override sidebar controls"
+            android:textAllCaps="true"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="10dp"
+            >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Search panel position"
+                android:textAllCaps="true"
+                android:textColor="@color/colorOnSurface"
+                />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spinnerSearchPanelPosition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:spinnerMode="dropdown"
+                android:textSize="12sp"
+                />
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleSearchPanelButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Override search panel buttons"
             android:textAllCaps="true"
             />
 
