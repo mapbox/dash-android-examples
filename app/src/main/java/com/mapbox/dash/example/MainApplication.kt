@@ -37,7 +37,6 @@ class MainApplication : Application() {
             }
             mapStyle {
                 pixelRatio = applicationContext.resources.displayMetrics.density
-                markerFactory = SampleMarkerFactory(applicationContext)
             }
             locationSimulation {
                 // Example of a debug option that teleports the user to a specific location at each app launch.

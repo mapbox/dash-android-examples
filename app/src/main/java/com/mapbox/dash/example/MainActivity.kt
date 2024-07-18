@@ -124,6 +124,7 @@ class MainActivity : DrawerActivity() {
     private val overrideSidebarControls = MutableStateFlow(value = false)
     private val searchPanelPosition = MutableStateFlow(SearchPanelPosition.BottomLeft.name)
     private val overrideSearchPanelButtons = MutableStateFlow(value = false)
+    private val setCustomMarkerFactory = MutableStateFlow(value = false)
 
     private fun initCustomizationMenu() {
         headlessModeCustomization()
@@ -392,6 +393,21 @@ class MainActivity : DrawerActivity() {
                         } else {
                             DashSearchPanelButton.defaultSearchPanelButtons
                         }
+                    }
+                }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleCustomMarkerFactory,
+            state = setCustomMarkerFactory,
+        ) { enabled ->
+            Dash.applyUpdate {
+                mapStyle {
+                    markerFactory = if (enabled) {
+                        SampleMarkerFactory(this@MainActivity)
+                    } else {
+                        null
                     }
                 }
             }
