@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.mapbox.dash.example"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.mapbox.dash.example"
@@ -72,8 +72,8 @@ android {
 }
 
 dependencies {
-    implementation("com.mapbox.navigationux:android:1.0.0-beta.32.1")
-    implementation("com.mapbox.navigationux:search-api:1.0.0-beta.32.1")
+    implementation("com.mapbox.navigationux:android:1.0.0-beta.33")
+    implementation("com.mapbox.navigationux:search-api:1.0.0-beta.33")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")

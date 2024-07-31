@@ -66,6 +66,7 @@ class MainActivity : DrawerActivity() {
             override val etaMinutes = null
             override val id = "customHistoryItemId1122334455"
             override val mapboxId: String? = null
+            override val metadata: Map<String, String>? = emptyMap()
             override val name = "1123 15th Street Northwest"
             override val type = DashSearchResultType.ADDRESS
             override val categories = listOf("some category")

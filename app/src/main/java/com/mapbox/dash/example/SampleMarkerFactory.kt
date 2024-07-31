@@ -15,7 +15,7 @@ private const val TEXT_OFFSET_EMS = 0.5
 
 class SampleMarkerFactory(
     private val context: Context,
-) : MarkerFactory {
+) : MarkerFactory() {
 
     private val textOffset = listOf(0.0, TEXT_OFFSET_EMS)
 
