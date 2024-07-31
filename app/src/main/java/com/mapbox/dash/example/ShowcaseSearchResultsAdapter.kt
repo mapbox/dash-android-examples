@@ -1,6 +1,8 @@
 package com.mapbox.dash.example
 
 import android.util.Log
+import com.mapbox.dash.sdk.search.DashCategorySearchOptions
+import com.mapbox.dash.sdk.search.DashSearchOptions
 import com.mapbox.dash.sdk.search.DashSearchRequest
 import com.mapbox.dash.sdk.search.DashSearchResult
 import com.mapbox.dash.sdk.search.DashSearchResultType
@@ -31,6 +33,7 @@ class ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
         override val etaMinutes = null
         override val id = "customSearchResultId1122334455"
         override val mapboxId: String? = null
+        override val metadata: Map<String, String>? = emptyMap()
         override val name = "The search result for the custom suggestion"
         override val type = DashSearchResultType.ADDRESS
         override val categories = listOf("Food")
@@ -41,9 +44,10 @@ class ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
 
     override suspend fun searchResults(
         request: DashSearchRequest,
+        options: DashCategorySearchOptions,
         results: List<DashSearchResult>,
     ): List<DashSearchResult> {
-        Log.d(TAG, "Adapt requested $request search results: $results Coming soon.")
+        Log.d(TAG, "Adapt requested for $request, options: $options, search results: $results Coming soon.")
         val adaptedResults = results.toMutableList()
         adaptedResults.add(0, customSearchResult)
         return adaptedResults
@@ -51,9 +55,10 @@ class ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
 
     override suspend fun searchSuggestions(
         request: DashSearchRequest,
+        options: DashSearchOptions,
         suggestions: List<DashSearchSuggestion>,
     ): List<DashSearchSuggestion> {
-        Log.d(TAG, "Adapt requested $request suggestions: $suggestions.")
+        Log.d(TAG, "Adapt requested for $request, options: $options, suggestions: $suggestions.")
         val adaptedSuggestions = suggestions.toMutableList()
         adaptedSuggestions.add(0, customSuggestion)
         return adaptedSuggestions

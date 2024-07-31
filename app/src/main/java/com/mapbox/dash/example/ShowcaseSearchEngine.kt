@@ -1,8 +1,8 @@
 package com.mapbox.dash.example
 
-import com.mapbox.dash.sdk.search.DashSearchEnginePolicy
 import com.mapbox.dash.sdk.search.DashCategorySearchOptions
 import com.mapbox.dash.sdk.search.DashSearchEngine
+import com.mapbox.dash.sdk.search.DashSearchEnginePolicy
 import com.mapbox.dash.sdk.search.DashSearchOptions
 import com.mapbox.dash.sdk.search.DashSearchRequest
 import com.mapbox.dash.sdk.search.DashSearchResult
@@ -12,8 +12,7 @@ import com.mapbox.geojson.Point
 
 @Suppress("MagicNumber", "ForbiddenComment")
 class ShowcaseSearchEngine(
-    override val processingPolicy: DashSearchEnginePolicy =
-        DashSearchEnginePolicy.MERGE_CUSTOM_AND_DEFAULT_ENGINES_RESULTS,
+    override val processingPolicyFlag: Int = DashSearchEnginePolicy.ORIGIN_ENGINES_RESULTS
 ) : DashSearchEngine {
 
     override suspend fun search(
@@ -46,6 +45,7 @@ class ShowcaseSearchEngine(
             override val etaMinutes = null
             override val id = "customSearchResultId1122334455"
             override val mapboxId: String? = null
+            override val metadata: Map<String, String>? = emptyMap()
             override val name = "The search result for the custom suggestion"
             override val type = DashSearchResultType.ADDRESS
             override val categories = listOf("test category")
