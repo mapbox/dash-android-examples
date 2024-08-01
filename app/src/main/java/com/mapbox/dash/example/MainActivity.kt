@@ -13,11 +13,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.Fragment
 import com.google.android.material.slider.Slider
+import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
 import com.mapbox.dash.logging.LogsExtra
@@ -76,6 +80,14 @@ class MainActivity : DrawerActivity() {
             override val favoriteType = favoriteType
         }
 
+    private inline fun <reified T : Fragment> applyFragment(
+        block: (T) -> Unit,
+    ) = supportFragmentManager.findFragmentById(R.id.container)?.let { fragment ->
+        if (fragment is T) {
+            block(fragment)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
@@ -127,6 +139,7 @@ class MainActivity : DrawerActivity() {
     private val searchPanelPosition = MutableStateFlow(SearchPanelPosition.BottomLeft.name)
     private val overrideSearchPanelButtons = MutableStateFlow(value = false)
     private val setCustomMarkerFactory = MutableStateFlow(value = false)
+    private val setCustomPlacesListComposer = MutableStateFlow(value = false)
     private val showTripProgress = MutableStateFlow(value = true)
 
     private fun initCustomizationMenu() {
@@ -425,6 +438,25 @@ class MainActivity : DrawerActivity() {
                     } else {
                         null
                     }
+                }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleCustomPlacesList,
+            state = setCustomPlacesListComposer,
+        ) { enabled ->
+            applyFragment<DashNavigationFragment> { fragment ->
+                if (enabled) {
+                    fragment.setPlacesPreview {
+                        val lazyListState: LazyListState = rememberLazyListState()
+                        SamplePlacesViewComposer(
+                            lazyListState = lazyListState,
+                            placesListUiState = it,
+                        )
+                    }
+                } else {
+                    fragment.setPlacesPreview { DefaultPlacesPreview(state = it) }
                 }
             }
         }
