@@ -2,7 +2,6 @@
 
 package com.mapbox.dash.example
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -91,17 +90,40 @@ object SamplePlacesViewComposer {
     }
 
     @Composable
-    internal fun SearchResultPlaceholder(modifier: Modifier = Modifier) {
-        Column(modifier = modifier) {
-            ShimmerItem(
+    internal fun SearchResultPlaceholder() {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .background(
+                    AppTheme.colors.backgroundColors.tertiary,
+                    shape = AppTheme.shapes.searchPanelBackground,
+                ),
+        ) {
+            Column(
                 modifier = Modifier
-                    .height(24.dp)
-                    .width(370.dp),
-            )
-            val secondRowModifier = Modifier
-                .padding(top = 4.dp)
-                .height(34.dp)
-            ShimmerItem(modifier = secondRowModifier.defaultMinSize(440.dp))
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                ShimmerItem(
+                    modifier = Modifier
+                        .height(24.dp)
+                        .width(370.dp),
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                ShimmerItem(
+                    modifier = Modifier
+                        .height(34.dp)
+                        .width(370.dp),
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                ShimmerItem(
+                    modifier = Modifier
+                        .height(34.dp)
+                        .width(370.dp),
+                )
+            }
         }
     }
 
@@ -156,9 +178,11 @@ object SamplePlacesViewComposer {
         lazyListState: LazyListState,
         placesListUiState: PlacesListUiState,
     ) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .background(AppTheme.colors.backgroundColors.primary, shape = AppTheme.shapes.poiCardBackground)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(AppTheme.colors.backgroundColors.primary, shape = AppTheme.shapes.poiCardBackground)
+        ) {
             PlacesHeader(
                 title = placesListUiState.title.content.orEmpty(),
                 backButtonHandler = placesListUiState.backHandler,
