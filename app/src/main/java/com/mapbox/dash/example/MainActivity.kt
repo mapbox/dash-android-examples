@@ -141,6 +141,7 @@ class MainActivity : DrawerActivity() {
     private val setCustomMarkerFactory = MutableStateFlow(value = false)
     private val setCustomPlacesListComposer = MutableStateFlow(value = false)
     private val showTripProgress = MutableStateFlow(value = true)
+    private val setCustomVoicePlayer = MutableStateFlow(value = false)
 
     private fun initCustomizationMenu() {
         headlessModeCustomization()
@@ -458,6 +459,17 @@ class MainActivity : DrawerActivity() {
                 } else {
                     fragment.setPlacesPreview { DefaultPlacesPreview(state = it) }
                 }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleCustomVoicePlayer,
+            state = setCustomVoicePlayer,
+        ) { enabled ->
+            if (enabled) {
+                Dash.controller.setVoicePlayerMiddleware(LocalVoicePlayerMiddleware())
+            } else {
+                Dash.controller.setDefaultVoicePlayerMiddleware()
             }
         }
     }
