@@ -2,6 +2,7 @@
 
 package com.mapbox.dash.example
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -45,6 +46,16 @@ import com.mapbox.nav.gm.map.presentation.ui.BackCloseButtonHandler
 import com.mapbox.nav.gm.map.presentation.ui.PlacesListUiState
 
 object SamplePlacesViewComposer {
+
+    @Composable
+    fun isTablet(): Boolean {
+        val configuration = LocalConfiguration.current
+        return if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            configuration.screenWidthDp > 840
+        } else {
+            configuration.screenWidthDp > 600
+        }
+    }
 
     @Composable
     fun ShimmerItem(modifier: Modifier, shape: Shape = RoundedCornerShape(8.dp)) {
@@ -180,7 +191,7 @@ object SamplePlacesViewComposer {
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(fraction = if (isTablet()) 0.5f else 1f)
                 .background(AppTheme.colors.backgroundColors.primary, shape = AppTheme.shapes.poiCardBackground)
         ) {
             PlacesHeader(
