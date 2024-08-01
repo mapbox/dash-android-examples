@@ -29,6 +29,7 @@ import com.mapbox.dash.sdk.config.api.PersonalLocations
 import com.mapbox.dash.sdk.config.api.SearchCategory
 import com.mapbox.dash.sdk.config.dsl.DashSidebarUpdate
 import com.mapbox.dash.sdk.config.dsl.DashUiUpdate
+import com.mapbox.dash.sdk.config.dsl.etaPanel
 import com.mapbox.dash.sdk.config.dsl.leftSidebar
 import com.mapbox.dash.sdk.config.dsl.mapStyle
 import com.mapbox.dash.sdk.config.dsl.rightSidebar
@@ -126,6 +127,7 @@ class MainActivity : DrawerActivity() {
     private val searchPanelPosition = MutableStateFlow(SearchPanelPosition.BottomLeft.name)
     private val overrideSearchPanelButtons = MutableStateFlow(value = false)
     private val setCustomMarkerFactory = MutableStateFlow(value = false)
+    private val showTripProgress = MutableStateFlow(value = true)
 
     private fun initCustomizationMenu() {
         headlessModeCustomization()
@@ -135,6 +137,7 @@ class MainActivity : DrawerActivity() {
         settingCustomization()
         offlineTtsCustomization()
         dashCoordination()
+        etaPanelCustomization()
     }
 
     private fun headlessModeCustomization() {
@@ -233,7 +236,19 @@ class MainActivity : DrawerActivity() {
                 }
             }
         }
+    }
 
+    private fun etaPanelCustomization() {
+        bindSwitch(
+            switch = menuBinding.toggleTripProgress,
+            state = showTripProgress,
+        ) { isChecked ->
+            Dash.applyUpdate {
+                 etaPanel {
+                     showTripProgress = isChecked
+                 }
+            }
+        }
     }
 
     private fun offlineTtsCustomization() {
