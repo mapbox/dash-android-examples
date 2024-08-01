@@ -2,6 +2,7 @@
 
 package com.mapbox.dash.example
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,13 +31,18 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mapbox.dash.compose.component.Body1
 import com.mapbox.dash.compose.component.Title4
 import com.mapbox.dash.compose.component.Title5
+import com.mapbox.dash.example.SamplePlacesViewComposer.PlacesHeader
 import com.mapbox.dash.sdk.config.api.UiStates
 import com.mapbox.dash.theming.compose.AppTheme
+import com.mapbox.dash.theming.compose.LightDashTheme
 import com.mapbox.dash.view.compose.R
+import com.mapbox.nav.gm.map.presentation.ui.BackCloseButtonHandler
 import com.mapbox.nav.gm.map.presentation.ui.PlacesListUiState
 
 object SamplePlacesViewComposer {
@@ -100,16 +106,17 @@ object SamplePlacesViewComposer {
     }
 
     @Composable
-    operator fun invoke(
-        lazyListState: LazyListState,
-        placesListUiState: PlacesListUiState,
+    internal fun PlacesHeader(
+        title: String,
+        backButtonHandler: BackCloseButtonHandler?,
+        closeButtonHandler: BackCloseButtonHandler?,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(32.dp),
         ) {
-            placesListUiState.backHandler?.let { handler ->
+            backButtonHandler?.let { handler ->
                 Image(
                     modifier = Modifier
                         .size(dimensionResource(id = R.dimen.card_header_button_size))
@@ -125,9 +132,9 @@ object SamplePlacesViewComposer {
             Title5(
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
-                text = placesListUiState.title.content ?: "", color = AppTheme.colors.textColor.primary,
+                text = title, color = AppTheme.colors.textColor.primary,
             )
-            placesListUiState.closeHandler?.let { handler ->
+            closeButtonHandler?.let { handler ->
                 Image(
                     modifier = Modifier
                         .weight(0.5f)
@@ -142,40 +149,67 @@ object SamplePlacesViewComposer {
                 )
             }
         }
-        placesListUiState.items.UiStates(
-            loading = {
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth(),
-                    state = lazyListState,
-                    contentPadding = PaddingValues(bottom = 8.dp),
-                ) {
-                    repeat(times = 3) {
-                        item {
-                            SearchResultPlaceholder()
+    }
+
+    @Composable
+    operator fun invoke(
+        lazyListState: LazyListState,
+        placesListUiState: PlacesListUiState,
+    ) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .background(AppTheme.colors.backgroundColors.primary, shape = AppTheme.shapes.poiCardBackground)) {
+            PlacesHeader(
+                title = placesListUiState.title.content.orEmpty(),
+                backButtonHandler = placesListUiState.backHandler,
+                closeButtonHandler = placesListUiState.closeHandler
+            )
+            placesListUiState.items.UiStates(
+                loading = {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        state = lazyListState,
+                        contentPadding = PaddingValues(bottom = 8.dp),
+                    ) {
+                        repeat(times = 3) {
+                            item {
+                                SearchResultPlaceholder()
+                            }
                         }
                     }
-                }
-            },
-            failure = {},
-            content = { content, loading, error ->
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth(),
-                    state = lazyListState,
-                    contentPadding = PaddingValues(bottom = 8.dp),
-                ) {
-                    content.forEachIndexed { index, result ->
-                        item {
-                            InfoCard(
-                                number = index + 1,
-                                title = result.name,
-                                eta = result.distanceMeters?.toLong()
-                                    .toString() + "m · " + result.etaMinutes?.toLong() + "min",
-                                onItemSelected = { placesListUiState.itemSelected(index) },
-                            )
+                },
+                failure = {},
+                content = { content, loading, error ->
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        state = lazyListState,
+                        contentPadding = PaddingValues(bottom = 8.dp),
+                    ) {
+                        content.forEachIndexed { index, result ->
+                            item {
+                                InfoCard(
+                                    number = index + 1,
+                                    title = result.name,
+                                    eta = result.distanceMeters?.toLong()
+                                        .toString() + "m · " + result.etaMinutes?.toLong() + "min",
+                                    onItemSelected = { placesListUiState.itemSelected(index) },
+                                )
+                            }
                         }
                     }
-                }
-            },
-        )
+                },
+            )
+        }
     }
 }
+
+@Preview(device = Devices.AUTOMOTIVE_1024p)
+@Composable
+private fun HeaderPreview() {
+    LightDashTheme {
+        PlacesHeader(title = "Coffee", backButtonHandler = null, closeButtonHandler = {})
+    }
+}
+
+
+
