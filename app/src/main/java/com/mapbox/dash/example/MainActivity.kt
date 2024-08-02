@@ -33,6 +33,7 @@ import com.mapbox.dash.sdk.config.api.PersonalLocations
 import com.mapbox.dash.sdk.config.api.SearchCategory
 import com.mapbox.dash.sdk.config.dsl.DashSidebarUpdate
 import com.mapbox.dash.sdk.config.dsl.DashUiUpdate
+import com.mapbox.dash.sdk.config.dsl.destinationPreview
 import com.mapbox.dash.sdk.config.dsl.etaPanel
 import com.mapbox.dash.sdk.config.dsl.leftSidebar
 import com.mapbox.dash.sdk.config.dsl.mapStyle
@@ -80,12 +81,8 @@ class MainActivity : DrawerActivity() {
             override val favoriteType = favoriteType
         }
 
-    private inline fun <reified T : Fragment> applyFragment(
-        block: (T) -> Unit,
-    ) = supportFragmentManager.findFragmentById(R.id.container)?.let { fragment ->
-        if (fragment is T) {
-            block(fragment)
-        }
+    private fun getDashNavigationFragment(): DashNavigationFragment? {
+        return supportFragmentManager.findFragmentById(R.id.container) as? DashNavigationFragment
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -141,6 +138,7 @@ class MainActivity : DrawerActivity() {
     private val setCustomMarkerFactory = MutableStateFlow(value = false)
     private val setCustomPlacesListComposer = MutableStateFlow(value = false)
     private val showTripProgress = MutableStateFlow(value = true)
+    private val simpleCardHeader = MutableStateFlow(value = false)
 
     private fun initCustomizationMenu() {
         headlessModeCustomization()
@@ -313,7 +311,7 @@ class MainActivity : DrawerActivity() {
 
         val density = resources.displayMetrics.density
         val paddingSliderChangeListener = Slider.OnChangeListener { _, _, _ ->
-            (supportFragmentManager.findFragmentById(R.id.container) as? DashNavigationFragment)?.setSafeAreaPaddings(
+            getDashNavigationFragment()?.setSafeAreaPaddings(
                 (menuBinding.leftPaddingSlider.value * density).roundToInt(),
                 (menuBinding.topPaddingSlider.value * density).roundToInt(),
                 (menuBinding.rightPaddingSlider.value * density).roundToInt(),
@@ -446,7 +444,7 @@ class MainActivity : DrawerActivity() {
             switch = menuBinding.toggleCustomPlacesList,
             state = setCustomPlacesListComposer,
         ) { enabled ->
-            applyFragment<DashNavigationFragment> { fragment ->
+            getDashNavigationFragment()?.let { fragment ->
                 if (enabled) {
                     fragment.setPlacesPreview {
                         val lazyListState: LazyListState = rememberLazyListState()
@@ -457,6 +455,20 @@ class MainActivity : DrawerActivity() {
                     }
                 } else {
                     fragment.setPlacesPreview { DefaultPlacesPreview(state = it) }
+                }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleSimpleCardHeader,
+            state = simpleCardHeader,
+        ) { enabled ->
+            Dash.applyUpdate {
+                destinationPreview {
+                    titleSingleLine = enabled
+                }
+                ui {
+                    showCloseButtonInCards = !enabled
                 }
             }
         }
