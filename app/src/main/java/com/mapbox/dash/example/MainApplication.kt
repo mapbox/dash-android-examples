@@ -7,6 +7,7 @@ import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.base.device.DashDeviceType
 import com.mapbox.dash.sdk.config.api.CustomKeys
 import com.mapbox.dash.sdk.config.api.EngineType
+import com.mapbox.dash.sdk.config.dsl.debugSettings
 import com.mapbox.dash.sdk.config.dsl.locationSimulation
 import com.mapbox.dash.sdk.config.dsl.mapGpt
 import com.mapbox.dash.sdk.config.dsl.mapStyle
@@ -58,6 +59,10 @@ class MainApplication : Application() {
             search {
                 resultsAdapter = ShowcaseSearchResultsAdapter()
                 searchEngine = ShowcaseSearchEngine()
+            }
+            debugSettings {
+                showSendDebugInfoButton = true
+                showDisplaySendDebugInfoButtonOption = true
             }
             engineType = EngineType.ELECTRIC
             device = DashDeviceType.Automobile
