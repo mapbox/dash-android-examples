@@ -444,6 +444,14 @@
             android:textAllCaps="true"
             />
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleSimpleCardHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enable simple card headers"
+            android:textAllCaps="true"
+            />
+
     </LinearLayout>
 
 </LinearLayout>
