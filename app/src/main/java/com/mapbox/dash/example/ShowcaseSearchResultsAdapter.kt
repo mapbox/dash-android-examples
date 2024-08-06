@@ -39,7 +39,6 @@ class ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
         override val categories = listOf("Food")
         override val description = null
         override val distanceMeters = null
-        override val favoriteType = null
     }
 
     override suspend fun searchResults(
