@@ -460,6 +460,14 @@
             android:textAllCaps="true"
             />
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleTabletLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enable tablet layout"
+            android:textAllCaps="true"
+            />
+
     </LinearLayout>
 
 </LinearLayout>
