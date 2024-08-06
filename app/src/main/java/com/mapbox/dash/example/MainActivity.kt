@@ -1,7 +1,9 @@
 package com.mapbox.dash.example
 
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -70,6 +72,10 @@ import kotlin.math.roundToInt
 
 class MainActivity : DrawerActivity() {
 
+    private var originalDensity = 0
+    private var originalSmallestWidth = 0
+    private var tabletLayout = false
+
     private val binding by lazy { ActivityMainBinding.inflate(LayoutInflater.from(this)) }
     private val menuBinding by lazy { LayoutCustomizationMenuBinding.inflate(LayoutInflater.from(this)) }
 
@@ -78,9 +84,9 @@ class MainActivity : DrawerActivity() {
     private val headlessMode = MutableStateFlow(false)
 
     private val searchItem = buildSearchItem()
-    private val favoriteItem = buildSearchItem(DashFavoriteType.HOME)
+    private val favoriteItem = buildSearchItem()
 
-    private fun buildSearchItem(@DashFavoriteType.Type favoriteType: String? = null) =
+    private fun buildSearchItem() =
         object : DashSearchResult {
             override val address = null
             override val coordinate = Point.fromLngLat(-77.0342, 38.9044)
@@ -100,6 +106,34 @@ class MainActivity : DrawerActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val configuration = Configuration(resources.configuration)
+        val displayMetrics = DisplayMetrics().apply { setTo(resources.displayMetrics) }
+
+        if (savedInstanceState != null) {
+            originalDensity = savedInstanceState.getInt(KEY_ORIGINAL_DENSITY)
+            originalSmallestWidth = savedInstanceState.getInt(KEY_ORIGINAL_SMALLEST_WIDTH)
+            tabletLayout = savedInstanceState.getBoolean(KEY_TABLET_LAYOUT)
+        } else {
+            originalDensity = configuration.densityDpi
+            originalSmallestWidth = configuration.smallestScreenWidthDp
+            tabletLayout = originalSmallestWidth >= 600
+        }
+
+        // changing originalSmallestWidth is enough to force a different layout,
+        // but changing density as well allows to keep control sizes more or less the same with different layouts
+        val (density, smallestWidth) = when {
+            tabletLayout && originalSmallestWidth < 600 -> (originalDensity / 1.5).roundToInt() to
+                (originalSmallestWidth * 1.5).roundToInt().coerceAtLeast(minimumValue = 600)
+            !tabletLayout && originalSmallestWidth >= 600 -> (originalDensity * 1.5).roundToInt() to
+                (originalSmallestWidth / 1.5).roundToInt().coerceAtMost(maximumValue = 599)
+            else -> originalDensity to originalSmallestWidth
+        }
+
+        configuration.densityDpi = density
+        displayMetrics.densityDpi = density
+        configuration.smallestScreenWidthDp = smallestWidth
+        resources.updateConfiguration(configuration, displayMetrics)
+
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
 
@@ -128,6 +162,13 @@ class MainActivity : DrawerActivity() {
                 .replace(R.id.container, fragment)
                 .commitNow()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(KEY_ORIGINAL_DENSITY, originalDensity)
+        outState.putInt(KEY_ORIGINAL_SMALLEST_WIDTH, originalSmallestWidth)
+        outState.putBoolean(KEY_TABLET_LAYOUT, tabletLayout)
     }
 
     override fun onCreateContentView(): View {
@@ -507,6 +548,14 @@ class MainActivity : DrawerActivity() {
                 }
             }
         }
+
+        menuBinding.toggleTabletLayout.isChecked = tabletLayout
+        menuBinding.toggleTabletLayout.setOnCheckedChangeListener { _, isChecked ->
+            if (tabletLayout != isChecked) {
+                tabletLayout = isChecked
+                recreate()
+            }
+        }
     }
 
     private fun registerEventsObservers() {
@@ -700,16 +749,15 @@ class MainActivity : DrawerActivity() {
 
     private companion object {
 
-        const val TAG = "MainActivity"
+        private const val TAG = "MainActivity"
 
-        /**
-         * Default satellite style.
-         */
-        const val DEFAULT_SATELLITE_STYLE = "mapbox://styles/mapbox-dash/standard-satellite-navigation"
+        private const val KEY_ORIGINAL_DENSITY = "original_density"
+        private const val KEY_ORIGINAL_SMALLEST_WIDTH = "original_smallest_width"
+        private const val KEY_TABLET_LAYOUT = "tablet_layout"
 
         /**
          * Default 3D style.
          */
-        const val DEFAULT_3D_STYLE = "mapbox://styles/mapbox-dash/standard-navigation"
+        private const val DEFAULT_3D_STYLE = "mapbox://styles/mapbox-dash/standard-navigation"
     }
 }
