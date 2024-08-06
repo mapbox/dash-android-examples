@@ -51,7 +51,6 @@ class ShowcaseSearchEngine(
             override val categories = listOf("test category")
             override val description = null
             override val distanceMeters = null
-            override val favoriteType = null
         }
     }
 }

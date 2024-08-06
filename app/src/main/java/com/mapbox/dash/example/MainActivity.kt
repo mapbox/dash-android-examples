@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
 import com.google.android.material.slider.Slider
 import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
 import com.mapbox.dash.example.databinding.ActivityMainBinding
@@ -78,7 +77,6 @@ class MainActivity : DrawerActivity() {
             override val categories = listOf("some category")
             override val description = null
             override val distanceMeters = null
-            override val favoriteType = favoriteType
         }
 
     private fun getDashNavigationFragment(): DashNavigationFragment? {
@@ -300,7 +298,7 @@ class MainActivity : DrawerActivity() {
             Dash.controller.removeHistoryItem(searchItem)
         }
         menuBinding.addToFavorites.bindAction {
-            Dash.controller.addFavoriteItem(favoriteItem)
+            Dash.controller.addFavoriteItem(favoriteItem, DashFavoriteType.REGULAR)
         }
         menuBinding.removeFromFavorites.bindAction {
             Dash.controller.removeFavoriteItem(favoriteItem)
