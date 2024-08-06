@@ -9,20 +9,33 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatSpinner
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.google.android.material.slider.Slider
+import com.mapbox.dash.compose.ComposeViewBlock
+import com.mapbox.dash.compose.component.Body5
 import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
+import com.mapbox.dash.favorites.PlaceFavoriteStatus
 import com.mapbox.dash.logging.LogsExtra
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.DashNavigationFragment
@@ -46,10 +59,13 @@ import com.mapbox.dash.sdk.search.DashFavoriteType
 import com.mapbox.dash.sdk.search.DashSearchResult
 import com.mapbox.dash.sdk.search.DashSearchResultType
 import com.mapbox.dash.theming.ThemeManager
+import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class MainActivity : DrawerActivity() {
@@ -136,6 +152,7 @@ class MainActivity : DrawerActivity() {
     private val setCustomMarkerFactory = MutableStateFlow(value = false)
     private val setCustomPlacesListComposer = MutableStateFlow(value = false)
     private val showTripProgress = MutableStateFlow(value = true)
+    private val setCustomDestination = MutableStateFlow(value = true)
     private val simpleCardHeader = MutableStateFlow(value = false)
 
     private fun initCustomizationMenu() {
@@ -147,6 +164,7 @@ class MainActivity : DrawerActivity() {
         offlineTtsCustomization()
         dashCoordination()
         etaPanelCustomization()
+        destinationPreviewCustomization()
     }
 
     private fun headlessModeCustomization() {
@@ -260,6 +278,23 @@ class MainActivity : DrawerActivity() {
         }
     }
 
+    private fun destinationPreviewCustomization() {
+        bindSwitch(
+            switch = menuBinding.setCustomDestinationPreview,
+            state = setCustomDestination,
+        ) { isChecked ->
+            setCustomDestination.observeWhenStarted(this) {
+                if (isChecked) {
+                    getDashNavigationFragment()?.setSingleCustomView()
+                } else {
+                    getDashNavigationFragment()?.editLayout {
+                        defaultDestinationPreviewLayout()
+                    }
+                }
+            }
+        }
+    }
+
     private fun offlineTtsCustomization() {
         bindSwitch(
             switch = menuBinding.setTtsOfflineMode,
@@ -345,11 +380,13 @@ class MainActivity : DrawerActivity() {
                                                 )
                                                 .background(androidx.compose.ui.graphics.Color.White)
                                                 .clickable {
-                                                    Toast.makeText(
-                                                        this@MainActivity,
-                                                        "This text was brought to you by Dash",
-                                                        Toast.LENGTH_LONG,
-                                                    ).show()
+                                                    Toast
+                                                        .makeText(
+                                                            this@MainActivity,
+                                                            "This text was brought to you by Dash",
+                                                            Toast.LENGTH_LONG,
+                                                        )
+                                                        .show()
                                                 }
                                                 .padding(all = 20.dp),
                                             text = "Custom sidebar button",
@@ -574,6 +611,81 @@ class MainActivity : DrawerActivity() {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private suspend fun DashNavigationFragment.setSingleCustomView() = editLayout {
+        updateDestinationPreviewLayout {
+            assign {
+                arrivalInformation(LoadingViewBlock)
+                weather(LoadingViewBlock)
+                rating(LoadingViewBlock)
+                openHours(LoadingViewBlock)
+                chartingInformation(LoadingViewBlock)
+                destinationInformation(LoadingViewBlock)
+                destinationFeedback(LoadingViewBlock)
+            }
+            delay(1_000)
+            assign {
+                destinationInformation(ComposeViewBlock {
+                    val coroutine = rememberCoroutineScope()
+                    Row(
+                        modifier = Modifier.padding(top = 20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Image(
+                            modifier = Modifier.size(32.dp),
+                            painter = painterResource(id = AppTheme.icons.information.pin),
+                            contentDescription = null,
+                        )
+                        Body5(
+                            modifier = Modifier.weight(1f),
+                            text = "Address: ${it.address.orEmpty()}",
+                            color = AppTheme.colors.textColor.primary,
+                        )
+                        Image(
+                            modifier = Modifier
+                                .size(54.dp)
+                                .border(
+                                    width = 1.dp,
+                                    color = AppTheme.colors.borderColors.primary,
+                                    shape = CircleShape,
+                                )
+                                .clip(CircleShape)
+                                .clickable {
+                                    coroutine.launch {
+                                        if (it.favoriteStatus == PlaceFavoriteStatus.NOT_A_FAVORITE) {
+                                            Dash.controller.addFavoriteItem(it.origin, DashFavoriteType.REGULAR)
+                                        } else {
+                                            Dash.controller.removeFavoriteItem(it.origin)
+                                        }
+                                    }
+                                }
+                                .padding(all = 12.dp),
+                            painter = painterResource(
+                                id = when (it.favoriteStatus) {
+                                    PlaceFavoriteStatus.HOME -> AppTheme.icons.main.home
+                                    PlaceFavoriteStatus.WORK -> AppTheme.icons.main.work
+                                    PlaceFavoriteStatus.REGULAR -> AppTheme.icons.main.favorite
+                                    PlaceFavoriteStatus.NOT_A_FAVORITE -> AppTheme.icons.main.addFavorite
+                                },
+                            ),
+                            colorFilter = ColorFilter.tint(
+                                color = when (it.favoriteStatus) {
+                                    PlaceFavoriteStatus.HOME,
+                                    PlaceFavoriteStatus.WORK,
+                                    -> AppTheme.colors.iconColor.accent
+
+                                    PlaceFavoriteStatus.REGULAR -> AppTheme.colors.iconColor.red
+                                    PlaceFavoriteStatus.NOT_A_FAVORITE -> AppTheme.colors.iconColor.secondary
+                                },
+                            ),
+                            contentDescription = null,
+                        )
+                    }
+                })
             }
         }
     }
