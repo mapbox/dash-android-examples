@@ -30,6 +30,7 @@ class ShowcaseSearchEngine(
         val customSuggestion = object : DashSearchSuggestion {
             override val id: String = "customSuggestionId11fse4w334455"
             override val mapboxId: String? = null
+            override val metadata: Map<String, String>? = null
             override val name: String = "Custom suggestion"
             override val descriptionText = "Suggestion provided by a third-party service"
             override val address = null
