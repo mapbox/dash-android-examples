@@ -1,9 +1,9 @@
 package com.mapbox.dash.example
 
+import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -72,10 +72,6 @@ import kotlin.math.roundToInt
 
 class MainActivity : DrawerActivity() {
 
-    private var originalDensity = 0
-    private var originalSmallestWidth = 0
-    private var tabletLayout = false
-
     private val binding by lazy { ActivityMainBinding.inflate(LayoutInflater.from(this)) }
     private val menuBinding by lazy { LayoutCustomizationMenuBinding.inflate(LayoutInflater.from(this)) }
 
@@ -105,35 +101,20 @@ class MainActivity : DrawerActivity() {
         return supportFragmentManager.findFragmentById(R.id.container) as? DashNavigationFragment
     }
 
+    override fun attachBaseContext(newBase: Context) {
+        val originalTabletLayout = newBase.resources.configuration.smallestScreenWidthDp >= 600
+        val tabletLayout = tabletLayout ?: originalTabletLayout.also { tabletLayout = it }
+        val smallestScreenWidthDp = when (tabletLayout) {
+            originalTabletLayout -> return super.attachBaseContext(newBase)
+            true -> 600
+            else -> 599
+        }
+        val overrideConfiguration = Configuration(newBase.resources.configuration)
+        overrideConfiguration.smallestScreenWidthDp = smallestScreenWidthDp
+        super.attachBaseContext(newBase.createConfigurationContext(overrideConfiguration))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        val configuration = Configuration(resources.configuration)
-        val displayMetrics = DisplayMetrics().apply { setTo(resources.displayMetrics) }
-
-        if (savedInstanceState != null) {
-            originalDensity = savedInstanceState.getInt(KEY_ORIGINAL_DENSITY)
-            originalSmallestWidth = savedInstanceState.getInt(KEY_ORIGINAL_SMALLEST_WIDTH)
-            tabletLayout = savedInstanceState.getBoolean(KEY_TABLET_LAYOUT)
-        } else {
-            originalDensity = configuration.densityDpi
-            originalSmallestWidth = configuration.smallestScreenWidthDp
-            tabletLayout = originalSmallestWidth >= 600
-        }
-
-        // changing originalSmallestWidth is enough to force a different layout,
-        // but changing density as well allows to keep control sizes more or less the same with different layouts
-        val (density, smallestWidth) = when {
-            tabletLayout && originalSmallestWidth < 600 -> (originalDensity / 1.5).roundToInt() to
-                (originalSmallestWidth * 1.5).roundToInt().coerceAtLeast(minimumValue = 600)
-            !tabletLayout && originalSmallestWidth >= 600 -> (originalDensity * 1.5).roundToInt() to
-                (originalSmallestWidth / 1.5).roundToInt().coerceAtMost(maximumValue = 599)
-            else -> originalDensity to originalSmallestWidth
-        }
-
-        configuration.densityDpi = density
-        displayMetrics.densityDpi = density
-        configuration.smallestScreenWidthDp = smallestWidth
-        resources.updateConfiguration(configuration, displayMetrics)
-
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
 
@@ -162,13 +143,6 @@ class MainActivity : DrawerActivity() {
                 .replace(R.id.container, fragment)
                 .commitNow()
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putInt(KEY_ORIGINAL_DENSITY, originalDensity)
-        outState.putInt(KEY_ORIGINAL_SMALLEST_WIDTH, originalSmallestWidth)
-        outState.putBoolean(KEY_TABLET_LAYOUT, tabletLayout)
     }
 
     override fun onCreateContentView(): View {
@@ -549,7 +523,7 @@ class MainActivity : DrawerActivity() {
             }
         }
 
-        menuBinding.toggleTabletLayout.isChecked = tabletLayout
+        menuBinding.toggleTabletLayout.isChecked = tabletLayout == true
         menuBinding.toggleTabletLayout.setOnCheckedChangeListener { _, isChecked ->
             if (tabletLayout != isChecked) {
                 tabletLayout = isChecked
@@ -751,9 +725,7 @@ class MainActivity : DrawerActivity() {
 
         private const val TAG = "MainActivity"
 
-        private const val KEY_ORIGINAL_DENSITY = "original_density"
-        private const val KEY_ORIGINAL_SMALLEST_WIDTH = "original_smallest_width"
-        private const val KEY_TABLET_LAYOUT = "tablet_layout"
+        private var tabletLayout: Boolean? = null
 
         /**
          * Default 3D style.
