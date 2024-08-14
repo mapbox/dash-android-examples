@@ -39,11 +39,11 @@ import com.mapbox.dash.compose.component.Title4
 import com.mapbox.dash.compose.component.Title5
 import com.mapbox.dash.example.SamplePlacesViewComposer.PlacesHeader
 import com.mapbox.dash.sdk.config.api.UiStates
+import com.mapbox.dash.sdk.map.presentation.ui.BackCloseButtonState
+import com.mapbox.dash.sdk.map.presentation.ui.PlacesListUiState
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.dash.theming.compose.LightDashTheme
 import com.mapbox.dash.view.compose.R
-import com.mapbox.nav.gm.map.presentation.ui.BackCloseButtonHandler
-import com.mapbox.nav.gm.map.presentation.ui.PlacesListUiState
 
 object SamplePlacesViewComposer {
 
@@ -141,21 +141,20 @@ object SamplePlacesViewComposer {
     @Composable
     internal fun PlacesHeader(
         title: String,
-        backButtonHandler: BackCloseButtonHandler?,
-        closeButtonHandler: BackCloseButtonHandler?,
+        backCloseButtonState: BackCloseButtonState?,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(32.dp),
         ) {
-            backButtonHandler?.let { handler ->
+            backCloseButtonState?.let { state ->
                 Image(
                     modifier = Modifier
                         .size(dimensionResource(id = R.dimen.card_header_button_size))
                         .clip(CircleShape)
                         .background(AppTheme.colors.buttonColors.primary)
-                        .clickable(onClick = handler)
+                        .clickable(onClick = backCloseButtonState.onBackClicked)
                         .wrapContentSize()
                         .size(dimensionResource(id = R.dimen.card_header_icon_size)),
                     painter = painterResource(id = AppTheme.icons.controls.longArrowLeft),
@@ -167,14 +166,14 @@ object SamplePlacesViewComposer {
                 textAlign = TextAlign.Center,
                 text = title, color = AppTheme.colors.textColor.primary,
             )
-            closeButtonHandler?.let { handler ->
+            backCloseButtonState?.let { state ->
                 Image(
                     modifier = Modifier
                         .weight(0.5f)
                         .size(dimensionResource(id = R.dimen.card_header_button_size))
                         .clip(CircleShape)
                         .background(AppTheme.colors.buttonColors.primary)
-                        .clickable(onClick = handler)
+                        .clickable(onClick = state.onCloseClicked)
                         .wrapContentSize()
                         .size(dimensionResource(id = R.dimen.card_header_icon_size)),
                     painter = painterResource(id = AppTheme.icons.controls.cross),
@@ -196,8 +195,7 @@ object SamplePlacesViewComposer {
         ) {
             PlacesHeader(
                 title = placesListUiState.title.content.orEmpty(),
-                backButtonHandler = placesListUiState.backHandler,
-                closeButtonHandler = placesListUiState.closeHandler
+                backCloseButtonState = placesListUiState.backCloseButtonState,
             )
             placesListUiState.items.UiStates(
                 loading = {
@@ -242,7 +240,7 @@ object SamplePlacesViewComposer {
 @Composable
 private fun HeaderPreview() {
     LightDashTheme {
-        PlacesHeader(title = "Coffee", backButtonHandler = null, closeButtonHandler = {})
+        PlacesHeader(title = "Coffee", backCloseButtonState = null)
     }
 }
 
