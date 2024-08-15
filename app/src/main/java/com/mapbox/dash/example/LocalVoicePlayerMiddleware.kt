@@ -4,9 +4,12 @@ import android.content.Context
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
+import com.mapbox.dash.logging.Log
+import com.mapbox.dash.logging.d
+import com.mapbox.dash.logging.i
+import com.mapbox.dash.logging.w
 import com.mapbox.dash.sdk.CoroutineMiddleware
 import com.mapbox.dash.sdk.audiofocus.AudioFocusOwner
-import com.mapbox.navigation.mapgpt.shared.common.SharedLog
 import com.mapbox.navigation.mapgpt.shared.language.Language
 import com.mapbox.navigation.mapgpt.shared.textplayer.Announcement
 import com.mapbox.navigation.mapgpt.shared.textplayer.PlayerCallback
@@ -36,7 +39,7 @@ class LocalVoicePlayerMiddleware :
 
     override fun onAttached(middlewareContext: VoicePlayerMiddlewareContext) {
         super.onAttached(middlewareContext)
-        SharedLog.i(TAG) { "onAttached" }
+        Log.i(TAG) { "onAttached" }
         voicePlayer = LocalVoicePlayer(
             middlewareContext.platformContext.applicationContext,
         ).also { voicePlayer ->
@@ -46,7 +49,7 @@ class LocalVoicePlayerMiddleware :
 
     override fun onDetached(middlewareContext: VoicePlayerMiddlewareContext) {
         super.onDetached(middlewareContext)
-        SharedLog.i(TAG) { "onDetached" }
+        Log.i(TAG) { "onDetached" }
         _availableLanguages.value = emptySet()
         _availableVoices.value = emptySet()
         release()
@@ -61,7 +64,7 @@ class LocalVoicePlayerMiddleware :
         progress: VoiceProgress?,
         callback: PlayerCallback,
     ) {
-        SharedLog.d(TAG) { "play $announcement" }
+        Log.d(TAG) { "play $announcement" }
         val middlewareContext = middlewareContext ?: run {
             callback.onError(announcement.utteranceId, "Middleware context is not available")
             return
@@ -141,15 +144,15 @@ internal class LocalVoicePlayer(
     )
 
     private fun initializeWithLanguage() {
-        SharedLog.d(TAG) { "Available tts engines: ${textToSpeech.engines.joinToString()}" }
+        Log.d(TAG) { "Available tts engines: ${textToSpeech.engines.joinToString()}" }
         val enginePackages = textToSpeech.engines.map { it.name }.toSet()
         if (!enginePackages.contains(initialTtsEngine)) {
-            SharedLog.w(TAG) {
+            Log.w(TAG) {
                 "The initialTtsEngine was not found: $initialTtsEngine. " +
                         "Using ${textToSpeech.defaultEngine}"
             }
         } else {
-            SharedLog.i(TAG) { "Using tts engine: $initialTtsEngine" }
+            Log.i(TAG) { "Using tts engine: $initialTtsEngine" }
         }
         try {
             // there is a chance to get NPE from ITextToSpeechService getting the voices that
@@ -157,32 +160,32 @@ internal class LocalVoicePlayer(
             // https://issuetracker.google.com/issues/37012397?pli=1
             textToSpeech.voices
         } catch (e: NullPointerException) {
-            SharedLog.w(TAG) { "Calling textToSpeech.voices causes NullPointerException" }
+            Log.w(TAG) { "Calling textToSpeech.voices causes NullPointerException" }
             textToSpeechInitStatus = TextToSpeech.ERROR
             return
         }
 
         val availableLocales = textToSpeech.availableLanguages
-        SharedLog.i(TAG) { "Available languages: ${availableLocales.joinToString { it.isO3Language }}" }
+        Log.i(TAG) { "Available languages: ${availableLocales.joinToString { it.isO3Language }}" }
         _availableLanguages.value = availableLocales.map { Language(it) }.toSet()
-        SharedLog.d(TAG) { "Searching for TTS language: ${initialLanguage.locale.isO3Language}" }
+        Log.d(TAG) { "Searching for TTS language: ${initialLanguage.locale.isO3Language}" }
         val targetLocale = availableLocales.firstOrNull {
             it.isO3Language == initialLanguage.locale.isO3Language
         }
-        SharedLog.i(TAG) { "Found TTS language: ${targetLocale?.isO3Language}" }
+        Log.i(TAG) { "Found TTS language: ${targetLocale?.isO3Language}" }
         val locale: Locale = targetLocale?.let {
             targetLocale.also { language = Language(it) }
         } ?: run {
-            SharedLog.w(TAG) { "${language.locale} is not supported, using $defaultLocale" }
+            Log.w(TAG) { "${language.locale} is not supported, using $defaultLocale" }
             defaultLocale
         }
 
         updateAvailableVoices(locale)
 
-        SharedLog.d(TAG) { "Set language to $locale" }
+        Log.d(TAG) { "Set language to $locale" }
         val setLanguageResult = textToSpeech.setLanguage(locale)
-        SharedLog.d(TAG) { "setLanguageResult: $setLanguageResult" }
-        SharedLog.d(TAG) { "TextToSpeech voice: ${textToSpeech.voice}" }
+        Log.d(TAG) { "setLanguageResult: $setLanguageResult" }
+        Log.d(TAG) { "TextToSpeech voice: ${textToSpeech.voice}" }
     }
 
     private fun updateAvailableVoices(locale: Locale) {
@@ -198,12 +201,12 @@ internal class LocalVoicePlayer(
             _availableVoices.value = availableVoices
         } else {
             val defaultVoice = textToSpeech.voice
-            SharedLog.w(TAG) { "No voice for $locale, fallback to $defaultVoice" }
+            Log.w(TAG) { "No voice for $locale, fallback to $defaultVoice" }
             _availableVoices.value = defaultVoice
                 ?.let { setOf(AndroidTextToSpeechVoice(it)) }
                 ?: emptySet()
         }
-        SharedLog.d(TAG) { "Available voices: ${_availableVoices.value}" }
+        Log.d(TAG) { "Available voices: ${_availableVoices.value}" }
     }
 
     override fun prefetch(announcement: Announcement) = Unit
@@ -254,17 +257,17 @@ internal class LocalVoicePlayer(
 
         private var currentPosition: Int = 0
         override fun onStart(utteranceId: String) {
-            SharedLog.d(TAG) { "onStart $utteranceId" }
+            Log.d(TAG) { "onStart $utteranceId" }
             clientCallback.onStartPlaying(text = text, utteranceId = utteranceId)
         }
 
         override fun onRangeStart(utteranceId: String, start: Int, end: Int, frame: Int) {
-            SharedLog.d(TAG) { "onRangeStart $utteranceId, start: $start, end $end, frame $frame" }
+            Log.d(TAG) { "onRangeStart $utteranceId, start: $start, end $end, frame $frame" }
             currentPosition = initialStartPosition + start
         }
 
         override fun onDone(utteranceId: String) {
-            SharedLog.d(TAG) { "onDone $utteranceId" }
+            Log.d(TAG) { "onDone $utteranceId" }
             clientCallback.onComplete(text = text, utteranceId = utteranceId)
             currentPosition = 0
         }
@@ -272,19 +275,19 @@ internal class LocalVoicePlayer(
         @Deprecated("Deprecated in Java")
         override fun onError(utteranceId: String) {
             // Deprecated, may be called due to https://issuetracker.google.com/issues/138321382
-            SharedLog.d(TAG) { "onError $utteranceId" }
+            Log.d(TAG) { "onError $utteranceId" }
             clientCallback.onError(utteranceId, null)
             currentPosition = 0
         }
 
         override fun onError(utteranceId: String, errorCode: Int) {
-            SharedLog.d(TAG) { "onError $utteranceId, errorCode: $errorCode" }
+            Log.d(TAG) { "onError $utteranceId, errorCode: $errorCode" }
             clientCallback.onError(utteranceId, errorCode.toString())
             currentPosition = 0
         }
 
         override fun onStop(utteranceId: String, interrupted: Boolean) {
-            SharedLog.d(TAG) { "onStop $utteranceId, interrupted: $interrupted" }
+            Log.d(TAG) { "onStop $utteranceId, interrupted: $interrupted" }
             clientCallback.onStop(
                 utteranceId,
                 VoiceProgress.Index(position = currentPosition),
