@@ -418,6 +418,7 @@ class MainActivity : DrawerActivity() {
                                         Toast.makeText(this@MainActivity, "Hey, Dash!", Toast.LENGTH_SHORT).show()
                                     },
                                 ),
+                                DashSidebarControl.Routes,
                                 DashSidebarControl.Debug,
                             )
                         } else {
