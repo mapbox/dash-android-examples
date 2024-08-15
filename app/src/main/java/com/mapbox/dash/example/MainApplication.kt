@@ -7,6 +7,7 @@ import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.base.device.DashDeviceType
 import com.mapbox.dash.sdk.config.api.CustomKeys
 import com.mapbox.dash.sdk.config.api.EngineType
+import com.mapbox.dash.sdk.config.api.ScreenDirectionality
 import com.mapbox.dash.sdk.config.dsl.debugSettings
 import com.mapbox.dash.sdk.config.dsl.locationSimulation
 import com.mapbox.dash.sdk.config.dsl.mapGpt
@@ -15,6 +16,7 @@ import com.mapbox.dash.sdk.config.dsl.routeOptions
 import com.mapbox.dash.sdk.config.dsl.search
 import com.mapbox.dash.sdk.config.dsl.speedLimitsOptions
 import com.mapbox.dash.sdk.config.dsl.theme
+import com.mapbox.dash.sdk.config.dsl.ui
 import com.mapbox.dash.sdk.config.dsl.uiSettings
 
 class MainApplication : Application() {
@@ -63,6 +65,9 @@ class MainApplication : Application() {
             debugSettings {
                 showSendDebugInfoButton = true
                 showDisplaySendDebugInfoButtonOption = true
+            }
+            ui {
+                screenDirectionality = ScreenDirectionality.LEFT_TO_RIGHT
             }
             engineType = EngineType.ELECTRIC
             device = DashDeviceType.Automobile
