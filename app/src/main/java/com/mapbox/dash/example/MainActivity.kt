@@ -7,9 +7,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,6 +34,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.commitNow
 import com.google.android.material.slider.Slider
 import com.mapbox.dash.compose.ComposeViewBlock
 import com.mapbox.dash.compose.component.Body5
@@ -103,14 +107,15 @@ class MainActivity : DrawerActivity() {
 
     override fun attachBaseContext(newBase: Context) {
         val originalTabletLayout = newBase.resources.configuration.smallestScreenWidthDp >= 600
+        val originalDensityDpi = newBase.resources.configuration.densityDpi
         val tabletLayout = tabletLayout ?: originalTabletLayout.also { tabletLayout = it }
-        val smallestScreenWidthDp = when (tabletLayout) {
-            originalTabletLayout -> return super.attachBaseContext(newBase)
-            true -> 600
-            else -> 599
+        val densityDpi = densityDpi ?: originalDensityDpi.also { densityDpi = it }
+        if (tabletLayout == originalTabletLayout && densityDpi == originalDensityDpi) {
+            return super.attachBaseContext(newBase)
         }
         val overrideConfiguration = Configuration(newBase.resources.configuration)
-        overrideConfiguration.smallestScreenWidthDp = smallestScreenWidthDp
+        overrideConfiguration.smallestScreenWidthDp = if (tabletLayout) 600 else 599
+        overrideConfiguration.densityDpi = densityDpi
         super.attachBaseContext(newBase.createConfigurationContext(overrideConfiguration))
     }
 
@@ -126,9 +131,7 @@ class MainActivity : DrawerActivity() {
         if (savedInstanceState == null) {
             // After initializing in your `MainApplication` class,
             // now you can transition to a new Dash Fragment instance
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, DashNavigationFragment.newInstance())
-                .commitNow()
+            supportFragmentManager.commitNow { replace(R.id.container, DashNavigationFragment.newInstance()) }
         }
 
         initCustomizationMenu()
@@ -543,6 +546,28 @@ class MainActivity : DrawerActivity() {
                 recreate()
             }
         }
+
+        menuBinding.currentDensity.text = getString(R.string.current_density, densityDpi)
+        menuBinding.overrideDensity.setOnClickListener {
+            val editText = EditText(this)
+            editText.inputType = EditorInfo.TYPE_CLASS_NUMBER
+            editText.setText(densityDpi?.toString().orEmpty())
+            AlertDialog.Builder(this)
+                .setView(editText)
+                .setPositiveButton("OK") { _, _ ->
+                    val newDensityDpi = editText.text.toString().toIntOrNull()
+                    if (densityDpi != newDensityDpi) {
+                        densityDpi = newDensityDpi
+                        recreate()
+                    }
+                }
+                .setNeutralButton("RESET") { _, _ ->
+                    densityDpi = null
+                    recreate()
+                }
+                .setNegativeButton("CANCEL", null)
+                .show()
+        }
     }
 
     private fun registerEventsObservers() {
@@ -739,6 +764,7 @@ class MainActivity : DrawerActivity() {
         private const val TAG = "MainActivity"
 
         private var tabletLayout: Boolean? = null
+        private var densityDpi: Int? = null
 
         /**
          * Default 3D style.
