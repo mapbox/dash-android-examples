@@ -1,5 +1,6 @@
 package com.mapbox.dash.example
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
@@ -95,6 +96,7 @@ class MainActivity : DrawerActivity() {
             override val mapboxId: String? = null
             override val metadata: Map<String, String>? = emptyMap()
             override val name = "1123 15th Street Northwest"
+            override val pinCoordinate: Point = coordinate
             override val type = DashSearchResultType.ADDRESS
             override val categories = listOf("some category")
             override val description = null
@@ -501,15 +503,16 @@ class MainActivity : DrawerActivity() {
         ) { enabled ->
             getDashNavigationFragment()?.let { fragment ->
                 if (enabled) {
-                    fragment.setPlacesPreview {
+                    fragment.setPlacesPreview { state, modifier ->
                         val lazyListState: LazyListState = rememberLazyListState()
                         SamplePlacesViewComposer(
                             lazyListState = lazyListState,
-                            placesListUiState = it,
+                            placesListUiState = state,
+                            modifier = modifier,
                         )
                     }
                 } else {
-                    fragment.setPlacesPreview { DefaultPlacesPreview(state = it) }
+                    fragment.setPlacesPreview {  state, modifier -> DefaultPlacesPreview(state = state, modifier = modifier) }
                 }
             }
         }
@@ -668,7 +671,7 @@ class MainActivity : DrawerActivity() {
                         background = if (mode == SidebarMode.Transparent) {
                             Color.TRANSPARENT
                         } else {
-                            ThemeManager.theme.backgroundColor.sidebar.color
+                            Color.BLACK
                         }
                     }
                 }
@@ -676,6 +679,7 @@ class MainActivity : DrawerActivity() {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     private suspend fun DashNavigationFragment.setSingleCustomView() = editLayout {
         updateDestinationPreviewLayout {
             assign {
