@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.commitNow
 import com.google.android.material.slider.Slider
 import com.mapbox.dash.compose.ComposeViewBlock
@@ -65,7 +66,6 @@ import com.mapbox.dash.sdk.config.dsl.voices
 import com.mapbox.dash.sdk.search.DashFavoriteType
 import com.mapbox.dash.sdk.search.DashSearchResult
 import com.mapbox.dash.sdk.search.DashSearchResultType
-import com.mapbox.dash.theming.ThemeManager
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
@@ -292,9 +292,9 @@ class MainActivity : DrawerActivity() {
             state = showTripProgress,
         ) { isChecked ->
             Dash.applyUpdate {
-                 etaPanel {
-                     showTripProgress = isChecked
-                 }
+                etaPanel {
+                    showTripProgress = isChecked
+                }
             }
         }
     }
@@ -512,7 +512,12 @@ class MainActivity : DrawerActivity() {
                         )
                     }
                 } else {
-                    fragment.setPlacesPreview {  state, modifier -> DefaultPlacesPreview(state = state, modifier = modifier) }
+                    fragment.setPlacesPreview { state, modifier ->
+                        DefaultPlacesPreview(
+                            state = state,
+                            modifier = modifier
+                        )
+                    }
                 }
             }
         }
@@ -671,7 +676,7 @@ class MainActivity : DrawerActivity() {
                         background = if (mode == SidebarMode.Transparent) {
                             Color.TRANSPARENT
                         } else {
-                            Color.BLACK
+                            ColorUtils.setAlphaComponent(Color.GRAY, 128)
                         }
                     }
                 }
