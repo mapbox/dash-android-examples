@@ -48,6 +48,7 @@ class ShowcaseSearchEngine(
             override val mapboxId: String? = null
             override val metadata: Map<String, String>? = emptyMap()
             override val name = "The search result for the custom suggestion"
+            override val pinCoordinate: Point = coordinate
             override val type = DashSearchResultType.ADDRESS
             override val categories = listOf("test category")
             override val description = null

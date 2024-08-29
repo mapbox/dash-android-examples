@@ -1,5 +1,6 @@
 package com.mapbox.dash.example
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
@@ -34,6 +35,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.commitNow
 import com.google.android.material.slider.Slider
 import com.mapbox.dash.compose.ComposeViewBlock
@@ -64,7 +66,6 @@ import com.mapbox.dash.sdk.config.dsl.voices
 import com.mapbox.dash.sdk.search.DashFavoriteType
 import com.mapbox.dash.sdk.search.DashSearchResult
 import com.mapbox.dash.sdk.search.DashSearchResultType
-import com.mapbox.dash.theming.ThemeManager
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
@@ -95,6 +96,7 @@ class MainActivity : DrawerActivity() {
             override val mapboxId: String? = null
             override val metadata: Map<String, String>? = emptyMap()
             override val name = "1123 15th Street Northwest"
+            override val pinCoordinate: Point = coordinate
             override val type = DashSearchResultType.ADDRESS
             override val categories = listOf("some category")
             override val description = null
@@ -290,9 +292,9 @@ class MainActivity : DrawerActivity() {
             state = showTripProgress,
         ) { isChecked ->
             Dash.applyUpdate {
-                 etaPanel {
-                     showTripProgress = isChecked
-                 }
+                etaPanel {
+                    showTripProgress = isChecked
+                }
             }
         }
     }
@@ -501,15 +503,21 @@ class MainActivity : DrawerActivity() {
         ) { enabled ->
             getDashNavigationFragment()?.let { fragment ->
                 if (enabled) {
-                    fragment.setPlacesPreview {
+                    fragment.setPlacesPreview { state, modifier ->
                         val lazyListState: LazyListState = rememberLazyListState()
                         SamplePlacesViewComposer(
                             lazyListState = lazyListState,
-                            placesListUiState = it,
+                            placesListUiState = state,
+                            modifier = modifier,
                         )
                     }
                 } else {
-                    fragment.setPlacesPreview { DefaultPlacesPreview(state = it) }
+                    fragment.setPlacesPreview { state, modifier ->
+                        DefaultPlacesPreview(
+                            state = state,
+                            modifier = modifier
+                        )
+                    }
                 }
             }
         }
@@ -668,7 +676,7 @@ class MainActivity : DrawerActivity() {
                         background = if (mode == SidebarMode.Transparent) {
                             Color.TRANSPARENT
                         } else {
-                            ThemeManager.theme.backgroundColor.sidebar.color
+                            ColorUtils.setAlphaComponent(Color.GRAY, 128)
                         }
                     }
                 }
@@ -676,6 +684,7 @@ class MainActivity : DrawerActivity() {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     private suspend fun DashNavigationFragment.setSingleCustomView() = editLayout {
         updateDestinationPreviewLayout {
             assign {
