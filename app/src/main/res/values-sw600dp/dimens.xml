@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingDefaultResource">
+<!--    Uncomment to change button sizes and paddings (sidebar, search panel, card actions)-->
+<!--    <dimen name="button_height">112dp</dimen>-->
+<!--    <dimen name="map_round_button_height">112dp</dimen>-->
+<!--    <dimen name="map_round_button_width">112dp</dimen>-->
+<!--    <dimen name="round_button_padding">20dp</dimen>-->
+</resources>
