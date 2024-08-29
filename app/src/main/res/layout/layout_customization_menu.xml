@@ -453,6 +453,30 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomDestinationPreview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom destination preview"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomRoutesOverview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom routes overview"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomTripSummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom trip summary"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/toggleSimpleCardHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

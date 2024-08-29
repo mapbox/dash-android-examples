@@ -41,8 +41,13 @@ import com.google.android.material.slider.Slider
 import com.mapbox.dash.compose.ComposeViewBlock
 import com.mapbox.dash.compose.component.Body5
 import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
+import com.mapbox.dash.destination.preview.presentation.DefaultDestinationPreview
+import com.mapbox.dash.destination.preview.presentation.DefaultRoutesOverview
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
+import com.mapbox.dash.example.ui.SampleDestinationPreview
+import com.mapbox.dash.example.ui.SamplePlacesView
+import com.mapbox.dash.example.ui.SampleRoutesOverview
 import com.mapbox.dash.favorites.PlaceFavoriteStatus
 import com.mapbox.dash.logging.LogsExtra
 import com.mapbox.dash.sdk.Dash
@@ -66,6 +71,7 @@ import com.mapbox.dash.sdk.config.dsl.voices
 import com.mapbox.dash.sdk.search.DashFavoriteType
 import com.mapbox.dash.sdk.search.DashSearchResult
 import com.mapbox.dash.sdk.search.DashSearchResultType
+import com.mapbox.dash.example.ui.SampleTripSummaryView
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
@@ -171,6 +177,9 @@ class MainActivity : DrawerActivity() {
     private val overrideSearchPanelButtons = MutableStateFlow(value = false)
     private val setCustomMarkerFactory = MutableStateFlow(value = false)
     private val setCustomPlacesListComposer = MutableStateFlow(value = false)
+    private val setCustomDestinationPreviewComposer = MutableStateFlow(value = false)
+    private val setCustomRoutesOverviewComposer = MutableStateFlow(value = false)
+    private val setCustomTripSummaryComposer = MutableStateFlow(value = false)
     private val showTripProgress = MutableStateFlow(value = true)
     private val setCustomDestination = MutableStateFlow(value = true)
     private val simpleCardHeader = MutableStateFlow(value = false)
@@ -505,7 +514,7 @@ class MainActivity : DrawerActivity() {
                 if (enabled) {
                     fragment.setPlacesPreview { state, modifier ->
                         val lazyListState: LazyListState = rememberLazyListState()
-                        SamplePlacesViewComposer(
+                        SamplePlacesView(
                             lazyListState = lazyListState,
                             placesListUiState = state,
                             modifier = modifier,
@@ -518,6 +527,60 @@ class MainActivity : DrawerActivity() {
                             modifier = modifier
                         )
                     }
+                }
+            }
+        }
+
+
+        bindSwitch(
+            switch = menuBinding.toggleCustomDestinationPreview,
+            state = setCustomDestinationPreviewComposer,
+        ) { enabled ->
+            getDashNavigationFragment()?.let { fragment ->
+                if (enabled) {
+                    fragment.setDestinationPreview { modifier, state ->
+                        SampleDestinationPreview(modifier, state)
+                    }
+                } else {
+                    fragment.setDestinationPreview { modifier, _ ->
+                        DefaultDestinationPreview(modifier)
+                    }
+                }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleCustomRoutesOverview,
+            state = setCustomRoutesOverviewComposer,
+        ) { enabled ->
+            getDashNavigationFragment()?.let { fragment ->
+                if (enabled) {
+                    fragment.setRoutesOverview { modifier, routesOverviewState, backCloseButtonState ->
+                        SampleRoutesOverview(
+                            modifier = modifier,
+                            routesOverviewState = routesOverviewState,
+                            backCloseButtonState = backCloseButtonState,
+                        )
+                    }
+                } else {
+                    fragment.setRoutesOverview { modifier, routesOverviewState, _ ->
+                        DefaultRoutesOverview(modifier = modifier, state = routesOverviewState)
+                    }
+                }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleCustomTripSummary,
+            state = setCustomTripSummaryComposer,
+        ) { enabled ->
+            getDashNavigationFragment()?.let { fragment ->
+                if (enabled) {
+                    fragment.setTripSummary { modifier, tripSummaryUiState ->
+                        SampleTripSummaryView(modifier, tripSummaryUiState)
+                    }
+                } else {
+                    fragment.setTripSummary(null)
                 }
             }
         }

@@ -1,6 +1,6 @@
 @file:SuppressWarnings("MagicNumber", "LongMethod")
 
-package com.mapbox.dash.example
+package com.mapbox.dash.example.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,7 +38,7 @@ import com.mapbox.dash.sdk.map.presentation.ui.PlacesListUiState
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.dash.view.compose.R
 
-object SamplePlacesViewComposer {
+object SamplePlacesView {
 
     @Composable
     fun ShimmerItem(modifier: Modifier, shape: Shape = RoundedCornerShape(8.dp)) {
