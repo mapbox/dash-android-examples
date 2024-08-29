@@ -71,7 +71,7 @@ import com.mapbox.dash.sdk.config.dsl.voices
 import com.mapbox.dash.sdk.search.DashFavoriteType
 import com.mapbox.dash.sdk.search.DashSearchResult
 import com.mapbox.dash.sdk.search.DashSearchResultType
-import com.mapbox.dash.showcase.app.ui.custom.tripsummary.SampleTripSummaryView
+import com.mapbox.dash.example.ui.SampleTripSummaryView
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental

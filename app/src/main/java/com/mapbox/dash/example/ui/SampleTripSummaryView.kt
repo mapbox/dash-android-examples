@@ -1,4 +1,4 @@
-package com.mapbox.dash.showcase.app.ui.custom.tripsummary
+package com.mapbox.dash.example.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
