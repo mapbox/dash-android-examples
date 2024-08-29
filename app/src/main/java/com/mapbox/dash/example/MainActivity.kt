@@ -518,8 +518,6 @@ class MainActivity : DrawerActivity() {
                             lazyListState = lazyListState,
                             placesListUiState = state,
                             modifier = modifier,
-                            placesListUiState = state,
-                            modifier = modifier,
                         )
                     }
                 } else {
