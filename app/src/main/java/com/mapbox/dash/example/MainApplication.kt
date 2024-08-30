@@ -5,6 +5,7 @@ import android.location.LocationManager
 import com.mapbox.common.location.Location
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.base.device.DashDeviceType
+import com.mapbox.dash.sdk.base.units.Gb
 import com.mapbox.dash.sdk.config.api.CustomKeys
 import com.mapbox.dash.sdk.config.api.EngineType
 import com.mapbox.dash.sdk.config.api.ScreenDirectionality
@@ -12,6 +13,7 @@ import com.mapbox.dash.sdk.config.dsl.debugSettings
 import com.mapbox.dash.sdk.config.dsl.locationSimulation
 import com.mapbox.dash.sdk.config.dsl.mapGpt
 import com.mapbox.dash.sdk.config.dsl.mapStyle
+import com.mapbox.dash.sdk.config.dsl.offline
 import com.mapbox.dash.sdk.config.dsl.routeOptions
 import com.mapbox.dash.sdk.config.dsl.search
 import com.mapbox.dash.sdk.config.dsl.speedLimitsOptions
@@ -61,6 +63,11 @@ class MainApplication : Application() {
             search {
                 resultsAdapter = ShowcaseSearchResultsAdapter()
                 searchEngine = ShowcaseSearchEngine()
+            }
+            offline {
+                tilesPath = applicationContext.filesDir.absolutePath + "/custom_tiles_path"
+                tilesDiskQuota = 15.Gb
+                fallbackNavigationTilesVersion = "2024_06_23-03_00_01"
             }
             debugSettings {
                 showSendDebugInfoButton = true
