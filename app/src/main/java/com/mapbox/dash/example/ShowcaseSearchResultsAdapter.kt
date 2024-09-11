@@ -1,13 +1,13 @@
 package com.mapbox.dash.example
 
 import android.util.Log
-import com.mapbox.dash.sdk.search.DashCategorySearchOptions
-import com.mapbox.dash.sdk.search.DashSearchOptions
-import com.mapbox.dash.sdk.search.DashSearchRequest
-import com.mapbox.dash.sdk.search.DashSearchResult
-import com.mapbox.dash.sdk.search.DashSearchResultType
-import com.mapbox.dash.sdk.search.DashSearchResultsAdapter
-import com.mapbox.dash.sdk.search.DashSearchSuggestion
+import com.mapbox.dash.sdk.search.api.DashCategorySearchOptions
+import com.mapbox.dash.sdk.search.api.DashSearchOptions
+import com.mapbox.dash.sdk.search.api.DashSearchRequest
+import com.mapbox.dash.sdk.search.api.DashSearchResult
+import com.mapbox.dash.sdk.search.api.DashSearchResultType
+import com.mapbox.dash.sdk.search.api.DashSearchResultsAdapter
+import com.mapbox.dash.sdk.search.api.DashSearchSuggestion
 import com.mapbox.geojson.Point
 
 private const val TAG = "CustomSearchAdapter"

@@ -26,7 +26,7 @@ import com.mapbox.dash.driver.R
 import com.mapbox.dash.driver.presentation.end.TripSummaryUiState
 import com.mapbox.dash.models.RemainingArrivalMetricType
 import com.mapbox.dash.models.TripSummaryModel
-import com.mapbox.dash.sdk.search.DashSearchResult
+import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.dash.theming.compose.PreviewDashTheme
 import com.mapbox.geojson.Point

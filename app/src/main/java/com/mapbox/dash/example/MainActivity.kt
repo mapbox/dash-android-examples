@@ -48,6 +48,7 @@ import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
 import com.mapbox.dash.example.ui.SampleDestinationPreview
 import com.mapbox.dash.example.ui.SamplePlacesView
 import com.mapbox.dash.example.ui.SampleRoutesOverview
+import com.mapbox.dash.example.ui.SampleTripSummaryView
 import com.mapbox.dash.favorites.PlaceFavoriteStatus
 import com.mapbox.dash.logging.LogsExtra
 import com.mapbox.dash.sdk.Dash
@@ -68,10 +69,9 @@ import com.mapbox.dash.sdk.config.dsl.theme
 import com.mapbox.dash.sdk.config.dsl.ui
 import com.mapbox.dash.sdk.config.dsl.uiSettings
 import com.mapbox.dash.sdk.config.dsl.voices
-import com.mapbox.dash.sdk.search.DashFavoriteType
-import com.mapbox.dash.sdk.search.DashSearchResult
-import com.mapbox.dash.sdk.search.DashSearchResultType
-import com.mapbox.dash.example.ui.SampleTripSummaryView
+import com.mapbox.dash.sdk.search.api.DashFavoriteType
+import com.mapbox.dash.sdk.search.api.DashSearchResult
+import com.mapbox.dash.sdk.search.api.DashSearchResultType
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
