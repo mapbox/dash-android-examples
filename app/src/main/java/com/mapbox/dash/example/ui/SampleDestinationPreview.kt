@@ -28,7 +28,7 @@ import com.mapbox.dash.compose.component.Title5
 import com.mapbox.dash.compose.shadow
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.map.presentation.ui.DestinationPreviewUiState
-import com.mapbox.dash.sdk.search.DashFavoriteType
+import com.mapbox.dash.sdk.search.api.DashFavoriteType
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.dash.view.compose.R
 import kotlinx.coroutines.launch

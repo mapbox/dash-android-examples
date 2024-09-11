@@ -23,10 +23,10 @@ import androidx.compose.ui.unit.dp
 import com.mapbox.dash.compose.component.Body5
 import com.mapbox.dash.compose.component.Title7
 import com.mapbox.dash.destination.preview.R
-import com.mapbox.dash.destination.preview.domain.model.ChargeData
 import com.mapbox.dash.destination.preview.domain.model.TripOverviewItem
 import com.mapbox.dash.models.ArrivalInformationFormatter
-import com.mapbox.dash.sdk.search.DashSearchResult
+import com.mapbox.dash.models.ChargeData
+import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.geojson.Point
 import kotlin.time.Duration
