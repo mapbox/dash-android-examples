@@ -690,9 +690,17 @@ class MainActivity : DrawerActivity() {
         }
         Dash.controller.observeSearchResults().observeWhenStarted(this) { results ->
             println(">> Search results. Items count = ${results.size}")
-            results.forEach {
-                println(">> Search result | $it")
+            fun List<DashSearchResult>.logEtaAndDistance() {
+                forEachIndexed { index, result ->
+                    println(">> Search result [$index]: " +
+                            "name = ${result.name}, " +
+                            "eta = ${result.etaMinutes}, " +
+                            "distance = ${result.distanceMeters}")
+                }
             }
+            results.logEtaAndDistance()
+            println(">> Search results. Update ETA and distance")
+            Dash.controller.addEtaAndDistanceToSearchResults(results).logEtaAndDistance()
         }
         Dash.controller.observeSearchSuggestions().observeWhenStarted(this) { suggestions ->
             println(">> Search suggestions. Items count = ${suggestions.size}")
