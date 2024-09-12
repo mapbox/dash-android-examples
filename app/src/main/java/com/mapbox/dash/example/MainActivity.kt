@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -114,12 +115,13 @@ class MainActivity : DrawerActivity() {
 
     private val themeVM: ThemeViewModel by viewModels()
     private val mapStyleVM: MapStyleViewModel by viewModels()
-    private val weatherVM: WeatherViewModel by viewModels()
-
+private val weatherVM: WeatherViewModel by viewModels()
     private val headlessMode = MutableStateFlow(false)
 
     private val searchItem = buildSearchItem()
     private val favoriteItem = buildSearchItem()
+
+    private var sampleSensorEventManager: SampleSensorEventManager? = null
 
     private fun buildSearchItem() =
         object : DashSearchResult {
@@ -183,6 +185,22 @@ class MainActivity : DrawerActivity() {
                 .replace(R.id.container, fragment)
                 .commitNow()
         }
+        sampleSensorEventManager = SampleSensorEventManager(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sampleSensorEventManager?.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sampleSensorEventManager?.onPause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        sampleSensorEventManager = null
     }
 
     override fun onCreateContentView(): View {
@@ -198,6 +216,7 @@ class MainActivity : DrawerActivity() {
     private val setMap3dStyle = MutableStateFlow(value = true)
     private val addMapLayer = MutableStateFlow(value = false)
     private val setOfflineTts = MutableStateFlow(value = false)
+    private val setCustomCompassDataInputs = MutableStateFlow(value = false)
     private val showRouteOptionsInSettings = MutableStateFlow(value = false)
     private val showSpeedLimitsOptionsInSettings = MutableStateFlow(value = false)
     private val leftSidebarMode = MutableStateFlow(SidebarMode.Transparent.name)
@@ -437,6 +456,18 @@ class MainActivity : DrawerActivity() {
         bindButton(button = menuBinding.btnStopNavigation) {
             val controller = Dash.controller
             controller.stopNavigation()
+        }
+
+        bindSwitch(
+            switch = menuBinding.customCompassDataInputs,
+            state = setCustomCompassDataInputs,
+        ) { enabled ->
+            sampleSensorEventManager?.compassData?.observeWhenStarted(this) {
+                if (enabled) {
+                    Log.d(TAG, "Updating compass data: $it")
+                    Dash.controller.updateCompassData(it)
+                }
+            }
         }
 
         menuBinding.cleanHistory.bindAction {
@@ -709,7 +740,7 @@ class MainActivity : DrawerActivity() {
                         SampleTripSummaryView(modifier, tripSummaryUiState, weatherVM)
                     }
                 } else {
-                    fragment.setTripSummary { modifier, tripSummaryUiState ->  
+                    fragment.setTripSummary { modifier, tripSummaryUiState ->
                         DefaultTripSummary(modifier, tripSummaryUiState)
                     }
                 }
