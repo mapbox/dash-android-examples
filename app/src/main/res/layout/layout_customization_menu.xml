@@ -17,7 +17,7 @@
         android:paddingBottom="10dp"
         android:text="Dash Customizations"
         android:textColor="#fff"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         />
 
@@ -143,6 +143,14 @@
             android:layout_gravity="center"
             android:backgroundTint="@android:color/holo_blue_dark"
             android:text="Stop navigation"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/customCompassDataInputs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Custom compass data inputs"
             android:textAllCaps="true"
             />
 
