@@ -32,10 +32,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mapbox.dash.destination.preview.presentation.RoutesOverviewState
+import com.mapbox.dash.example.R
 import com.mapbox.dash.sdk.map.presentation.ui.BackCloseButtonState
 import kotlin.math.roundToLong
 import kotlin.time.DurationUnit
@@ -135,6 +137,15 @@ private fun SampleRoutesOverviewItem(
             fontWeight = FontWeight.Light,
         )
         if (item.index == 0 && newItemSelected.value) {
+            if (item.hasCountryBorderCrossing) {
+                Image(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .size(48.dp),
+                    painter = painterResource(id = R.drawable.ic_country_border_crossing),
+                    contentDescription = null,
+                )
+            }
             Text(
                 modifier = Modifier
                     .padding(top = 16.dp)
