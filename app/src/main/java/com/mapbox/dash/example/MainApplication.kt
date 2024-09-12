@@ -46,9 +46,9 @@ class MainApplication : Application() {
                 defaultLocation = MAPBOX_DC_OFFICE
             }
             routeOptions {
-                avoidHighways = true
-                avoidFerries = true
-                avoidTolls = true
+                avoidHighways = false
+                avoidFerries = false
+                avoidTolls = false
             }
             speedLimitsOptions {
                 showSpeedLimits = true
