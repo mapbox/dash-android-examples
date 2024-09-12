@@ -20,12 +20,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.mapbox.dash.compose.component.Title5
-import com.mapbox.dash.compose.shadow
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.map.presentation.ui.DestinationPreviewUiState
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
@@ -44,7 +44,7 @@ object SampleDestinationPreview {
         val coroutineScope = rememberCoroutineScope()
         Column(
             modifier = modifier
-                .shadow(shape = AppTheme.shapes.poiCardBackground)
+                .shadow(elevation = 8.dp, shape = AppTheme.shapes.poiCardBackground)
                 .background(AppTheme.colors.backgroundColors.primary)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
