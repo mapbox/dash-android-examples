@@ -1,4 +1,4 @@
-@file:Suppress("LongMethod")
+@file:Suppress("LongMethod", "RestrictedApi")
 
 package com.mapbox.dash.example.ui
 
@@ -25,6 +25,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.mapbox.dash.compose.component.Body5
 import com.mapbox.dash.compose.component.Title5
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.map.presentation.ui.DestinationPreviewUiState
@@ -32,6 +33,8 @@ import com.mapbox.dash.sdk.search.api.DashFavoriteType
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.dash.view.compose.R
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.DurationUnit
 
 object SampleDestinationPreview {
 
@@ -103,26 +106,32 @@ object SampleDestinationPreview {
                     )
                 }
 
-                place.origin.etaMinutes?.let {
+                place.arrivalInformation.apply {
                     Title5(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 8.dp),
                         textAlign = TextAlign.Start,
-                        text = "ETA: $it minutes",
+                        text = "${getFormattedEta()} · ${getFormattedDistance()}",
                         color = AppTheme.colors.textColor.primary,
                     )
                 }
-
-                place.origin.distanceMeters?.let {
-                    Title5(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp),
-                        textAlign = TextAlign.Start,
-                        text = "Distance: $it meters",
-                        color = AppTheme.colors.textColor.primary,
-                    )
+                place.chargeData?.takeIf { it.chargeForMin > 1 }?.apply {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement
+                            .spacedBy(4.dp),
+                    ) {
+                        Image(
+                            modifier = Modifier.size(24.dp),
+                            painter = painterResource(id = AppTheme.icons.main.charging),
+                            contentDescription = null,
+                        )
+                        Body5(
+                            text = chargeForMin.minutes.toString(DurationUnit.MINUTES),
+                            color = AppTheme.colors.textColor.secondary,
+                        )
+                    }
                 }
 
                 val isFavorite = favorites.value.any { it.id == place.origin.id }
@@ -190,3 +199,5 @@ object SampleDestinationPreview {
         }
     }
 }
+
+
