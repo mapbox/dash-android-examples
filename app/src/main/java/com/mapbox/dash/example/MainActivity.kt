@@ -87,6 +87,8 @@ class MainActivity : DrawerActivity() {
     private val menuBinding by lazy { LayoutCustomizationMenuBinding.inflate(LayoutInflater.from(this)) }
 
     private val themeVM: ThemeViewModel by viewModels()
+    private val mapStyleVM: MapStyleViewModel by viewModels()
+
 
     private val headlessMode = MutableStateFlow(false)
 
@@ -269,6 +271,70 @@ class MainActivity : DrawerActivity() {
                 }
             }
         }
+
+        val mapStyleModeNames = mapStyleVM.mapStyleModeNames
+        val modeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, mapStyleModeNames)
+        modeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        menuBinding.mapStyleMode.adapter = modeAdapter
+        bindSpinner(
+            spinner = menuBinding.mapStyleMode,
+            state = mapStyleVM.mapStyleMode,
+            onSelected = { mode ->
+                Dash.applyUpdate {
+                    ui {
+                        mapStyleMode = mode
+                    }
+                }
+            },
+        )
+
+        val mapStyleThemeNames = mapStyleVM.mapStyleThemeNames
+        val themeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, mapStyleThemeNames)
+        themeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        menuBinding.mapStyleTheme.adapter = themeAdapter
+        bindSpinner(
+            spinner = menuBinding.mapStyleTheme,
+            state = mapStyleVM.mapStyleTheme,
+            onSelected = { theme ->
+                Dash.applyUpdate {
+                    ui {
+                        mapStyleTheme = theme
+                    }
+                }
+            },
+        )
+
+        val mapStyleLightingNames = mapStyleVM.mapStyleLightingNames
+        val lightingAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, mapStyleLightingNames)
+        lightingAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        menuBinding.mapStyleLighting.adapter = lightingAdapter
+        bindSpinner(
+            spinner = menuBinding.mapStyleLighting,
+            state = mapStyleVM.mapStyleLighting,
+            onSelected = { lighting ->
+                Dash.applyUpdate {
+                    ui {
+                        mapStyleLighting = lighting
+                    }
+                }
+            },
+        )
+
+        val uiModeNames = mapStyleVM.uiModeNames
+        val uiModeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, uiModeNames)
+        uiModeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        menuBinding.uiMode.adapter = uiModeAdapter
+        bindSpinner(
+            spinner = menuBinding.uiMode,
+            state = mapStyleVM.uiMode,
+            onSelected = { mode ->
+                Dash.applyUpdate {
+                    ui {
+                        uiModeSettings = mode
+                    }
+                }
+            },
+        )
     }
 
     private fun settingCustomization() {
@@ -690,9 +756,17 @@ class MainActivity : DrawerActivity() {
         }
         Dash.controller.observeSearchResults().observeWhenStarted(this) { results ->
             println(">> Search results. Items count = ${results.size}")
-            results.forEach {
-                println(">> Search result | $it")
+            fun List<DashSearchResult>.logEtaAndDistance() {
+                forEachIndexed { index, result ->
+                    println(">> Search result [$index]: " +
+                            "name = ${result.name}, " +
+                            "eta = ${result.etaMinutes}, " +
+                            "distance = ${result.distanceMeters}")
+                }
             }
+            results.logEtaAndDistance()
+            println(">> Search results. Update ETA and distance")
+            Dash.controller.addEtaAndDistanceToSearchResults(results).logEtaAndDistance()
         }
         Dash.controller.observeSearchSuggestions().observeWhenStarted(this) { suggestions ->
             println(">> Search suggestions. Items count = ${suggestions.size}")
