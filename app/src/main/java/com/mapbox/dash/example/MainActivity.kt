@@ -183,9 +183,10 @@ class MainActivity : DrawerActivity() {
     private val setCustomRoutesOverviewComposer = MutableStateFlow(value = false)
     private val setCustomTripSummaryComposer = MutableStateFlow(value = false)
     private val showTripProgress = MutableStateFlow(value = true)
-    private val setCustomDestination = MutableStateFlow(value = true)
     private val simpleCardHeader = MutableStateFlow(value = false)
     private val setCustomVoicePlayer = MutableStateFlow(value = false)
+
+//    private val setCustomDestination = MutableStateFlow(value = false)
 
     private fun initCustomizationMenu() {
         headlessModeCustomization()
@@ -196,7 +197,7 @@ class MainActivity : DrawerActivity() {
         offlineTtsCustomization()
         dashCoordination()
         etaPanelCustomization()
-        destinationPreviewCustomization()
+//        destinationPreviewCustomization()
     }
 
     private fun headlessModeCustomization() {
@@ -374,22 +375,22 @@ class MainActivity : DrawerActivity() {
         }
     }
 
-    private fun destinationPreviewCustomization() {
-        bindSwitch(
-            switch = menuBinding.setCustomDestinationPreview,
-            state = setCustomDestination,
-        ) { isChecked ->
-            setCustomDestination.observeWhenStarted(this) {
-                if (isChecked) {
-                    getDashNavigationFragment()?.setSingleCustomView()
-                } else {
-                    getDashNavigationFragment()?.editLayout {
-                        defaultDestinationPreviewLayout()
-                    }
-                }
-            }
-        }
-    }
+//    private fun destinationPreviewCustomization() {
+//        bindSwitch(
+//            switch = menuBinding.setCustomDestinationPreview,
+//            state = setCustomDestination,
+//        ) { isChecked ->
+//            setCustomDestination.observeWhenStarted(this) {
+//                if (isChecked) {
+//                    getDashNavigationFragment()?.setSingleCustomView()
+//                } else {
+//                    getDashNavigationFragment()?.editLayout {
+//                        defaultDestinationPreviewLayout()
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     private fun offlineTtsCustomization() {
         bindSwitch(
@@ -578,7 +579,7 @@ class MainActivity : DrawerActivity() {
         ) { enabled ->
             getDashNavigationFragment()?.let { fragment ->
                 if (enabled) {
-                    fragment.setPlacesPreview { state, modifier ->
+                    getDashNavigationFragment()?.setPlacesPreview { state, modifier ->
                         val lazyListState: LazyListState = rememberLazyListState()
                         SamplePlacesView(
                             lazyListState = lazyListState,
@@ -587,7 +588,7 @@ class MainActivity : DrawerActivity() {
                         )
                     }
                 } else {
-                    fragment.setPlacesPreview { state, modifier ->
+                    getDashNavigationFragment()?.setPlacesPreview { state, modifier ->
                         DefaultPlacesPreview(
                             state = state,
                             modifier = modifier

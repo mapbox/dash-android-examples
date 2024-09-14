@@ -5,6 +5,7 @@ package com.mapbox.dash.example.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -106,7 +107,12 @@ object SamplePlacesView {
     ) {
         Column(
             modifier = modifier
-                .background(AppTheme.colors.backgroundColors.primary, shape = AppTheme.shapes.poiCardBackground),
+                .background(
+                    AppTheme.colors.backgroundColors.primary,
+                    shape = AppTheme.shapes.poiCardBackground
+                )
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 placesListUiState.backCloseButtonState?.takeUnless { it.isFinalAction }?.let { backCloseButtonState ->

@@ -9,6 +9,7 @@ import com.mapbox.dash.sdk.base.units.Gb
 import com.mapbox.dash.sdk.config.api.CustomKeys
 import com.mapbox.dash.sdk.config.api.EngineType
 import com.mapbox.dash.sdk.config.api.ScreenDirectionality
+import com.mapbox.dash.sdk.config.api.UnitOfMeasurement
 import com.mapbox.dash.sdk.config.dsl.debugSettings
 import com.mapbox.dash.sdk.config.dsl.locationSimulation
 import com.mapbox.dash.sdk.config.dsl.mapGpt
@@ -32,25 +33,26 @@ class MainApplication : Application() {
             context = applicationContext,
             accessToken = getString(R.string.mapbox_access_token),
         ) {
+          this.unitOfMeasurement = UnitOfMeasurement.METRIC
             theme {
                 // Example of providing a custom theme to change the look-and-feel of Dash's UI components.
-                dayStyleRes = R.style.MyDashTheme_Day
+//                dayStyleRes = R.style.MyDashTheme_Day
             }
             mapGpt {
                 // Example of managing the visibility of user-accessible settings for MapGPT.
                 isSettingsMenuEnabled = true
             }
             mapStyle {
-                pixelRatio = applicationContext.resources.displayMetrics.density
+//                pixelRatio = applicationContext.resources.displayMetrics.density
             }
             locationSimulation {
                 // Example of a debug option that teleports the user to a specific location at each app launch.
                 defaultLocation = MAPBOX_DC_OFFICE
             }
             routeOptions {
-                avoidHighways = false
-                avoidFerries = false
-                avoidTolls = false
+//                avoidHighways = false
+//                avoidFerries = false
+//                avoidTolls = false
             }
             speedLimitsOptions {
                 showSpeedLimits = true
@@ -61,26 +63,28 @@ class MainApplication : Application() {
                 showSpeedLimitsOptions = true
             }
             search {
-                resultsAdapter = ShowcaseSearchResultsAdapter()
-                searchEngine = ShowcaseSearchEngine()
+//                resultsAdapter = ShowcaseSearchResultsAdapter()
+//                searchEngine = ShowcaseSearchEngine()
             }
             offline {
-                tilesPath = applicationContext.filesDir.absolutePath + "/prepared_tilestore"
-                tilesDiskQuota = 30.Gb
+//                tilesPath = applicationContext.filesDir.absolutePath + "/prepared_tilestore"
+//                tilesDiskQuota = 30.Gb
             }
             debugSettings {
-                showSendDebugInfoButton = true
-                showDisplaySendDebugInfoButtonOption = true
+//                showSendDebugInfoButton = true
+//                showDisplaySendDebugInfoButtonOption = true
+              showSimulateLocationOption = true
+              showElectricOptionsItem = true
             }
             ui {
-                screenDirectionality = ScreenDirectionality.LEFT_TO_RIGHT
+//                screenDirectionality = ScreenDirectionality.LEFT_TO_RIGHT
             }
             engineType = EngineType.ELECTRIC
             device = DashDeviceType.Automobile
 
             customValues[CustomKeys.SINGLE_CHARGER_MANUAL_SELECTION] = true
             customValues[CustomKeys.ENABLE_QUICK_SEARCH_SUGGESTIONS_IN_ACTIVE_GUIDANCE] = false
-            customValues[CustomKeys.FORCE_DEBUG] = true
+//            customValues[CustomKeys.FORCE_DEBUG] = true
         }
     }
 
