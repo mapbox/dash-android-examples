@@ -10,6 +10,8 @@ import com.mapbox.dash.sdk.config.api.CustomKeys
 import com.mapbox.dash.sdk.config.api.EngineType
 import com.mapbox.dash.sdk.config.api.ScreenDirectionality
 import com.mapbox.dash.sdk.config.dsl.debugSettings
+import com.mapbox.dash.sdk.config.dsl.driverNotification
+import com.mapbox.dash.sdk.config.dsl.fasterRouteNotification
 import com.mapbox.dash.sdk.config.dsl.locationSimulation
 import com.mapbox.dash.sdk.config.dsl.mapGpt
 import com.mapbox.dash.sdk.config.dsl.mapStyle
@@ -20,6 +22,7 @@ import com.mapbox.dash.sdk.config.dsl.speedLimitsOptions
 import com.mapbox.dash.sdk.config.dsl.theme
 import com.mapbox.dash.sdk.config.dsl.ui
 import com.mapbox.dash.sdk.config.dsl.uiSettings
+import kotlin.time.Duration.Companion.minutes
 
 class MainApplication : Application() {
 
@@ -74,6 +77,12 @@ class MainApplication : Application() {
             }
             ui {
                 screenDirectionality = ScreenDirectionality.LEFT_TO_RIGHT
+            }
+            driverNotification {
+                fasterRouteNotification {
+                    minFasterRouteDurationDiff = 1.minutes
+                    fasterRouteNotificationFreeze = 5.minutes
+                }
             }
             engineType = EngineType.ELECTRIC
             device = DashDeviceType.Automobile

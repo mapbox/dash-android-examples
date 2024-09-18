@@ -492,6 +492,14 @@
             android:textAllCaps="true"
             />
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomDriverNotification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom driver notification"
+            android:textAllCaps="true"
+            />
+
         <LinearLayout
             android:orientation="horizontal"
             android:gravity="center_vertical"

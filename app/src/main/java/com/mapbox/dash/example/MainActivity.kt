@@ -43,9 +43,11 @@ import com.mapbox.dash.compose.component.Body5
 import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultDestinationPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultRoutesOverview
+import com.mapbox.dash.driver.notification.presentation.DefaultDriverNotificationView
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
 import com.mapbox.dash.example.ui.SampleDestinationPreview
+import com.mapbox.dash.example.ui.SampleDriverNotificationView
 import com.mapbox.dash.example.ui.SamplePlacesView
 import com.mapbox.dash.example.ui.SampleRoutesOverview
 import com.mapbox.dash.example.ui.SampleTripSummaryView
@@ -186,6 +188,7 @@ class MainActivity : DrawerActivity() {
     private val setCustomDestination = MutableStateFlow(value = true)
     private val simpleCardHeader = MutableStateFlow(value = false)
     private val setCustomVoicePlayer = MutableStateFlow(value = false)
+    private val setCustomDriverNotification = MutableStateFlow(value = false)
 
     private fun initCustomizationMenu() {
         headlessModeCustomization()
@@ -672,6 +675,23 @@ class MainActivity : DrawerActivity() {
                 }
                 ui {
                     showCloseButtonInCards = !enabled
+                }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleCustomDriverNotification,
+            state = setCustomDriverNotification,
+        ) { enabled ->
+            getDashNavigationFragment()?.let { fragment ->
+                if (enabled) {
+                    fragment.setDriverNotification { modifier, uiState ->
+                        SampleDriverNotificationView(modifier, uiState)
+                    }
+                } else {
+                    fragment.setDriverNotification { modifier, uiState ->
+                        DefaultDriverNotificationView(modifier, uiState)
+                    }
                 }
             }
         }
