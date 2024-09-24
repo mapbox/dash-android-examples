@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Dash sdk showcase app</string>
     <string name="current_density">Dpi: %d</string>
+    <string name="shortcut_service_label">Foreground service</string>
 </resources>
