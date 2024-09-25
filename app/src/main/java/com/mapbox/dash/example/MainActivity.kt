@@ -896,7 +896,7 @@ class MainActivity : DrawerActivity() {
                                     PlaceFavoriteStatus.HOME -> AppTheme.icons.main.home
                                     PlaceFavoriteStatus.WORK -> AppTheme.icons.main.work
                                     PlaceFavoriteStatus.REGULAR -> AppTheme.icons.main.favorite
-                                    PlaceFavoriteStatus.NOT_A_FAVORITE -> AppTheme.icons.main.addFavorite
+                                    else -> AppTheme.icons.main.addFavorite
                                 },
                             ),
                             colorFilter = ColorFilter.tint(
@@ -906,7 +906,7 @@ class MainActivity : DrawerActivity() {
                                     -> AppTheme.colors.iconColor.accent
 
                                     PlaceFavoriteStatus.REGULAR -> AppTheme.colors.iconColor.red
-                                    PlaceFavoriteStatus.NOT_A_FAVORITE -> AppTheme.colors.iconColor.secondary
+                                    else -> AppTheme.colors.iconColor.secondary
                                 },
                             ),
                             contentDescription = null,
