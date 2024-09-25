@@ -38,6 +38,7 @@ class ShowcaseSearchEngine(
             override val categories = null
             override val etaMinutes = 5.0
             override val poweredByAi = false
+            override val type: DashSearchSuggestion.Type = DashSearchSuggestion.Type.Point
         }
 
         private val customSearchResult = object : DashSearchResult {
