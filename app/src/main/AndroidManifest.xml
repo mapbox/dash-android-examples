@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+
     <application
         android:name=".MainApplication"
         android:allowBackup="true"
@@ -11,12 +16,32 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
-            <intent-filter>
+            <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
+
+        <activity
+            android:name=".service.UXFBackgroundServiceLauncherActivity"
+            android:icon="@drawable/ic_destination"
+            android:label="@string/shortcut_service_label"
+            android:exported="true">
+            <intent-filter android:priority="99">
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".service.UXFBackgroundService"
+            android:exported="false"
+            android:foregroundServiceType="location"/>
+
     </application>
 
 </manifest>
