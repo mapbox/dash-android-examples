@@ -485,6 +485,14 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomEditTrip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom edit trip"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/toggleCustomFullScreenSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
