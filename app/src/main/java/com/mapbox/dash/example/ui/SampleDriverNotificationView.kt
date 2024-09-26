@@ -44,9 +44,12 @@ import com.mapbox.dash.compose.component.Button1
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.FasterAlternativeAvailable
 import com.mapbox.dash.driver.notification.presentation.DriverNotificationUiState
 import com.mapbox.dash.driver.notification.R
+import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.BorderCrossing
+import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.SlowTraffic
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.dash.theming.compose.PreviewDashTheme
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 
 @Composable
@@ -68,6 +71,40 @@ fun SampleDriverNotificationView(
                 R.string.dash_driver_notification_show,
                 { uiState.onAcceptClick(notification) },
                 R.string.dash_driver_notification_faster_route_decline,
+                { uiState.onDismissClick(notification) },
+            )
+        }
+        is BorderCrossing -> {
+            DriverNotificationView(
+                modifier,
+                context.getString(
+                    R.string.dash_driver_notification_border_crossing_title,
+                    notification.country,
+                ),
+                context.getString(
+                    R.string.dash_driver_notification_border_crossing_distance,
+                    notification.distanceInMeters.toInt().toString(),
+                ),
+                AppTheme.icons.driverNotification.borderCrossing,
+                R.string.dash_driver_notification_show,
+                null,
+                R.string.dash_driver_notification_dismiss,
+                { uiState.onDismissClick(notification) },
+            )
+        }
+
+        is SlowTraffic -> {
+            DriverNotificationView(
+                modifier,
+                stringResource(R.string.dash_driver_notification_heavy_traffic),
+                context.getString(
+                    R.string.dash_driver_notification_heavy_traffic_delay,
+                    notification.diffDuration.toString(DurationUnit.MINUTES),
+                ),
+                AppTheme.icons.driverNotification.heavyTraffic,
+                0,
+                null,
+                R.string.dash_driver_notification_dismiss,
                 { uiState.onDismissClick(notification) },
             )
         }
@@ -232,6 +269,8 @@ fun DriverNotificationButton(
 internal fun Preview_DriverNotifications() {
     val uiStates = listOf(
         DriverNotificationUiState(FasterAlternativeAvailable(1200000.0.milliseconds)),
+        DriverNotificationUiState(BorderCrossing("Germany", 100.0)),
+        DriverNotificationUiState(SlowTraffic(1.minutes)),
     )
     PreviewDashTheme {
         LazyColumn(
