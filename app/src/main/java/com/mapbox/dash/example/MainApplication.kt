@@ -9,6 +9,7 @@ import com.mapbox.dash.sdk.base.units.Gb
 import com.mapbox.dash.sdk.config.api.CustomKeys
 import com.mapbox.dash.sdk.config.api.EngineType
 import com.mapbox.dash.sdk.config.api.ScreenDirectionality
+import com.mapbox.dash.sdk.config.dsl.borderCrossingNotification
 import com.mapbox.dash.sdk.config.dsl.debugSettings
 import com.mapbox.dash.sdk.config.dsl.driverNotification
 import com.mapbox.dash.sdk.config.dsl.fasterRouteNotification
@@ -18,11 +19,13 @@ import com.mapbox.dash.sdk.config.dsl.mapStyle
 import com.mapbox.dash.sdk.config.dsl.offline
 import com.mapbox.dash.sdk.config.dsl.routeOptions
 import com.mapbox.dash.sdk.config.dsl.search
+import com.mapbox.dash.sdk.config.dsl.slowTrafficNotification
 import com.mapbox.dash.sdk.config.dsl.speedLimitsOptions
 import com.mapbox.dash.sdk.config.dsl.theme
 import com.mapbox.dash.sdk.config.dsl.ui
 import com.mapbox.dash.sdk.config.dsl.uiSettings
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class MainApplication : Application() {
 
@@ -78,10 +81,18 @@ class MainApplication : Application() {
             ui {
                 screenDirectionality = ScreenDirectionality.LEFT_TO_RIGHT
             }
+
+            // Setup small thresholds to be able to reproduce driver notifications easily
             driverNotification {
                 fasterRouteNotification {
                     minFasterRouteDurationDiff = 1.minutes
-                    fasterRouteNotificationFreeze = 5.minutes
+                    fasterRouteNotificationFreeze = 0.minutes
+                }
+                borderCrossingNotification {
+                    distanceToBorder = 600.0
+                }
+                slowTrafficNotification {
+                    minSlowTrafficDelay = 10.seconds
                 }
             }
             engineType = EngineType.ELECTRIC
