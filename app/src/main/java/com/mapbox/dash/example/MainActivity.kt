@@ -2,6 +2,7 @@ package com.mapbox.dash.example
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
@@ -46,6 +47,7 @@ import com.mapbox.dash.destination.preview.presentation.DefaultRoutesOverview
 import com.mapbox.dash.driver.notification.presentation.DefaultDriverNotificationView
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
+import com.mapbox.dash.example.relaxedmode.RelaxedModeActivity
 import com.mapbox.dash.example.ui.SampleDestinationPreview
 import com.mapbox.dash.example.ui.SampleDriverNotificationView
 import com.mapbox.dash.example.ui.SampleFullScreenSearch
@@ -508,6 +510,16 @@ class MainActivity : DrawerActivity() {
                                             text = "Custom sidebar button",
                                             color = androidx.compose.ui.graphics.Color.Black,
                                         )
+                                    },
+                                ),
+                                DashSidebarControl.Button(
+                                    iconId = R.drawable.baseline_remove_red_eye_24,
+                                    onClick = {
+                                        val intent = Intent(
+                                            this@MainActivity,
+                                            RelaxedModeActivity::class.java,
+                                        )
+                                        this@MainActivity.startActivity(intent)
                                     },
                                 ),
                                 DashSidebarControl.Speed,

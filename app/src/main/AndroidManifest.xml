@@ -42,6 +42,10 @@
             android:exported="false"
             android:foregroundServiceType="location"/>
 
+        <activity
+            android:name=".relaxedmode.RelaxedModeActivity"
+            android:theme="@style/Theme.DashExample.Transparent"
+            android:exported="false"/>
     </application>
 
 </manifest>
