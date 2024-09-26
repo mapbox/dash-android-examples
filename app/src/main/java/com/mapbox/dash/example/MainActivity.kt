@@ -73,6 +73,7 @@ import com.mapbox.dash.sdk.config.dsl.theme
 import com.mapbox.dash.sdk.config.dsl.ui
 import com.mapbox.dash.sdk.config.dsl.uiSettings
 import com.mapbox.dash.sdk.config.dsl.voices
+import com.mapbox.dash.sdk.map.domain.style.DefaultMapLayerComposer
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
 import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.sdk.search.api.DashSearchResultType
@@ -173,6 +174,7 @@ class MainActivity : DrawerActivity() {
     // storage for configuration mutations
     private val showDebugLogs = MutableStateFlow(value = true)
     private val setMap3dStyle = MutableStateFlow(value = true)
+    private val addMapLayer = MutableStateFlow(value = false)
     private val setOfflineTts = MutableStateFlow(value = false)
     private val showRouteOptionsInSettings = MutableStateFlow(value = false)
     private val showSpeedLimitsOptionsInSettings = MutableStateFlow(value = false)
@@ -341,6 +343,18 @@ class MainActivity : DrawerActivity() {
                 }
             },
         )
+        bindSwitch(
+            switch = menuBinding.addCustomMapLayer,
+            state = addMapLayer,
+        ) { enabled ->
+            getDashNavigationFragment()?.let { fragment ->
+                if (enabled) {
+                    fragment.setMapLayer { SampleMapLayer() }
+                } else {
+                    fragment.setMapLayer { DefaultMapLayerComposer() }
+                }
+            }
+        }
     }
 
     private fun settingCustomization() {
