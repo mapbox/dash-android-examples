@@ -48,10 +48,12 @@ import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
 import com.mapbox.dash.example.ui.SampleDestinationPreview
 import com.mapbox.dash.example.ui.SampleDriverNotificationView
+import com.mapbox.dash.example.ui.SampleFullScreenSearch
 import com.mapbox.dash.example.ui.SamplePlacesView
 import com.mapbox.dash.example.ui.SampleRoutesOverview
 import com.mapbox.dash.example.ui.SampleTripSummaryView
 import com.mapbox.dash.favorites.PlaceFavoriteStatus
+import com.mapbox.dash.fullscreen.search.DefaultFullScreenSearch
 import com.mapbox.dash.logging.LogsExtra
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.DashNavigationFragment
@@ -184,6 +186,7 @@ class MainActivity : DrawerActivity() {
     private val setCustomDestinationPreviewComposer = MutableStateFlow(value = false)
     private val setCustomRoutesOverviewComposer = MutableStateFlow(value = false)
     private val setCustomTripSummaryComposer = MutableStateFlow(value = false)
+    private val setCustomFullScreenSearchComposer = MutableStateFlow(value = false)
     private val showTripProgress = MutableStateFlow(value = true)
     private val setCustomDestination = MutableStateFlow(value = true)
     private val simpleCardHeader = MutableStateFlow(value = false)
@@ -650,6 +653,23 @@ class MainActivity : DrawerActivity() {
                     }
                 } else {
                     fragment.setTripSummary(null)
+                }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleCustomFullScreenSearch,
+            state = setCustomFullScreenSearchComposer,
+        ) { enabled ->
+            getDashNavigationFragment()?.let { fragment ->
+                if (enabled) {
+                    fragment.setFullScreenSearch { _, setFullScreenSearch ->
+                        SampleFullScreenSearch(state = setFullScreenSearch)
+                    }
+                } else {
+                    fragment.setFullScreenSearch { modifier, fullScreenSearchState ->
+                        DefaultFullScreenSearch(modifier = modifier, state = fullScreenSearchState)
+                    }
                 }
             }
         }
