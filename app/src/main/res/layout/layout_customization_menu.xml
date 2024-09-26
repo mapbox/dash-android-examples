@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:background="@android:color/holo_blue_dark"
         android:paddingHorizontal="15dp"
-        android:paddingTop="100dp"
+        android:paddingTop="60dp"
         android:paddingBottom="10dp"
         android:text="Dash Customizations"
         android:textColor="#fff"
@@ -79,6 +79,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="SET 3D MAP style"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/addCustomMapLayer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ADD CUSTOM MAP LAYER"
             android:textAllCaps="true"
             />
 
