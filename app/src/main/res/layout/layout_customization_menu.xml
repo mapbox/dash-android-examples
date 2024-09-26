@@ -477,6 +477,14 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomFullScreenSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom full screen search"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/toggleSimpleCardHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
