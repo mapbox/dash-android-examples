@@ -45,6 +45,7 @@ import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultDestinationPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultRoutesOverview
 import com.mapbox.dash.driver.notification.presentation.DefaultDriverNotificationView
+import com.mapbox.dash.driver.presentation.edittrip.DefaultEditTripCard
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
 import com.mapbox.dash.example.relaxedmode.RelaxedModeActivity
@@ -79,6 +80,7 @@ import com.mapbox.dash.sdk.map.domain.style.DefaultMapLayerComposer
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
 import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.sdk.search.api.DashSearchResultType
+import com.mapbox.dash.showcase.app.ui.custom.edittrip.SampleEditTrip
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
@@ -190,6 +192,7 @@ class MainActivity : DrawerActivity() {
     private val setCustomDestinationPreviewComposer = MutableStateFlow(value = false)
     private val setCustomRoutesOverviewComposer = MutableStateFlow(value = false)
     private val setCustomTripSummaryComposer = MutableStateFlow(value = false)
+    private val setCustomEditTripComposer = MutableStateFlow(value = false)
     private val setCustomFullScreenSearchComposer = MutableStateFlow(value = false)
     private val showTripProgress = MutableStateFlow(value = true)
     private val setCustomDestination = MutableStateFlow(value = true)
@@ -679,6 +682,19 @@ class MainActivity : DrawerActivity() {
                     }
                 } else {
                     fragment.setTripSummary(null)
+                }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleCustomEditTrip,
+            state = setCustomEditTripComposer,
+        ) { enabled ->
+            getDashNavigationFragment()?.setEditTrip { modifier, state ->
+                if (enabled) {
+                    SampleEditTrip(state)
+                } else {
+                    DefaultEditTripCard(state = state, modifier = modifier)
                 }
             }
         }

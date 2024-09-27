@@ -10,7 +10,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/royal_blue"
+        android:background="@color/teal_700"
         android:padding="@dimen/default_margin">
 
         <ImageButton
