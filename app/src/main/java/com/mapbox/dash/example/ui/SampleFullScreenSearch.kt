@@ -19,6 +19,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +35,14 @@ import com.mapbox.dash.sdk.config.api.SearchCategory
 
 @Composable
 fun SampleFullScreenSearch(state: FullScreenSearchState) {
+    val showHistory = remember { mutableStateOf(value = false) }
+    if (showHistory.value) {
+        SampleSearchHistory(
+            onBackClick = { showHistory.value = false },
+            onHistoryItemClick = state.onHistoryItemSelected,
+        )
+        return
+    }
     Column(
         modifier = Modifier
             .background(color = Color(red = 16, green = 18, blue = 23))
@@ -56,28 +66,34 @@ fun SampleFullScreenSearch(state: FullScreenSearchState) {
             Text(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(vertical = 12.dp)
+                    .height(104.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(color = Color(red = 28, green = 28, blue = 36))
                     .clickable(onClick = state.onQueryClicked)
-                    .padding(all = 24.dp)
+                    .padding(horizontal = 24.dp)
                     .wrapContentHeight(),
-                text = "Search",
+                text = "Search by Name",
                 color = Color.White.copy(alpha = 0.8f),
                 fontSize = 42.sp,
                 lineHeight = 56.sp,
                 fontWeight = FontWeight.Normal,
             )
         }
-        GridMainButtons(state = state)
+        GridMainButtons(
+            state = state,
+            onHistoryClick = { showHistory.value = true },
+        )
         GridCategoryButtons(state = state)
     }
 }
 
 @Composable
-private fun ColumnScope.GridMainButtons(state: FullScreenSearchState) {
+private fun ColumnScope.GridMainButtons(
+    state: FullScreenSearchState,
+    onHistoryClick: () -> Unit,
+) {
     Row(
-        modifier = Modifier.Companion
+        modifier = Modifier
             .weight(1f)
             .padding(horizontal = 32.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -85,7 +101,7 @@ private fun ColumnScope.GridMainButtons(state: FullScreenSearchState) {
         GridButton(
             text = "Recents",
             iconId = R.drawable.ic_full_screen_search_recents,
-            onClick = {},
+            onClick = onHistoryClick,
         )
         GridButton(
             text = "Add Home",
@@ -108,7 +124,7 @@ private fun ColumnScope.GridMainButtons(state: FullScreenSearchState) {
 @Composable
 private fun ColumnScope.GridCategoryButtons(state: FullScreenSearchState) {
     Row(
-        modifier = Modifier.Companion
+        modifier = Modifier
             .weight(1f)
             .padding(horizontal = 32.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
