@@ -5,4 +5,9 @@
 <!--    <dimen name="map_round_button_height">112dp</dimen>-->
 <!--    <dimen name="map_round_button_width">112dp</dimen>-->
 <!--    <dimen name="round_button_padding">20dp</dimen>-->
+
+<!--    Uncomment to change street name view size and paddings-->
+<!--    <dimen name="street_label_max_width">600dp</dimen>-->
+<!--    <dimen name="street_label_padding_horizontal">32dp</dimen>-->
+<!--    <dimen name="street_label_padding_vertical">24dp</dimen>-->
 </resources>
