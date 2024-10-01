@@ -34,7 +34,6 @@ internal class UXFBackgroundService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        createNotificationChannel()
         ServiceCompat.startForeground(
             this,
             FOREGROUND_SERVICE_ID,
@@ -110,19 +109,10 @@ internal class UXFBackgroundService : Service() {
         notificationManager.notify(FOREGROUND_SERVICE_ID, notification)
     }
 
-    private fun createNotificationChannel() {
-        val channel = NotificationChannelCompat
-            .Builder(NOTIFICATION_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_DEFAULT)
-            .setName(this.getString(R.string.shortcut_service_label))
-            .build()
-        NotificationManagerCompat.from(this)
-            .createNotificationChannel(channel)
-    }
-
     private fun buildNotification(
         state: UXFBackgroundState,
     ): Notification {
-        return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+        return NotificationCompat.Builder(this, FOREGROUND_NOTIFICATION_CHANNEL_ID)
             .setContentTitle("Navigation state:")
             .setContentText(state.title)
             .setSmallIcon(R.drawable.ic_destination)
@@ -132,8 +122,8 @@ internal class UXFBackgroundService : Service() {
             .build()
     }
 
-    companion object {
-        private const val NOTIFICATION_CHANNEL_ID = "general_notification_channel"
+    internal companion object {
+        const val FOREGROUND_NOTIFICATION_CHANNEL_ID = "general_notification_channel"
         private const val FOREGROUND_SERVICE_ID = 9765
     }
 }
