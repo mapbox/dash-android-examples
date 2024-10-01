@@ -100,7 +100,6 @@ class MainApplication : Application() {
 
             customValues[CustomKeys.SINGLE_CHARGER_MANUAL_SELECTION] = true
             customValues[CustomKeys.ENABLE_QUICK_SEARCH_SUGGESTIONS_IN_ACTIVE_GUIDANCE] = false
-            customValues[CustomKeys.FORCE_DEBUG] = true
         }
     }
 
