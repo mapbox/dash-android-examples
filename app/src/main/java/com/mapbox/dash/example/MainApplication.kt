@@ -11,6 +11,7 @@ import com.mapbox.dash.sdk.config.api.EngineType
 import com.mapbox.dash.sdk.config.api.ScreenDirectionality
 import com.mapbox.dash.sdk.config.dsl.borderCrossingNotification
 import com.mapbox.dash.sdk.config.dsl.debugSettings
+import com.mapbox.dash.sdk.config.dsl.destinationPreview
 import com.mapbox.dash.sdk.config.dsl.driverNotification
 import com.mapbox.dash.sdk.config.dsl.fasterRouteNotification
 import com.mapbox.dash.sdk.config.dsl.locationSimulation
@@ -80,6 +81,10 @@ class MainApplication : Application() {
             }
             ui {
                 screenDirectionality = ScreenDirectionality.LEFT_TO_RIGHT
+            }
+
+            destinationPreview {
+                skipDestinationPreview = false
             }
 
             // Setup small thresholds to be able to reproduce driver notifications easily
