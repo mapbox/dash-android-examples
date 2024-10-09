@@ -355,7 +355,16 @@ class MainActivity : DrawerActivity() {
         ) { enabled ->
             getDashNavigationFragment()?.let { fragment ->
                 if (enabled) {
-//                    fragment.setMapLayer { SampleMapLayer() }
+                    fragment.setMapLayer {
+
+                        middleSlot {
+                            FireHydrantsLayer()
+                        }
+
+                        topSlot {
+                            WeatherLayer()
+                        }
+                    }
                 } else {
                     fragment.setMapLayer { DefaultMapLayerComposer() }
                 }
