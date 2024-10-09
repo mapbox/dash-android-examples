@@ -104,7 +104,6 @@ class MainApplication : Application() {
             device = DashDeviceType.Automobile
 
             customValues[CustomKeys.ENABLE_QUICK_SEARCH_SUGGESTIONS_IN_ACTIVE_GUIDANCE] = false
-            customValues[CustomKeys.FORCE_DEBUG] = true
         }
     }
 
