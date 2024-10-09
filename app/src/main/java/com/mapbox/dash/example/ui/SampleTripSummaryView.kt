@@ -49,7 +49,6 @@ fun SampleTripSummaryView(modifier: Modifier = Modifier, tripSummaryUiState: Tri
         SampleTripOverviewItems(
             modifier = Modifier.padding(dimensionResource(R.dimen.default_margin)),
             items = tripSummaryUiState.tripOverviewItems,
-            onAddStopClick = tripSummaryUiState.onOpenFullScreenSearchClick,
             onWaypointClick = tripSummaryUiState.onWaypointClick,
             onEndOfChargeClick = tripSummaryUiState.onOpenSearchForChargeClick,
         )
@@ -108,11 +107,11 @@ internal fun Preview_SampleTripSummaryView() {
             tripSummaryUiState = TripSummaryUiState(
                 tripSummaryModel = model,
                 tripOverviewItems = listOf(
-                    TripOverviewItem.AddStop,
                     TripOverviewItem.Destination(
                         searchResult = object : DashSearchResult {
                             override val address = null
                             override val coordinate = Point.fromLngLat(1.0, 2.0)
+                            override val customName: String? = null
                             override val id = "id-1"
                             override val mapboxId = "mapbox-id-1"
                             override val name = "Mapbox DC Office"

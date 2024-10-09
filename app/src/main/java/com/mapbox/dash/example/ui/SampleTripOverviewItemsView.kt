@@ -39,7 +39,6 @@ internal fun SampleTripOverviewItems(
     modifier: Modifier = Modifier,
     items: List<TripOverviewItem>,
     onYourLocationClick: (() -> Unit)? = null,
-    onAddStopClick: (() -> Unit)? = null,
     onWaypointClick: ((DashSearchResult) -> Unit)? = null,
     onEndOfChargeClick: ((List<Point>) -> Unit)? = null,
 ) {
@@ -50,12 +49,6 @@ internal fun SampleTripOverviewItems(
                     iconId = R.drawable.ic_trip_overview_your_location,
                     title = stringResource(id = R.string.dash_trip_overview_your_location),
                     onClick = onYourLocationClick,
-                )
-                is TripOverviewItem.AddStop -> TripOverviewItem(
-                    iconId = R.drawable.ic_trip_overview_add_stop,
-                    title = stringResource(id = R.string.dash_trip_overview_add_stop),
-                    color = AppTheme.colors.textColor.links,
-                    onClick = onAddStopClick,
                 )
                 is TripOverviewItem.Waypoint -> TripOverviewItem(
                     iconId = R.drawable.ic_trip_overview_waypoint,
@@ -183,7 +176,7 @@ private fun SampleTripOverviewArrivalInformation(
                     text = formatter.formatDuration(
                         duration = etaMinutes.minutes,
                         truncateDurationUnit = DurationUnit.MINUTES,
-                    ).trim(),
+                    ),
                     color = AppTheme.colors.textColor.secondary,
                 )
             }

@@ -44,6 +44,7 @@ class ShowcaseSearchEngine(
         private val customSearchResult = object : DashSearchResult {
             override val address = null
             override val coordinate = Point.fromLngLat(-77.0342, 38.9044)
+            override val customName: String? = null
             override val etaMinutes = null
             override val id = "customSearchResultId1122334455"
             override val mapboxId: String? = null
