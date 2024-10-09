@@ -108,6 +108,7 @@ class MainActivity : DrawerActivity() {
         object : DashSearchResult {
             override val address = null
             override val coordinate = Point.fromLngLat(-77.0342, 38.9044)
+            override val customName: String? = null
             override val etaMinutes = null
             override val id = "customHistoryItemId1122334455"
             override val mapboxId: String? = null
@@ -354,7 +355,7 @@ class MainActivity : DrawerActivity() {
         ) { enabled ->
             getDashNavigationFragment()?.let { fragment ->
                 if (enabled) {
-                    fragment.setMapLayer { SampleMapLayer() }
+//                    fragment.setMapLayer { SampleMapLayer() }
                 } else {
                     fragment.setMapLayer { DefaultMapLayerComposer() }
                 }
