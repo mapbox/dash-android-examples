@@ -51,12 +51,16 @@ import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
 import com.mapbox.dash.example.relaxedmode.RelaxedModeActivity
 import com.mapbox.dash.example.ui.SampleDestinationPreview
 import com.mapbox.dash.example.ui.SampleDriverNotificationView
+import com.mapbox.dash.example.ui.SampleEditFavoriteScreen
+import com.mapbox.dash.example.ui.SampleFavoritesScreen
 import com.mapbox.dash.example.ui.SampleFullScreenSearch
 import com.mapbox.dash.example.ui.SamplePlacesView
 import com.mapbox.dash.example.ui.SampleRoutesOverview
 import com.mapbox.dash.example.ui.SampleTripSummaryView
 import com.mapbox.dash.favorites.PlaceFavoriteStatus
 import com.mapbox.dash.fullscreen.search.DefaultFullScreenSearch
+import com.mapbox.dash.fullscreen.search.favorites.DefaultFavoritesScreen
+import com.mapbox.dash.fullscreen.search.favorites.presenation.DefaultEditFavoriteScreen
 import com.mapbox.dash.logging.LogsExtra
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.DashNavigationFragment
@@ -194,7 +198,7 @@ class MainActivity : DrawerActivity() {
     private val setCustomRoutesOverviewComposer = MutableStateFlow(value = false)
     private val setCustomTripSummaryComposer = MutableStateFlow(value = false)
     private val setCustomEditTripComposer = MutableStateFlow(value = false)
-    private val setCustomFullScreenSearchComposer = MutableStateFlow(value = false)
+    private val setCustomSearchScreen = MutableStateFlow(value = false)
     private val showTripProgress = MutableStateFlow(value = true)
     private val setCustomDestination = MutableStateFlow(value = true)
     private val simpleCardHeader = MutableStateFlow(value = false)
@@ -214,11 +218,8 @@ class MainActivity : DrawerActivity() {
     }
 
     private fun headlessModeCustomization() {
-        bindSwitch(
-            switch = menuBinding.toggleHeadlessMode,
-            state = headlessMode,
-        ) { enabled ->
-            headlessMode.value = enabled
+        menuBinding.toggleHeadlessMode.setOnCheckedChangeListener { _, isChecked ->
+            headlessMode.value = isChecked
         }
     }
 
@@ -710,17 +711,29 @@ class MainActivity : DrawerActivity() {
         }
 
         bindSwitch(
-            switch = menuBinding.toggleCustomFullScreenSearch,
-            state = setCustomFullScreenSearchComposer,
+            switch = menuBinding.toggleCustomSearchScreen,
+            state = setCustomSearchScreen,
         ) { enabled ->
             getDashNavigationFragment()?.let { fragment ->
                 if (enabled) {
-                    fragment.setFullScreenSearch { _, setFullScreenSearch ->
-                        SampleFullScreenSearch(state = setFullScreenSearch)
+                    fragment.setFullScreenSearch { modifier, setFullScreenSearch ->
+                        SampleFullScreenSearch(modifier = modifier, state = setFullScreenSearch)
+                    }
+                    fragment.setFavoritesScreen { modifier, favoritesScreenState ->
+                        SampleFavoritesScreen(modifier = modifier, state = favoritesScreenState)
+                    }
+                    fragment.setEditFavoriteScreen { modifier, editFavoriteScreenState ->
+                        SampleEditFavoriteScreen(modifier = modifier, state = editFavoriteScreenState)
                     }
                 } else {
                     fragment.setFullScreenSearch { modifier, fullScreenSearchState ->
                         DefaultFullScreenSearch(modifier = modifier, state = fullScreenSearchState)
+                    }
+                    fragment.setFavoritesScreen { modifier, favoritesScreenState ->
+                        DefaultFavoritesScreen(modifier = modifier, state = favoritesScreenState)
+                    }
+                    fragment.setEditFavoriteScreen { modifier, editFavoriteScreenState ->
+                        DefaultEditFavoriteScreen(modifier = modifier, state = editFavoriteScreenState)
                     }
                 }
             }
