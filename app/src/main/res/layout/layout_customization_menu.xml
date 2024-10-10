@@ -493,10 +493,10 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/toggleCustomFullScreenSearch"
+            android:id="@+id/toggleCustomSearchScreen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Set custom full screen search"
+            android:text="Set custom search screen"
             android:textAllCaps="true"
             />
 

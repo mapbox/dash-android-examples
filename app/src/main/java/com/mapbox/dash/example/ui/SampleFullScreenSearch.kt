@@ -34,17 +34,21 @@ import com.mapbox.dash.fullscreen.search.FullScreenSearchState
 import com.mapbox.dash.sdk.config.api.SearchCategory
 
 @Composable
-fun SampleFullScreenSearch(state: FullScreenSearchState) {
+fun SampleFullScreenSearch(
+    modifier: Modifier,
+    state: FullScreenSearchState,
+) {
     val showHistory = remember { mutableStateOf(value = false) }
     if (showHistory.value) {
         SampleSearchHistory(
+            modifier = modifier,
             onBackClick = { showHistory.value = false },
             onHistoryItemClick = state.onHistoryItemSelected,
         )
         return
     }
     Column(
-        modifier = Modifier
+        modifier = modifier
             .background(color = Color(red = 16, green = 18, blue = 23))
             .systemBarsPadding()
             .padding(bottom = 16.dp),

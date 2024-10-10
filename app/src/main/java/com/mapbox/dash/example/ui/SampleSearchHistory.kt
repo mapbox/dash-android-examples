@@ -38,12 +38,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SampleSearchHistory(
+    modifier: Modifier,
     onBackClick: () -> Unit,
     onHistoryItemClick: (DashSearchResult) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     Column(
-        modifier = Modifier
+        modifier = modifier
             .background(Color.Black)
             .systemBarsPadding(),
     ) {
@@ -95,8 +96,8 @@ fun SampleSearchHistory(
     }
 }
 
-@Composable
 @OptIn(ExperimentalFoundationApi::class)
+@Composable
 private fun ColumnScope.HistoryItems(
     historyItems: List<DashSearchResult>,
     onHistoryItemClick: (DashSearchResult) -> Unit,
@@ -104,14 +105,13 @@ private fun ColumnScope.HistoryItems(
     val scope = rememberCoroutineScope()
     LazyColumn(
         modifier = Modifier.weight(1f),
-        contentPadding = PaddingValues(start = 24.dp, top = 16.dp, end = 24.dp, bottom = 48.dp),
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(historyItems, key = { it.id }) { item ->
             Row(
                 modifier = Modifier
                     .animateItemPlacement()
-                    .height(128.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color(red = 28, green = 28, blue = 36))
                     .clickable { onHistoryItemClick(item) },
