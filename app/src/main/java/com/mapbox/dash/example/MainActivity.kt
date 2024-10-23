@@ -1,6 +1,5 @@
 package com.mapbox.dash.example
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -16,31 +15,19 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatSpinner
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.commitNow
 import com.google.android.material.slider.Slider
-import com.mapbox.dash.compose.ComposeViewBlock
-import com.mapbox.dash.compose.component.Body5
 import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultDestinationPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultRoutesOverview
@@ -57,7 +44,6 @@ import com.mapbox.dash.example.ui.SampleFullScreenSearch
 import com.mapbox.dash.example.ui.SamplePlacesView
 import com.mapbox.dash.example.ui.SampleRoutesOverview
 import com.mapbox.dash.example.ui.SampleTripSummaryView
-import com.mapbox.dash.favorites.PlaceFavoriteStatus
 import com.mapbox.dash.fullscreen.search.DefaultFullScreenSearch
 import com.mapbox.dash.fullscreen.search.favorites.DefaultFavoritesScreen
 import com.mapbox.dash.fullscreen.search.favorites.presenation.DefaultEditFavoriteScreen
@@ -85,13 +71,10 @@ import com.mapbox.dash.sdk.search.api.DashFavoriteType
 import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.sdk.search.api.DashSearchResultType
 import com.mapbox.dash.showcase.app.ui.custom.edittrip.SampleEditTrip
-import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class MainActivity : DrawerActivity() {
@@ -200,7 +183,6 @@ class MainActivity : DrawerActivity() {
     private val setCustomEditTripComposer = MutableStateFlow(value = false)
     private val setCustomSearchScreen = MutableStateFlow(value = false)
     private val showTripProgress = MutableStateFlow(value = true)
-    private val setCustomDestination = MutableStateFlow(value = true)
     private val simpleCardHeader = MutableStateFlow(value = false)
     private val setCustomVoicePlayer = MutableStateFlow(value = false)
     private val setCustomDriverNotification = MutableStateFlow(value = false)
@@ -214,7 +196,6 @@ class MainActivity : DrawerActivity() {
         offlineTtsCustomization()
         dashCoordination()
         etaPanelCustomization()
-        destinationPreviewCustomization()
     }
 
     private fun headlessModeCustomization() {
@@ -405,23 +386,6 @@ class MainActivity : DrawerActivity() {
             Dash.applyUpdate {
                 etaPanel {
                     showTripProgress = isChecked
-                }
-            }
-        }
-    }
-
-    private fun destinationPreviewCustomization() {
-        bindSwitch(
-            switch = menuBinding.setCustomDestinationPreview,
-            state = setCustomDestination,
-        ) { isChecked ->
-            setCustomDestination.observeWhenStarted(this) {
-                if (isChecked) {
-                    getDashNavigationFragment()?.setSingleCustomView()
-                } else {
-                    getDashNavigationFragment()?.editLayout {
-                        defaultDestinationPreviewLayout()
-                    }
                 }
             }
         }
@@ -922,82 +886,6 @@ class MainActivity : DrawerActivity() {
                         }
                     }
                 }
-            }
-        }
-    }
-
-    @SuppressLint("RestrictedApi")
-    private suspend fun DashNavigationFragment.setSingleCustomView() = editLayout {
-        updateDestinationPreviewLayout {
-            assign {
-                arrivalInformation(LoadingViewBlock)
-                weather(LoadingViewBlock)
-                rating(LoadingViewBlock)
-                openHours(LoadingViewBlock)
-                chartingInformation(LoadingViewBlock)
-                destinationInformation(LoadingViewBlock)
-                destinationFeedback(LoadingViewBlock)
-            }
-            delay(1_000)
-            assign {
-                destinationInformation(ComposeViewBlock {
-                    val coroutine = rememberCoroutineScope()
-                    Row(
-                        modifier = Modifier.padding(top = 20.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Image(
-                            modifier = Modifier.size(32.dp),
-                            painter = painterResource(id = AppTheme.icons.information.pin),
-                            contentDescription = null,
-                        )
-                        Body5(
-                            modifier = Modifier.weight(1f),
-                            text = "Address: ${it.address.orEmpty()}",
-                            color = AppTheme.colors.textColor.primary,
-                        )
-                        Image(
-                            modifier = Modifier
-                                .size(54.dp)
-                                .border(
-                                    width = 1.dp,
-                                    color = AppTheme.colors.borderColors.primary,
-                                    shape = CircleShape,
-                                )
-                                .clip(CircleShape)
-                                .clickable {
-                                    coroutine.launch {
-                                        if (it.favoriteStatus == PlaceFavoriteStatus.NOT_A_FAVORITE) {
-                                            Dash.controller.addFavoriteItem(it.origin, DashFavoriteType.REGULAR)
-                                        } else {
-                                            Dash.controller.removeFavoriteItem(it.origin)
-                                        }
-                                    }
-                                }
-                                .padding(all = 12.dp),
-                            painter = painterResource(
-                                id = when (it.favoriteStatus) {
-                                    PlaceFavoriteStatus.HOME -> AppTheme.icons.main.home
-                                    PlaceFavoriteStatus.WORK -> AppTheme.icons.main.work
-                                    PlaceFavoriteStatus.REGULAR -> AppTheme.icons.main.favorite
-                                    else -> AppTheme.icons.main.addFavorite
-                                },
-                            ),
-                            colorFilter = ColorFilter.tint(
-                                color = when (it.favoriteStatus) {
-                                    PlaceFavoriteStatus.HOME,
-                                    PlaceFavoriteStatus.WORK,
-                                    -> AppTheme.colors.iconColor.accent
-
-                                    PlaceFavoriteStatus.REGULAR -> AppTheme.colors.iconColor.red
-                                    else -> AppTheme.colors.iconColor.secondary
-                                },
-                            ),
-                            contentDescription = null,
-                        )
-                    }
-                })
             }
         }
     }
