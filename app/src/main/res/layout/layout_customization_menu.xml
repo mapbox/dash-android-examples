@@ -445,14 +445,6 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/setCustomDestinationPreview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Set custom destination preview"
-            android:textAllCaps="true"
-            />
-
-        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/toggleCustomPlacesList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

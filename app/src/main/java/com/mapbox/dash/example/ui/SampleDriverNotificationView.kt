@@ -41,11 +41,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mapbox.dash.compose.component.Body4
 import com.mapbox.dash.compose.component.Button1
-import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.FasterAlternativeAvailable
-import com.mapbox.dash.driver.notification.presentation.DriverNotificationUiState
 import com.mapbox.dash.driver.notification.R
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.BorderCrossing
+import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.FasterAlternativeAvailable
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.SlowTraffic
+import com.mapbox.dash.driver.notification.presentation.DriverNotificationUiState
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.dash.theming.compose.PreviewDashTheme
 import kotlin.time.Duration.Companion.milliseconds
@@ -79,7 +79,7 @@ fun SampleDriverNotificationView(
                 modifier,
                 context.getString(
                     R.string.dash_driver_notification_border_crossing_title,
-                    notification.country,
+                    notification.countryCode,
                 ),
                 context.getString(
                     R.string.dash_driver_notification_border_crossing_distance,
@@ -269,7 +269,7 @@ fun DriverNotificationButton(
 internal fun Preview_DriverNotifications() {
     val uiStates = listOf(
         DriverNotificationUiState(FasterAlternativeAvailable(1200000.0.milliseconds)),
-        DriverNotificationUiState(BorderCrossing("Germany", 100.0)),
+        DriverNotificationUiState(BorderCrossing("NL", "NLD", distanceInMeters = 500.0)),
         DriverNotificationUiState(SlowTraffic(1.minutes)),
     )
     PreviewDashTheme {
