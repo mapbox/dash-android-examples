@@ -462,18 +462,6 @@ private val weatherVM: WeatherViewModel by viewModels()
             controller.stopNavigation()
         }
 
-        bindSwitch(
-            switch = menuBinding.customCompassDataInputs,
-            state = setCustomCompassDataInputs,
-        ) { enabled ->
-            sampleSensorEventManager?.compassData?.observeWhenStarted(this) {
-                if (enabled) {
-                    Log.d(TAG, "Updating compass data: $it")
-                    Dash.controller.updateCompassData(it)
-                }
-            }
-        }
-
         menuBinding.customCompassDataInputs.setOnCheckedChangeListener { _, isChecked ->
             setCustomCompassDataInputs.value = isChecked
         }
