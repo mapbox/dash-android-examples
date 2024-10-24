@@ -38,6 +38,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.commitNow
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.slider.Slider
 import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
@@ -103,6 +106,7 @@ import com.mapbox.navigation.weather.model.WeatherCondition
 import com.mapbox.navigation.weather.model.WeatherSystemOfMeasurement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -466,6 +470,22 @@ private val weatherVM: WeatherViewModel by viewModels()
                 if (enabled) {
                     Log.d(TAG, "Updating compass data: $it")
                     Dash.controller.updateCompassData(it)
+                }
+            }
+        }
+
+        menuBinding.customCompassDataInputs.setOnCheckedChangeListener { _, isChecked ->
+            setCustomCompassDataInputs.value = isChecked
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                setCustomCompassDataInputs.collectLatest { enabled ->
+                    if (!enabled) return@collectLatest
+                    sampleSensorEventManager?.compassData?.collect { compassData ->
+                        Log.d(TAG, "Updating compass data: $compassData")
+                        Dash.controller.updateCompassData(compassData)
+                    }
                 }
             }
         }
