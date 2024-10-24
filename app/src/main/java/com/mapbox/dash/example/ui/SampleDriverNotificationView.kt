@@ -44,8 +44,10 @@ import com.mapbox.dash.compose.component.Button1
 import com.mapbox.dash.driver.notification.R
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.BorderCrossing
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.FasterAlternativeAvailable
+import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.RoadCamera
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.SlowTraffic
 import com.mapbox.dash.driver.notification.presentation.DriverNotificationUiState
+import com.mapbox.dash.driver.notification.presentation.RoadCameraType
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.dash.theming.compose.PreviewDashTheme
 import kotlin.time.Duration.Companion.milliseconds
@@ -79,7 +81,6 @@ fun SampleDriverNotificationView(
                 modifier,
                 context.getString(
                     R.string.dash_driver_notification_border_crossing_title,
-                    notification.countryCode,
                 ),
                 context.getString(
                     R.string.dash_driver_notification_border_crossing_distance,
@@ -91,6 +92,23 @@ fun SampleDriverNotificationView(
                 R.string.dash_driver_notification_dismiss,
                 { uiState.onDismissClick(notification) },
             )
+        }
+        is RoadCamera -> {
+            if (notification.roadCameraType == RoadCameraType.SPEED_CAMERA) {
+                DriverNotificationView(
+                    modifier,
+                    stringResource(R.string.dash_driver_notification_speed_camera),
+                    context.getString(
+                        R.string.dash_driver_notification_road_camera_distance,
+                        notification.distanceInMeters.toInt().toString(),
+                    ),
+                    AppTheme.icons.driverNotification.speedCamera,
+                    0,
+                    null,
+                    R.string.dash_driver_notification_dismiss,
+                    { uiState.onDismissClick(notification) },
+                )
+            }
         }
 
         is SlowTraffic -> {
@@ -260,8 +278,8 @@ fun DriverNotificationButton(
     )
 }
 
-@Preview(device = Devices.PIXEL_TABLET, heightDp = 1080, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(device = Devices.PIXEL_TABLET, heightDp = 1080)
+@Preview(device = Devices.PIXEL_TABLET, heightDp = 1300, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(device = Devices.PIXEL_TABLET, heightDp = 1300)
 @Preview(device = Devices.PIXEL_7)
 @Preview(device = Devices.PIXEL_7, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -271,6 +289,7 @@ internal fun Preview_DriverNotifications() {
         DriverNotificationUiState(FasterAlternativeAvailable(1200000.0.milliseconds)),
         DriverNotificationUiState(BorderCrossing("NL", "NLD", distanceInMeters = 500.0)),
         DriverNotificationUiState(SlowTraffic(1.minutes)),
+        DriverNotificationUiState(RoadCamera(RoadCameraType.SPEED_CAMERA, 500.0)),
     )
     PreviewDashTheme {
         LazyColumn(
