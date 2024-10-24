@@ -352,6 +352,8 @@ class MainActivity : DrawerActivity() {
                 }
             }
         }
+
+        menuBinding.layersManagerCard.bind(this)
     }
 
     private fun settingCustomization() {
