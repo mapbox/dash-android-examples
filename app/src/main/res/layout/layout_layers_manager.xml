@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:parentTag="androidx.cardview.widget.CardView"
+    >
+
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:background="#880099cc"
+        android:elevation="8dp"
+        android:padding="12dp"
+        android:text="Map style layers manager"
+        android:textColor="#fff"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        />
+
+    <LinearLayout
+        android:id="@+id/llToggles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#440099cc"
+        android:orientation="vertical"
+        android:paddingHorizontal="8dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        >
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleDistractingElements"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="Distracting Map Elements Hidden in Active Guidance"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleTransit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Transit"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/togglePoi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="POI"
+            android:textAllCaps="true"
+            />
+    </LinearLayout>
+
+
+</merge>
