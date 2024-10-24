@@ -9,7 +9,9 @@ import com.mapbox.dash.sdk.base.units.Gb
 import com.mapbox.dash.sdk.config.api.CustomKeys
 import com.mapbox.dash.sdk.config.api.EngineType
 import com.mapbox.dash.sdk.config.api.ScreenDirectionality
+
 import com.mapbox.dash.sdk.config.dsl.borderCrossingNotification
+import com.mapbox.dash.sdk.config.dsl.dataInputs
 import com.mapbox.dash.sdk.config.dsl.debugSettings
 import com.mapbox.dash.sdk.config.dsl.destinationPreview
 import com.mapbox.dash.sdk.config.dsl.driverNotification
@@ -100,6 +102,11 @@ class MainApplication : Application() {
                     minSlowTrafficDelay = 10.seconds
                 }
             }
+
+            dataInputs {
+                enabled = true
+            }
+
             engineType = EngineType.ELECTRIC
             device = DashDeviceType.Automobile
 
