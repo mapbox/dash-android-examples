@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.commitNow
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.slider.Slider
 import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultDestinationPreview
@@ -70,11 +71,13 @@ import com.mapbox.dash.sdk.map.domain.style.DefaultMapLayerComposer
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
 import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.sdk.search.api.DashSearchResultType
+import com.mapbox.dash.sdk.storage.ExternalProfile
 import com.mapbox.dash.showcase.app.ui.custom.edittrip.SampleEditTrip
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class MainActivity : DrawerActivity() {
@@ -774,6 +777,36 @@ class MainActivity : DrawerActivity() {
                 .setNegativeButton("CANCEL", null)
                 .show()
         }
+
+        Dash.controller.observeExternalProfile().observeWhenStarted(lifecycleOwner = this) { profile ->
+            menuBinding.currentProfile.text = getString(R.string.current_profile, profile?.id)
+        }
+        menuBinding.switchProfile.setOnClickListener {
+            showProfileAlert { profileId ->
+                Dash.controller.setExternalProfile(profileId?.let { ExternalProfile(it) })
+            }
+        }
+        menuBinding.removeProfile.setOnClickListener {
+            showProfileAlert { profileId ->
+                lifecycleScope.launch {
+                    Dash.controller.removeExternalProfile(profileId)
+                }
+            }
+        }
+    }
+
+    private fun showProfileAlert(onDone: (String?) -> Unit) {
+        val editText = EditText(this)
+        AlertDialog.Builder(this)
+            .setView(editText)
+            .setPositiveButton("OK") { _, _ ->
+                onDone(editText.text.toString())
+            }
+            .setNeutralButton("DEFAULT") { _, _ ->
+                onDone(null)
+            }
+            .setNegativeButton("CANCEL", null)
+            .show()
     }
 
     private fun registerEventsObservers() {
