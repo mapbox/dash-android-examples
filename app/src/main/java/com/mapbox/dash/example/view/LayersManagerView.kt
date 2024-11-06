@@ -6,14 +6,12 @@ import android.view.LayoutInflater
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
+import com.mapbox.dash.example.databinding.LayoutLayersManagerBinding
 import com.mapbox.dash.sdk.Dash
-import com.mapbox.dash.sdk.base.extension.hide
-import com.mapbox.dash.sdk.base.extension.show
 import com.mapbox.dash.sdk.base.flow.observeWhenStarted
 import com.mapbox.dash.sdk.base.layer.DashMapStyleLayer
 import com.mapbox.dash.sdk.base.layer.DashMapStyleLayersConfig
 import com.mapbox.dash.sdk.config.dsl.mapStyle
-import com.mapbox.dash.example.databinding.LayoutLayersManagerBinding
 import kotlinx.coroutines.flow.MutableStateFlow
 
 private const val TRANSIT_LAYER_ID = "transit-label"
@@ -42,11 +40,7 @@ class LayersManagerCard @JvmOverloads constructor(
 
     init {
         binding.header.setOnClickListener {
-            if (binding.llToggles.isVisible) {
-                binding.llToggles.hide()
-            } else {
-                binding.llToggles.show()
-            }
+            binding.llToggles.isVisible = !binding.llToggles.isVisible
         }
         binding.toggleTransit.isChecked = true
         binding.toggleTransit.setOnCheckedChangeListener { _, isChecked ->
