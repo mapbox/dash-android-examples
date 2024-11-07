@@ -29,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -41,19 +42,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mapbox.dash.compose.component.Body4
 import com.mapbox.dash.compose.component.Button1
+import com.mapbox.dash.compose.shadow
 import com.mapbox.dash.driver.notification.R
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.BorderCrossing
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.FasterAlternativeAvailable
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.RoadCamera
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.SlowTraffic
 import com.mapbox.dash.driver.notification.presentation.DriverNotificationUiState
-import com.mapbox.dash.driver.notification.presentation.RoadCameraType
+import com.mapbox.dash.sdk.config.api.RoadCameraType.RED_LIGHT
+import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CAMERA
+import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CAMERA_RED_LIGHT
+import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CONTROL_ZONE_ENTER
+import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CONTROL_ZONE_EXIT
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.dash.theming.compose.PreviewDashTheme
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 
+@SuppressWarnings("LongMethod")
 @Composable
 fun SampleDriverNotificationView(
     modifier: Modifier = Modifier,
@@ -69,7 +76,7 @@ fun SampleDriverNotificationView(
                     R.string.dash_driver_notification_faster_save_time,
                     notification.diffDuration.toString(DurationUnit.MINUTES),
                 ),
-                AppTheme.icons.driverNotification.fastAlternative,
+                R.drawable.ic_navux_driver_notification_faster_route_available,
                 R.string.dash_driver_notification_show,
                 { uiState.onAcceptClick(notification) },
                 R.string.dash_driver_notification_faster_route_decline,
@@ -86,7 +93,7 @@ fun SampleDriverNotificationView(
                     R.string.dash_driver_notification_border_crossing_distance,
                     notification.distanceInMeters.toInt().toString(),
                 ),
-                AppTheme.icons.driverNotification.borderCrossing,
+                R.drawable.ic_navux_driver_notification_border_crossing,
                 R.string.dash_driver_notification_show,
                 null,
                 R.string.dash_driver_notification_dismiss,
@@ -94,15 +101,35 @@ fun SampleDriverNotificationView(
             )
         }
         is RoadCamera -> {
-            if (notification.roadCameraType == RoadCameraType.SPEED_CAMERA) {
+            val (iconRes, stringRes) = when (notification.roadCameraType) {
+                SPEED_CAMERA -> Pair(
+                    R.drawable.ic_navux_driver_notification_speed_camera,
+                    R.string.dash_driver_notification_speed_camera,
+                )
+                SPEED_CAMERA_RED_LIGHT -> Pair(
+                    R.drawable.ic_navux_driver_notification_speed_camera_red_light,
+                    R.string.dash_driver_notification_speed_camera_red_light,
+                )
+                RED_LIGHT -> Pair(
+                    R.drawable.ic_navux_driver_notification_camera_red_light,
+                    R.string.dash_driver_notification_camera_red_light,
+                )
+                SPEED_CONTROL_ZONE_ENTER -> Pair(
+                    R.drawable.ic_navux_driver_notification_speed_control_zone,
+                    R.string.dash_driver_notification_speed_control_zone,
+                )
+                SPEED_CONTROL_ZONE_EXIT -> Pair(
+                    R.drawable.ic_navux_driver_notification_speed_control_zone,
+                    R.string.dash_driver_notification_speed_control_zone_exit,
+                )
+                else -> Pair(null, null)
+            }
+            if (stringRes != null && iconRes != null) {
                 DriverNotificationView(
                     modifier,
-                    stringResource(R.string.dash_driver_notification_speed_camera),
-                    context.getString(
-                        R.string.dash_driver_notification_road_camera_distance,
-                        notification.distanceInMeters.toInt().toString(),
-                    ),
-                    AppTheme.icons.driverNotification.speedCamera,
+                    stringResource(stringRes),
+                    notification.distanceInMeters.toInt().toString(),
+                    iconRes,
                     0,
                     null,
                     R.string.dash_driver_notification_dismiss,
@@ -110,7 +137,6 @@ fun SampleDriverNotificationView(
                 )
             }
         }
-
         is SlowTraffic -> {
             DriverNotificationView(
                 modifier,
@@ -119,7 +145,7 @@ fun SampleDriverNotificationView(
                     R.string.dash_driver_notification_heavy_traffic_delay,
                     notification.diffDuration.toString(DurationUnit.MINUTES),
                 ),
-                AppTheme.icons.driverNotification.heavyTraffic,
+                R.drawable.ic_navux_driver_notification_heavy_traffic,
                 0,
                 null,
                 R.string.dash_driver_notification_dismiss,
@@ -147,10 +173,8 @@ private fun DriverNotificationView(
     val defaultPadding = dimensionResource(R.dimen.driver_notification_view_padding)
     Column(
         modifier = modifier
-            .background(
-                color = AppTheme.colors.buttonColors.secondary,
-                shape = AppTheme.shapes.driverNotificationBackground,
-            )
+            .shadow(shape = AppTheme.shapes.driverNotificationBackground)
+            .background(color = AppTheme.colors.buttonColors.secondary)
             .padding(defaultPadding),
         verticalArrangement = Arrangement.spacedBy(defaultPadding),
     ) {
@@ -260,8 +284,8 @@ fun DriverNotificationButton(
         modifier = modifier
             .height(dimensionResource(id = R.dimen.button_height))
             .fillMaxWidth()
+            .clip(AppTheme.shapes.driverNotificationButtonBackground)
             .background(
-                shape = AppTheme.shapes.driverNotificationButtonBackground,
                 brush = if (progress == 0f) {
                     SolidColor(backgroundColor)
                 } else {
@@ -278,18 +302,21 @@ fun DriverNotificationButton(
     )
 }
 
-@Preview(device = Devices.PIXEL_TABLET, heightDp = 1300, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(device = Devices.PIXEL_TABLET, heightDp = 1300)
-@Preview(device = Devices.PIXEL_7)
-@Preview(device = Devices.PIXEL_7, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(device = Devices.PIXEL_TABLET, heightDp = 2000, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(device = Devices.PIXEL_TABLET, heightDp = 2000)
+@Preview(device = Devices.PIXEL_7, heightDp = 1200)
+@Preview(device = Devices.PIXEL_7, heightDp = 1200, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 @SuppressWarnings("MagicNumber")
 internal fun Preview_DriverNotifications() {
     val uiStates = listOf(
         DriverNotificationUiState(FasterAlternativeAvailable(1200000.0.milliseconds)),
         DriverNotificationUiState(BorderCrossing("NL", "NLD", distanceInMeters = 500.0)),
-        DriverNotificationUiState(SlowTraffic(1.minutes)),
-        DriverNotificationUiState(RoadCamera(RoadCameraType.SPEED_CAMERA, 500.0)),
+        DriverNotificationUiState(RoadCamera(SPEED_CAMERA, 50.0, 0.0)),
+        DriverNotificationUiState(RoadCamera(SPEED_CAMERA_RED_LIGHT, 50.0, 0.0)),
+        DriverNotificationUiState(RoadCamera(RED_LIGHT, 50.0, 0.0)),
+        DriverNotificationUiState(RoadCamera(SPEED_CONTROL_ZONE_ENTER, 50.0, 0.0)),
+        DriverNotificationUiState(SlowTraffic(diffDuration = 5.minutes)),
     )
     PreviewDashTheme {
         LazyColumn(
