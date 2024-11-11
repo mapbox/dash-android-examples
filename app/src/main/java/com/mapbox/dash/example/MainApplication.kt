@@ -3,13 +3,20 @@ package com.mapbox.dash.example
 import android.app.Application
 import android.location.LocationManager
 import com.mapbox.common.location.Location
+import com.mapbox.dash.cluster.dayStyleUri
+import com.mapbox.dash.cluster.map3DStyleUri
+import com.mapbox.dash.cluster.nightStyleUri
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.base.device.DashDeviceType
 import com.mapbox.dash.sdk.base.units.Gb
 import com.mapbox.dash.sdk.config.api.CustomKeys
 import com.mapbox.dash.sdk.config.api.EngineType
 import com.mapbox.dash.sdk.config.api.ScreenDirectionality
+import com.mapbox.dash.sdk.config.dsl.DEFAULT_3D_STYLE
+import com.mapbox.dash.sdk.config.dsl.DEFAULT_DAY_STYLE
+import com.mapbox.dash.sdk.config.dsl.DEFAULT_NIGHT_STYLE
 import com.mapbox.dash.sdk.config.dsl.borderCrossingNotification
+import com.mapbox.dash.sdk.config.dsl.cluster
 import com.mapbox.dash.sdk.config.dsl.debugSettings
 import com.mapbox.dash.sdk.config.dsl.destinationPreview
 import com.mapbox.dash.sdk.config.dsl.driverNotification
@@ -25,11 +32,13 @@ import com.mapbox.dash.sdk.config.dsl.speedLimitsOptions
 import com.mapbox.dash.sdk.config.dsl.theme
 import com.mapbox.dash.sdk.config.dsl.ui
 import com.mapbox.dash.sdk.config.dsl.uiSettings
+import com.mapbox.maps.MapboxExperimental
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class MainApplication : Application() {
 
+    @OptIn(MapboxExperimental::class)
     override fun onCreate() {
         super.onCreate()
 
@@ -100,6 +109,14 @@ class MainApplication : Application() {
                     minSlowTrafficDelay = 10.seconds
                 }
             }
+
+            cluster {
+                enabled = true
+                dayStyleUri = DEFAULT_DAY_STYLE
+                nightStyleUri = DEFAULT_NIGHT_STYLE
+                map3DStyleUri = DEFAULT_3D_STYLE
+            }
+
             engineType = EngineType.ELECTRIC
             device = DashDeviceType.Automobile
 
@@ -109,7 +126,7 @@ class MainApplication : Application() {
 
     internal companion object {
 
-        val MAPBOX_DC_OFFICE = Location.Builder()
+        val MAPBOX_DC_OFFICE: Location = Location.Builder()
             .source(LocationManager.PASSIVE_PROVIDER)
             .latitude(38.899929)
             .longitude(-77.03394)

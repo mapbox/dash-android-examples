@@ -55,6 +55,7 @@ import com.mapbox.dash.sdk.config.api.DashSearchPanelButton
 import com.mapbox.dash.sdk.config.api.DashSidebarControl
 import com.mapbox.dash.sdk.config.api.PersonalLocations
 import com.mapbox.dash.sdk.config.api.SearchCategory
+import com.mapbox.dash.sdk.config.dsl.DEFAULT_3D_STYLE
 import com.mapbox.dash.sdk.config.dsl.DashSidebarUpdate
 import com.mapbox.dash.sdk.config.dsl.DashUiUpdate
 import com.mapbox.dash.sdk.config.dsl.destinationPreview
@@ -939,10 +940,5 @@ class MainActivity : DrawerActivity() {
 
         private var tabletLayout: Boolean? = null
         private var densityDpi: Int? = null
-
-        /**
-         * Default 3D style.
-         */
-        private const val DEFAULT_3D_STYLE = "mapbox://styles/mapbox-dash/standard-navigation"
     }
 }
