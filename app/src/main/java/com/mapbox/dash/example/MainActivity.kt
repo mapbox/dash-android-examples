@@ -15,15 +15,26 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatSpinner
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.BiasAlignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.commitNow
@@ -72,9 +83,13 @@ import com.mapbox.dash.sdk.search.api.DashFavoriteType
 import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.sdk.search.api.DashSearchResultType
 import com.mapbox.dash.sdk.storage.ExternalProfile
+import com.mapbox.dash.sdk.weather.api.model.WeatherAlert
+import com.mapbox.dash.sdk.weather.api.model.WeatherCondition
+import com.mapbox.dash.sdk.weather.api.model.WeatherSystemOfMeasurement
 import com.mapbox.dash.showcase.app.ui.custom.edittrip.SampleEditTrip
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -87,6 +102,7 @@ class MainActivity : DrawerActivity() {
 
     private val themeVM: ThemeViewModel by viewModels()
     private val mapStyleVM: MapStyleViewModel by viewModels()
+    private val weatherVM: WeatherViewModel by viewModels()
 
 
     private val headlessMode = MutableStateFlow(false)
@@ -471,27 +487,9 @@ class MainActivity : DrawerActivity() {
                             listOf(
                                 DashSidebarControl.Custom(
                                     content = { modifier ->
-                                        Text(
-                                            modifier = modifier
-                                                .shadow(8.dp, shape = CircleShape)
-                                                .border(
-                                                    width = 2.dp,
-                                                    color = androidx.compose.ui.graphics.Color.Black,
-                                                    shape = CircleShape,
-                                                )
-                                                .background(androidx.compose.ui.graphics.Color.White)
-                                                .clickable {
-                                                    Toast
-                                                        .makeText(
-                                                            this@MainActivity,
-                                                            "This text was brought to you by Dash",
-                                                            Toast.LENGTH_LONG,
-                                                        )
-                                                        .show()
-                                                }
-                                                .padding(all = 20.dp),
-                                            text = "Custom sidebar button",
-                                            color = androidx.compose.ui.graphics.Color.Black,
+                                        WeatherAlertWidget(
+                                            modifier = modifier,
+                                            weatherAlertAtMapCenter = weatherVM.weatherAlertsAtMapCenter,
                                         )
                                     },
                                 ),
@@ -515,6 +513,9 @@ class MainActivity : DrawerActivity() {
                                 ),
                                 DashSidebarControl.Routes,
                                 DashSidebarControl.Debug,
+                                DashSidebarControl.Custom {
+                                    CurrentWeatherWidget(it, weatherVM.weatherConditionAtMapCenter)
+                                },
                             )
                         } else {
                             DashSidebarControl.defaultRightSidebarControls
@@ -658,7 +659,7 @@ class MainActivity : DrawerActivity() {
             getDashNavigationFragment()?.let { fragment ->
                 if (enabled) {
                     fragment.setTripSummary { modifier, tripSummaryUiState ->
-                        SampleTripSummaryView(modifier, tripSummaryUiState)
+                        SampleTripSummaryView(modifier, tripSummaryUiState, weatherVM)
                     }
                 } else {
                     fragment.setTripSummary(null)
@@ -944,5 +945,61 @@ class MainActivity : DrawerActivity() {
          * Default 3D style.
          */
         private const val DEFAULT_3D_STYLE = "mapbox://styles/mapbox-dash/standard-navigation"
+    }
+}
+
+@Composable
+private fun WeatherAlertWidget(modifier: Modifier, weatherAlertAtMapCenter: Flow<List<WeatherAlert>>) {
+    val alerts = weatherAlertAtMapCenter.collectAsState(null).value?.joinToString("\n") { it.title }
+        ?.takeIf { it.isNotBlank() } ?: "No weather alerts in the center of the map"
+
+    Text(
+        modifier = modifier
+            .shadow(4.dp, shape = CircleShape)
+            .border(
+                width = 2.dp,
+                color = androidx.compose.ui.graphics.Color.Black,
+                shape = CircleShape,
+            )
+            .background(androidx.compose.ui.graphics.Color.White)
+            .padding(all = 20.dp),
+        text = alerts,
+        color = androidx.compose.ui.graphics.Color.Black,
+    )
+}
+
+@Composable
+private fun CurrentWeatherWidget(modifier: Modifier, weatherConditionAtMapCenter: Flow<WeatherCondition>) {
+    val conditions = weatherConditionAtMapCenter.collectAsState(null).value ?: return
+
+    val unit = when (conditions.systemOfMeasurement) {
+        WeatherSystemOfMeasurement.Imperial -> "F"
+        WeatherSystemOfMeasurement.Metric -> "C"
+        else -> "C"
+    }
+
+    Box(
+        modifier = modifier
+            .width(90.dp)
+            .height(90.dp)
+            .shadow(8.dp, shape = CircleShape)
+            .background(androidx.compose.ui.graphics.Color.White),
+    ) {
+        Image(
+            modifier = Modifier
+                .align(BiasAlignment(horizontalBias = 0.4f, verticalBias = 0.4f))
+                .size(40.dp),
+            colorFilter = ColorFilter.tint(androidx.compose.ui.graphics.Color.Black),
+            painter = painterResource(conditions.toIcon()),
+            contentDescription = null,
+        )
+        Text(
+            modifier = Modifier.align(
+                BiasAlignment(horizontalBias = -0.3f, verticalBias = -0.3f),
+            ),
+            text = "${conditions.temperature.toInt()} °$unit",
+            maxLines = 1,
+            color = androidx.compose.ui.graphics.Color.Black,
+        )
     }
 }

@@ -7,8 +7,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
@@ -24,9 +26,12 @@ import com.mapbox.dash.compose.component.Body5
 import com.mapbox.dash.compose.component.Title7
 import com.mapbox.dash.destination.preview.R
 import com.mapbox.dash.destination.preview.domain.model.TripOverviewItem
+import com.mapbox.dash.example.toIcon
 import com.mapbox.dash.models.ArrivalInformationFormatter
 import com.mapbox.dash.models.ChargeData
 import com.mapbox.dash.sdk.search.api.DashSearchResult
+import com.mapbox.dash.sdk.weather.api.model.WeatherForecastItem
+import com.mapbox.dash.sdk.weather.api.model.WeatherSystemOfMeasurement
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.geojson.Point
 import kotlin.time.Duration
@@ -38,6 +43,7 @@ import kotlin.time.DurationUnit
 internal fun SampleTripOverviewItems(
     modifier: Modifier = Modifier,
     items: List<TripOverviewItem>,
+    weatherForecast: List<WeatherForecastItem>? = null,
     onYourLocationClick: (() -> Unit)? = null,
     onWaypointClick: ((DashSearchResult) -> Unit)? = null,
     onEndOfChargeClick: ((List<Point>) -> Unit)? = null,
@@ -81,6 +87,7 @@ internal fun SampleTripOverviewItems(
                     etaMinutes = item.etaMinutes,
                     stateOfCharge = item.arrivalStateOfCharge,
                     onClick = onWaypointClick?.forward(item.searchResult),
+                    weatherForecast = weatherForecast,
                     showArrow = true,
                 )
             }
@@ -99,6 +106,7 @@ private fun TripOverviewItem(
     stateOfCharge: Int? = null,
     chargeData: ChargeData? = null,
     onClick: (() -> Unit)? = null,
+    weatherForecast: List<WeatherForecastItem>? = null,
     showArrow: Boolean = false,
 ) {
     val modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
@@ -127,6 +135,7 @@ private fun TripOverviewItem(
                 etaMinutes = etaMinutes,
                 chargeFromPercent = chargeData?.chargeFromPercent ?: stateOfCharge,
                 chargeToPercent = chargeData?.chargeToPercent,
+                weatherForecast = weatherForecast,
             )
             if (chargeData != null && chargeData.chargeForMin > 1) {
                 Row(
@@ -168,6 +177,7 @@ private fun SampleTripOverviewArrivalInformation(
     etaMinutes: Double?,
     chargeFromPercent: Int?,
     chargeToPercent: Int?,
+    weatherForecast: List<WeatherForecastItem>? = null,
 ) {
     if (etaMinutes != null || chargeFromPercent != null) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -206,6 +216,38 @@ private fun SampleTripOverviewArrivalInformation(
                         color = AppTheme.colors.textColor.secondary,
                     )
                 }
+            }
+
+            if (weatherForecast != null) {
+                val weatherCondition = weatherForecast.first().condition
+                val temperature = weatherCondition.temperature.toInt()
+                val weatherIcon = weatherCondition.toIcon()
+                val maxTemp = weatherForecast.maxOf { it.condition.temperature }.toInt()
+                val minTemp = weatherForecast.minOf { it.condition.temperature }.toInt()
+                val unit = when (weatherCondition.systemOfMeasurement) {
+                    WeatherSystemOfMeasurement.Imperial -> "F"
+                    WeatherSystemOfMeasurement.Metric -> "C"
+                    else -> "C"
+                }
+
+                Body5(
+                    text = " · ",
+                    color = AppTheme.colors.textColor.secondary,
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.eta_point_margin)),
+                )
+                Image(
+                    modifier = Modifier
+                        .padding(1.dp)
+                        .width(28.dp)
+                        .height(28.dp),
+                    painter = painterResource(id = weatherIcon),
+                    contentDescription = null,
+                )
+                Body5(
+                    text = "$temperature °$unit · H: $maxTemp L: $minTemp",
+                    color = AppTheme.colors.textColor.secondary,
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.eta_point_margin)),
+                )
             }
         }
     }

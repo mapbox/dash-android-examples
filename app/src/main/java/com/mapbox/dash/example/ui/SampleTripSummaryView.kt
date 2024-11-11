@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,6 +25,7 @@ import com.mapbox.dash.compose.component.Button1
 import com.mapbox.dash.destination.preview.domain.model.TripOverviewItem
 import com.mapbox.dash.driver.R
 import com.mapbox.dash.driver.presentation.end.TripSummaryUiState
+import com.mapbox.dash.example.WeatherViewModel
 import com.mapbox.dash.models.RemainingArrivalMetricType
 import com.mapbox.dash.models.TripSummaryModel
 import com.mapbox.dash.sdk.search.api.DashSearchResult
@@ -33,7 +35,13 @@ import com.mapbox.geojson.Point
 import com.mapbox.search.result.SearchResultType
 
 @Composable
-fun SampleTripSummaryView(modifier: Modifier = Modifier, tripSummaryUiState: TripSummaryUiState) {
+fun SampleTripSummaryView(
+    modifier: Modifier = Modifier,
+    tripSummaryUiState: TripSummaryUiState,
+    weatherViewModel: WeatherViewModel,
+) {
+
+    val weatherForecast = weatherViewModel.weatherForecastOnDestination.collectAsState(null).value
 
     val model = tripSummaryUiState.tripSummaryModel
     Column(
@@ -51,6 +59,7 @@ fun SampleTripSummaryView(modifier: Modifier = Modifier, tripSummaryUiState: Tri
             items = tripSummaryUiState.tripOverviewItems,
             onWaypointClick = tripSummaryUiState.onWaypointClick,
             onEndOfChargeClick = tripSummaryUiState.onOpenSearchForChargeClick,
+            weatherForecast = weatherForecast,
         )
         Box {
 
@@ -128,6 +137,7 @@ internal fun Preview_SampleTripSummaryView() {
                     ),
                 ),
             ),
+            weatherViewModel = WeatherViewModel(),
         )
     }
 }
