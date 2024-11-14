@@ -6,6 +6,7 @@ import com.mapbox.common.location.Location
 import com.mapbox.dash.cluster.dayStyleUri
 import com.mapbox.dash.cluster.map3DStyleUri
 import com.mapbox.dash.cluster.nightStyleUri
+import com.mapbox.dash.ev.api.EvDataProvider
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.base.device.DashDeviceType
 import com.mapbox.dash.sdk.base.units.Gb
@@ -33,6 +34,7 @@ import com.mapbox.dash.sdk.config.dsl.theme
 import com.mapbox.dash.sdk.config.dsl.ui
 import com.mapbox.dash.sdk.config.dsl.uiSettings
 import com.mapbox.maps.MapboxExperimental
+import kotlinx.coroutines.flow.flowOf
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -122,6 +124,30 @@ class MainApplication : Application() {
 
             customValues[CustomKeys.ENABLE_QUICK_SEARCH_SUGGESTIONS_IN_ACTIVE_GUIDANCE] = false
         }
+
+        configureEvProvider()
+    }
+
+    /**
+     * Configure [EvDataProvider] for Electric Vehicle Data
+     *
+     * Reference Docs https://docs.mapbox.com/android/navigation/ux/guides/coordination/electric-vehicle/
+     * Interface Docs https://docs.mapbox.com/android/navigation/api/uxframework/1.0.0-beta.40/ev-api/com.mapbox.dash.ev.api/-ev-data-provider/?query=interface%20EvDataProvider
+     */
+    private fun configureEvProvider() {
+        val evDataProvider = object : EvDataProvider {
+            override val stateOfCharge = flowOf(50f)
+            override val minBatteryRange = flowOf<Float?>(200f)
+            override val maxBatteryRange = flowOf<Float?>(240f)
+            override val secondsRemainingToCharge = flowOf<Int?>(7200)
+            override val isChargerPluggedIn = flowOf(true)
+            override val maxCharge = flowOf(57500)
+            override val connectorTypes = flowOf("ccs_combo_type1")
+            override val energyConsumptionCurve = flowOf("0,300;20,160;80,140;120,180")
+            override val chargingCurve = flowOf("0,100000;40000,70000;60000,30000;80000,10000")
+        }
+
+        Dash.controller.setEvDataProvider(evDataProvider)
     }
 
     internal companion object {
