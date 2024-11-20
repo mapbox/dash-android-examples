@@ -18,7 +18,6 @@ import androidx.appcompat.widget.AppCompatSpinner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -62,10 +61,7 @@ import com.mapbox.dash.fullscreen.search.favorites.presenation.DefaultEditFavori
 import com.mapbox.dash.logging.LogsExtra
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.DashNavigationFragment
-import com.mapbox.dash.sdk.config.api.DashSearchPanelButton
 import com.mapbox.dash.sdk.config.api.DashSidebarControl
-import com.mapbox.dash.sdk.config.api.PersonalLocations
-import com.mapbox.dash.sdk.config.api.SearchCategory
 import com.mapbox.dash.sdk.config.dsl.DEFAULT_3D_STYLE
 import com.mapbox.dash.sdk.config.dsl.DashSidebarUpdate
 import com.mapbox.dash.sdk.config.dsl.DashUiUpdate
@@ -74,7 +70,6 @@ import com.mapbox.dash.sdk.config.dsl.etaPanel
 import com.mapbox.dash.sdk.config.dsl.leftSidebar
 import com.mapbox.dash.sdk.config.dsl.mapStyle
 import com.mapbox.dash.sdk.config.dsl.rightSidebar
-import com.mapbox.dash.sdk.config.dsl.searchPanel
 import com.mapbox.dash.sdk.config.dsl.theme
 import com.mapbox.dash.sdk.config.dsl.ui
 import com.mapbox.dash.sdk.config.dsl.uiSettings
@@ -532,46 +527,14 @@ class MainActivity : DrawerActivity() {
             menuBinding.spinnerSearchPanelPosition,
             searchPanelPosition,
         ) { name ->
-            val position = SearchPanelPosition.valueOf(name)
-            Dash.applyUpdate {
-                ui {
-                    searchPanel {
-                        visible = position != SearchPanelPosition.Nowhere
-                        this.position = if (position == SearchPanelPosition.TopLeft) {
-                            com.mapbox.dash.sdk.config.api.SearchPanelPosition.TOP_LEFT
-                        } else {
-                            com.mapbox.dash.sdk.config.api.SearchPanelPosition.BOTTOM_LEFT
-                        }
-                    }
-                }
-            }
+            // TBD
         }
 
         bindSwitch(
             switch = menuBinding.toggleSearchPanelButtons,
             state = overrideSearchPanelButtons,
         ) { enabled ->
-            Dash.applyUpdate {
-                ui {
-                    searchPanel {
-                        buttons = if (enabled) {
-                            listOf(
-                                DashSearchPanelButton.Category(SearchCategory.Airport),
-                                DashSearchPanelButton.Favorite(PersonalLocations.Home),
-                                DashSearchPanelButton.Custom(
-                                    id = "hello",
-                                    iconId = R.drawable.ic_waving_hand,
-                                    onClick = {
-                                        Toast.makeText(this@MainActivity, "Hey, Dash!", Toast.LENGTH_SHORT).show()
-                                    },
-                                ),
-                            )
-                        } else {
-                            DashSearchPanelButton.defaultSearchPanelButtons
-                        }
-                    }
-                }
-            }
+            // TBD
         }
 
         bindSwitch(
