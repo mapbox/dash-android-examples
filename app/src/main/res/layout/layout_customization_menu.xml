@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingBottom="80dp"
-    tools:layout_width="300dp"
-    >
+    tools:layout_width="300dp">
 
     <TextView
         android:layout_width="match_parent"
@@ -260,6 +260,23 @@
                 />
 
         </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Free drive pitch"
+            android:textAllCaps="true"
+            />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/freeDrivePitchSlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stepSize="5"
+            android:valueFrom="0"
+            app:labelBehavior="withinBounds"
+            android:valueTo="70"
+            />
 
         <TextView
             android:layout_width="wrap_content"

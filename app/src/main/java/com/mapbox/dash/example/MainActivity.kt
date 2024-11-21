@@ -65,6 +65,7 @@ import com.mapbox.dash.sdk.config.api.DashSidebarControl
 import com.mapbox.dash.sdk.config.dsl.DEFAULT_3D_STYLE
 import com.mapbox.dash.sdk.config.dsl.DashSidebarUpdate
 import com.mapbox.dash.sdk.config.dsl.DashUiUpdate
+import com.mapbox.dash.sdk.config.dsl.camera
 import com.mapbox.dash.sdk.config.dsl.destinationPreview
 import com.mapbox.dash.sdk.config.dsl.etaPanel
 import com.mapbox.dash.sdk.config.dsl.leftSidebar
@@ -83,6 +84,7 @@ import com.mapbox.dash.sdk.weather.api.model.WeatherAlert
 import com.mapbox.dash.sdk.weather.api.model.WeatherCondition
 import com.mapbox.dash.sdk.weather.api.model.WeatherSystemOfMeasurement
 import com.mapbox.dash.showcase.app.ui.custom.edittrip.SampleEditTrip
+import com.mapbox.dash.state.defaults.camera.SimpleDefaults
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
 import kotlinx.coroutines.flow.Flow
@@ -453,6 +455,16 @@ class MainActivity : DrawerActivity() {
         }
         menuBinding.btnSearchApi.bindAction {
             Dash.controller.search(menuBinding.etSearchApi.text.toString())
+        }
+
+        menuBinding.freeDrivePitchSlider.addOnChangeListener { _, value, fromUser ->
+            if (fromUser) {
+                Dash.applyUpdate {
+                    camera {
+                        freeDriveDefaults = SimpleDefaults(freeDriveDefaults.zoom, value.toDouble())
+                    }
+                }
+            }
         }
 
         val density = resources.displayMetrics.density
