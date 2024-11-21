@@ -115,6 +115,10 @@ class MainApplication : Application() {
                 slowTrafficNotification {
                     minSlowTrafficDelay = 10.seconds
                 }
+                roadCameraNotification {
+                    distanceToCamera = 500.0
+                    withSound = true
+                }
             }
 
             cluster {
