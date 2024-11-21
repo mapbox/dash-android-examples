@@ -44,6 +44,7 @@ import com.mapbox.dash.destination.preview.presentation.DefaultDestinationPrevie
 import com.mapbox.dash.destination.preview.presentation.DefaultRoutesOverview
 import com.mapbox.dash.driver.notification.presentation.DefaultDriverNotificationView
 import com.mapbox.dash.driver.presentation.edittrip.DefaultEditTripCard
+import com.mapbox.dash.driver.presentation.search.DefaultSearchPanelView
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
 import com.mapbox.dash.example.relaxedmode.RelaxedModeActivity
@@ -70,6 +71,7 @@ import com.mapbox.dash.sdk.config.dsl.etaPanel
 import com.mapbox.dash.sdk.config.dsl.leftSidebar
 import com.mapbox.dash.sdk.config.dsl.mapStyle
 import com.mapbox.dash.sdk.config.dsl.rightSidebar
+import com.mapbox.dash.sdk.config.dsl.searchPanel
 import com.mapbox.dash.sdk.config.dsl.theme
 import com.mapbox.dash.sdk.config.dsl.ui
 import com.mapbox.dash.sdk.config.dsl.uiSettings
@@ -90,6 +92,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import com.mapbox.dash.sdk.config.api.SearchPanelPosition as RawSearchPanelPosition
 
 class MainActivity : DrawerActivity() {
 
@@ -189,7 +192,7 @@ class MainActivity : DrawerActivity() {
     private val rightSidebarMode = MutableStateFlow(SidebarMode.Transparent.name)
     private val overrideSidebarControls = MutableStateFlow(value = false)
     private val searchPanelPosition = MutableStateFlow(SearchPanelPosition.BottomLeft.name)
-    private val overrideSearchPanelButtons = MutableStateFlow(value = false)
+    private val setCustomSearchPanel = MutableStateFlow(value = false)
     private val setCustomMarkerFactory = MutableStateFlow(value = false)
     private val setCustomPlacesListComposer = MutableStateFlow(value = false)
     private val setCustomDestinationPreviewComposer = MutableStateFlow(value = false)
@@ -527,14 +530,33 @@ class MainActivity : DrawerActivity() {
             menuBinding.spinnerSearchPanelPosition,
             searchPanelPosition,
         ) { name ->
-            // TBD
+            val position = SearchPanelPosition.valueOf(name)
+            Dash.applyUpdate {
+                ui {
+                    searchPanel {
+                        this.position = when (position) {
+                            SearchPanelPosition.TopLeft -> RawSearchPanelPosition.TOP_LEFT
+                            SearchPanelPosition.BottomLeft -> RawSearchPanelPosition.BOTTOM_LEFT
+                        }
+                    }
+                }
+            }
         }
 
         bindSwitch(
-            switch = menuBinding.toggleSearchPanelButtons,
-            state = overrideSearchPanelButtons,
+            switch = menuBinding.toggleCustomSearchPanel,
+            state = setCustomSearchPanel,
         ) { enabled ->
-            // TBD
+            val fragment = getDashNavigationFragment() ?: return@bindSwitch
+            if (enabled) {
+                fragment.setSearchPanel { modifier, searchPanelState ->
+                    SampleSearchPanel(modifier = modifier, state = searchPanelState)
+                }
+            } else {
+                fragment.setSearchPanel { modifier, searchPanelState ->
+                    DefaultSearchPanelView(modifier = modifier, state = searchPanelState)
+                }
+            }
         }
 
         bindSwitch(
@@ -895,7 +917,7 @@ class MainActivity : DrawerActivity() {
     }
 
     private enum class SearchPanelPosition {
-        BottomLeft, TopLeft, Nowhere,
+        BottomLeft, TopLeft,
     }
 
     private companion object {
