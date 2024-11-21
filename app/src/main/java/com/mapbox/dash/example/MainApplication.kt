@@ -6,6 +6,7 @@ import com.mapbox.common.location.Location
 import com.mapbox.dash.cluster.dayStyleUri
 import com.mapbox.dash.cluster.map3DStyleUri
 import com.mapbox.dash.cluster.nightStyleUri
+import com.mapbox.dash.driver.notification.presentation.DashIncidentType
 import com.mapbox.dash.ev.api.EvDataProvider
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.base.device.DashDeviceType
@@ -23,10 +24,12 @@ import com.mapbox.dash.sdk.config.dsl.debugSettings
 import com.mapbox.dash.sdk.config.dsl.destinationPreview
 import com.mapbox.dash.sdk.config.dsl.driverNotification
 import com.mapbox.dash.sdk.config.dsl.fasterRouteNotification
+import com.mapbox.dash.sdk.config.dsl.incidentNotification
 import com.mapbox.dash.sdk.config.dsl.locationSimulation
 import com.mapbox.dash.sdk.config.dsl.mapGpt
 import com.mapbox.dash.sdk.config.dsl.mapStyle
 import com.mapbox.dash.sdk.config.dsl.offline
+import com.mapbox.dash.sdk.config.dsl.roadCameraNotification
 import com.mapbox.dash.sdk.config.dsl.routeOptions
 import com.mapbox.dash.sdk.config.dsl.search
 import com.mapbox.dash.sdk.config.dsl.slowTrafficNotification
@@ -115,8 +118,30 @@ class MainApplication : Application() {
                 slowTrafficNotification {
                     minSlowTrafficDelay = 10.seconds
                 }
+                roadCameraNotification {
+                    distanceToCamera = 500.0
+                    withSound = true
+                }
+                incidentNotification {
+                    distanceToIncident = 600.0
+                    timeToDismiss = 15.seconds
+                    enabledIncidentTypes = setOf(
+                        DashIncidentType.ACCIDENT,
+                        DashIncidentType.CONSTRUCTION,
+                        DashIncidentType.DISABLED_VEHICLE,
+                        DashIncidentType.LANE_RESTRICTION,
+                        DashIncidentType.MASS_TRANSIT,
+                        DashIncidentType.MISCELLANEOUS,
+                        DashIncidentType.OTHER_NEWS,
+                        DashIncidentType.PLANNED_EVENT,
+                        DashIncidentType.ROAD_CLOSURE,
+                        DashIncidentType.ROAD_HAZARD,
+                        DashIncidentType.WEATHER,
+                        DashIncidentType.UNKNOWN,
+                    )
+                    withSound = true
+                }
             }
-
             cluster {
                 enabled = true
                 dayStyleUri = DEFAULT_DAY_STYLE
