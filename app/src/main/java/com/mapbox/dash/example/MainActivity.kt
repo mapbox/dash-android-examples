@@ -42,6 +42,7 @@ import com.google.android.material.slider.Slider
 import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultDestinationPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultRoutesOverview
+import com.mapbox.dash.destination.preview.presentation.compose.DefaultOfflineRouteAlert
 import com.mapbox.dash.driver.notification.presentation.DefaultDriverNotificationView
 import com.mapbox.dash.driver.presentation.edittrip.DefaultEditTripCard
 import com.mapbox.dash.driver.presentation.search.DefaultSearchPanelView
@@ -53,8 +54,10 @@ import com.mapbox.dash.example.ui.SampleDriverNotificationView
 import com.mapbox.dash.example.ui.SampleEditFavoriteScreen
 import com.mapbox.dash.example.ui.SampleFavoritesScreen
 import com.mapbox.dash.example.ui.SampleFullScreenSearch
+import com.mapbox.dash.example.ui.SampleOfflineRouteAlert
 import com.mapbox.dash.example.ui.SamplePlacesView
 import com.mapbox.dash.example.ui.SampleRoutesOverview
+import com.mapbox.dash.example.ui.SampleSearchPanel
 import com.mapbox.dash.example.ui.SampleTripSummaryView
 import com.mapbox.dash.fullscreen.search.DefaultFullScreenSearch
 import com.mapbox.dash.fullscreen.search.favorites.DefaultFavoritesScreen
@@ -202,6 +205,7 @@ class MainActivity : DrawerActivity() {
     private val setCustomTripSummaryComposer = MutableStateFlow(value = false)
     private val setCustomEditTripComposer = MutableStateFlow(value = false)
     private val setCustomSearchScreen = MutableStateFlow(value = false)
+    private val setCustomOfflineRouteAlert = MutableStateFlow(value = false)
     private val showTripProgress = MutableStateFlow(value = true)
     private val simpleCardHeader = MutableStateFlow(value = false)
     private val setCustomVoicePlayer = MutableStateFlow(value = false)
@@ -703,6 +707,19 @@ class MainActivity : DrawerActivity() {
                     fragment.setEditFavoriteScreen { modifier, editFavoriteScreenState ->
                         DefaultEditFavoriteScreen(modifier = modifier, state = editFavoriteScreenState)
                     }
+                }
+            }
+        }
+
+        bindSwitch(menuBinding.toggleCustomOfflineAlert, setCustomOfflineRouteAlert) { enabled ->
+            val fragment = getDashNavigationFragment() ?: return@bindSwitch
+            if (enabled) {
+                fragment.setOfflineRouteAlert { modifier, offlineRouteAlertState ->
+                    SampleOfflineRouteAlert(modifier = modifier, state = offlineRouteAlertState)
+                }
+            } else {
+                fragment.setOfflineRouteAlert { modifier, offlineRouteAlertState ->
+                    DefaultOfflineRouteAlert(modifier = modifier, state = offlineRouteAlertState)
                 }
             }
         }

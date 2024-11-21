@@ -1,4 +1,4 @@
-package com.mapbox.dash.example
+package com.mapbox.dash.example.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.mapbox.dash.driver.presentation.search.SearchPanelState
+import com.mapbox.dash.example.R
 import com.mapbox.dash.sdk.Dash
 
 @Composable
