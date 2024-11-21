@@ -17,6 +17,7 @@ import com.mapbox.dash.sdk.config.dsl.DEFAULT_3D_STYLE
 import com.mapbox.dash.sdk.config.dsl.DEFAULT_DAY_STYLE
 import com.mapbox.dash.sdk.config.dsl.DEFAULT_NIGHT_STYLE
 import com.mapbox.dash.sdk.config.dsl.borderCrossingNotification
+import com.mapbox.dash.sdk.config.dsl.camera
 import com.mapbox.dash.sdk.config.dsl.cluster
 import com.mapbox.dash.sdk.config.dsl.debugSettings
 import com.mapbox.dash.sdk.config.dsl.destinationPreview
@@ -33,6 +34,7 @@ import com.mapbox.dash.sdk.config.dsl.speedLimitsOptions
 import com.mapbox.dash.sdk.config.dsl.theme
 import com.mapbox.dash.sdk.config.dsl.ui
 import com.mapbox.dash.sdk.config.dsl.uiSettings
+import com.mapbox.dash.state.defaults.camera.SimpleDefaults
 import com.mapbox.maps.MapboxExperimental
 import kotlinx.coroutines.flow.flowOf
 import kotlin.time.Duration.Companion.minutes
@@ -92,8 +94,11 @@ class MainApplication : Application() {
             }
             ui {
                 screenDirectionality = ScreenDirectionality.LEFT_TO_RIGHT
+                freeDriveCamera3DModeEnabled = true
             }
-
+            camera {
+                freeDrive3DMode = SimpleDefaults(zoom = 16.5, pitch = 30.0)
+            }
             destinationPreview {
                 skipDestinationPreview = false
             }
