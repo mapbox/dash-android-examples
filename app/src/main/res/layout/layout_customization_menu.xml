@@ -426,10 +426,10 @@
         </LinearLayout>
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/toggleSearchPanelButtons"
+            android:id="@+id/toggleCustomSearchPanel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Override search panel buttons"
+            android:text="Set custom search panel"
             android:textAllCaps="true"
             />
 
