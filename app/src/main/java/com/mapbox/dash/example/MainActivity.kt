@@ -1,5 +1,6 @@
 package com.mapbox.dash.example
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -93,6 +94,7 @@ import com.mapbox.maps.MapboxExperimental
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -813,9 +815,16 @@ class MainActivity : DrawerActivity() {
             .show()
     }
 
+    @SuppressLint("RestrictedApi")
     private fun registerEventsObservers() {
         Dash.controller.observeMapEvents().observeWhenStarted(this) { event ->
             Log.d(TAG, ">> DashMapEvent | event = $event")
+            lifecycleScope.launch {
+                val controller = getDashNavigationFragment()?.mapControllerFlow?.firstOrNull()
+                controller?.mapView.let { mapView ->
+                    mapView?.setMaximumFps(15)
+                }
+            }
         }
         Dash.controller.observeMapGptEvents().observeWhenStarted(this) { event ->
             Log.d(TAG, ">> DashMapGptEvent | event = $event")
