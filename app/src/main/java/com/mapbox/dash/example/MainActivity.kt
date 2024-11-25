@@ -47,10 +47,12 @@ import com.mapbox.dash.driver.notification.presentation.DefaultDriverNotificatio
 import com.mapbox.dash.driver.presentation.DefaultArrivalFeedbackView
 import com.mapbox.dash.driver.presentation.edittrip.DefaultEditTripCard
 import com.mapbox.dash.driver.presentation.search.DefaultSearchPanelView
+import com.mapbox.dash.driver.presentation.waypoint.DefaultContinueNavigationView
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
 import com.mapbox.dash.example.relaxedmode.RelaxedModeActivity
 import com.mapbox.dash.example.ui.SampleArrivalFeedback
+import com.mapbox.dash.example.ui.SampleContinueNavigation
 import com.mapbox.dash.example.ui.SampleDestinationPreview
 import com.mapbox.dash.example.ui.SampleDriverNotificationView
 import com.mapbox.dash.example.ui.SampleEditFavoriteScreen
@@ -200,6 +202,7 @@ class MainActivity : DrawerActivity() {
     private val overrideSidebarControls = MutableStateFlow(value = false)
     private val searchPanelPosition = MutableStateFlow(SearchPanelPosition.BottomLeft.name)
     private val setCustomArrivalFeedbackComposer = MutableStateFlow(value = false)
+    private val setCustomContinueNavigationComposer = MutableStateFlow(value = false)
     private val setCustomSearchPanel = MutableStateFlow(value = false)
     private val setCustomMarkerFactory = MutableStateFlow(value = false)
     private val setCustomPlacesListComposer = MutableStateFlow(value = false)
@@ -574,6 +577,23 @@ class MainActivity : DrawerActivity() {
                 } else {
                     fragment.setArrivalFeedback { modifier, state ->
                         DefaultArrivalFeedbackView(modifier, state)
+                    }
+                }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleCustomContinueComposer,
+            state = setCustomContinueNavigationComposer,
+        ) { enabled ->
+            getDashNavigationFragment()?.let { fragment ->
+                if (enabled) {
+                    fragment.setContinueNavigation { modifier, state ->
+                        SampleContinueNavigation(modifier, state)
+                    }
+                } else {
+                    fragment.setContinueNavigation { modifier, state ->
+                        DefaultContinueNavigationView(modifier, state)
                     }
                 }
             }
