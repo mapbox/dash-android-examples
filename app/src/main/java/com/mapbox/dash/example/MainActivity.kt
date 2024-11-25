@@ -619,23 +619,6 @@ class MainActivity : DrawerActivity() {
         }
 
         bindSwitch(
-            switch = menuBinding.toggleCustomDestinationPreview,
-            state = setCustomDestinationPreviewComposer,
-        ) { enabled ->
-            getDashNavigationFragment()?.let { fragment ->
-                if (enabled) {
-                    fragment.setDestinationPreview { modifier, state ->
-                        SampleDestinationPreview(modifier, state)
-                    }
-                } else {
-                    fragment.setDestinationPreview { modifier, _ ->
-                        DefaultDestinationPreview(modifier)
-                    }
-                }
-            }
-        }
-
-        bindSwitch(
             switch = menuBinding.toggleCustomSearchPanel,
             state = setCustomSearchPanel,
         ) { enabled ->
