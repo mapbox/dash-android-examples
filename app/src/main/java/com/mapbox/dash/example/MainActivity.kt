@@ -44,11 +44,13 @@ import com.mapbox.dash.destination.preview.presentation.DefaultDestinationPrevie
 import com.mapbox.dash.destination.preview.presentation.DefaultRoutesOverview
 import com.mapbox.dash.destination.preview.presentation.compose.DefaultOfflineRouteAlert
 import com.mapbox.dash.driver.notification.presentation.DefaultDriverNotificationView
+import com.mapbox.dash.driver.presentation.DefaultArrivalFeedbackView
 import com.mapbox.dash.driver.presentation.edittrip.DefaultEditTripCard
 import com.mapbox.dash.driver.presentation.search.DefaultSearchPanelView
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
 import com.mapbox.dash.example.relaxedmode.RelaxedModeActivity
+import com.mapbox.dash.example.ui.SampleArrivalFeedback
 import com.mapbox.dash.example.ui.SampleDestinationPreview
 import com.mapbox.dash.example.ui.SampleDriverNotificationView
 import com.mapbox.dash.example.ui.SampleEditFavoriteScreen
@@ -197,6 +199,7 @@ class MainActivity : DrawerActivity() {
     private val rightSidebarMode = MutableStateFlow(SidebarMode.Transparent.name)
     private val overrideSidebarControls = MutableStateFlow(value = false)
     private val searchPanelPosition = MutableStateFlow(SearchPanelPosition.BottomLeft.name)
+    private val setCustomArrivalFeedbackComposer = MutableStateFlow(value = false)
     private val setCustomSearchPanel = MutableStateFlow(value = false)
     private val setCustomMarkerFactory = MutableStateFlow(value = false)
     private val setCustomPlacesListComposer = MutableStateFlow(value = false)
@@ -554,6 +557,40 @@ class MainActivity : DrawerActivity() {
                             SearchPanelPosition.TopLeft -> RawSearchPanelPosition.TOP_LEFT
                             SearchPanelPosition.BottomLeft -> RawSearchPanelPosition.BOTTOM_LEFT
                         }
+                    }
+                }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleCustomArrivalFeedbackComposer,
+            state = setCustomArrivalFeedbackComposer,
+        ) { enabled ->
+            getDashNavigationFragment()?.let { fragment ->
+                if (enabled) {
+                    fragment.setArrivalFeedback { modifier, state ->
+                        SampleArrivalFeedback(modifier, state)
+                    }
+                } else {
+                    fragment.setArrivalFeedback { modifier, state ->
+                        DefaultArrivalFeedbackView(modifier, state)
+                    }
+                }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleCustomDestinationPreview,
+            state = setCustomDestinationPreviewComposer,
+        ) { enabled ->
+            getDashNavigationFragment()?.let { fragment ->
+                if (enabled) {
+                    fragment.setDestinationPreview { modifier, state ->
+                        SampleDestinationPreview(modifier, state)
+                    }
+                } else {
+                    fragment.setDestinationPreview { modifier, _ ->
+                        DefaultDestinationPreview(modifier)
                     }
                 }
             }

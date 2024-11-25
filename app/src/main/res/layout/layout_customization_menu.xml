@@ -539,6 +539,14 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomArrivalFeedbackComposer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom arrival feedback"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/toggleCustomDriverNotification"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
