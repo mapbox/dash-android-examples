@@ -44,16 +44,21 @@ import com.mapbox.dash.destination.preview.presentation.DefaultDestinationPrevie
 import com.mapbox.dash.destination.preview.presentation.DefaultRoutesOverview
 import com.mapbox.dash.destination.preview.presentation.compose.DefaultOfflineRouteAlert
 import com.mapbox.dash.driver.notification.presentation.DefaultDriverNotificationView
+import com.mapbox.dash.driver.presentation.DefaultArrivalFeedbackView
 import com.mapbox.dash.driver.presentation.edittrip.DefaultEditTripCard
 import com.mapbox.dash.driver.presentation.search.DefaultSearchPanelView
+import com.mapbox.dash.driver.presentation.waypoint.DefaultContinueNavigationView
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
 import com.mapbox.dash.example.relaxedmode.RelaxedModeActivity
+import com.mapbox.dash.example.ui.SampleArrivalFeedback
+import com.mapbox.dash.example.ui.SampleContinueNavigation
 import com.mapbox.dash.example.ui.SampleDestinationPreview
 import com.mapbox.dash.example.ui.SampleDriverNotificationView
 import com.mapbox.dash.example.ui.SampleEditFavoriteScreen
 import com.mapbox.dash.example.ui.SampleFavoritesScreen
 import com.mapbox.dash.example.ui.SampleFullScreenSearch
+import com.mapbox.dash.example.ui.SampleGuidanceBanner
 import com.mapbox.dash.example.ui.SampleOfflineRouteAlert
 import com.mapbox.dash.example.ui.SamplePlacesView
 import com.mapbox.dash.example.ui.SampleRoutesOverview
@@ -63,6 +68,7 @@ import com.mapbox.dash.fullscreen.search.DefaultFullScreenSearch
 import com.mapbox.dash.fullscreen.search.favorites.DefaultFavoritesScreen
 import com.mapbox.dash.fullscreen.search.favorites.presenation.DefaultEditFavoriteScreen
 import com.mapbox.dash.logging.LogsExtra
+import com.mapbox.dash.maneuver.presentation.ui.DefaultManeuverView
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.DashNavigationFragment
 import com.mapbox.dash.sdk.config.api.DashSidebarControl
@@ -107,7 +113,6 @@ class MainActivity : DrawerActivity() {
     private val themeVM: ThemeViewModel by viewModels()
     private val mapStyleVM: MapStyleViewModel by viewModels()
     private val weatherVM: WeatherViewModel by viewModels()
-
 
     private val headlessMode = MutableStateFlow(false)
 
@@ -197,6 +202,9 @@ class MainActivity : DrawerActivity() {
     private val rightSidebarMode = MutableStateFlow(SidebarMode.Transparent.name)
     private val overrideSidebarControls = MutableStateFlow(value = false)
     private val searchPanelPosition = MutableStateFlow(SearchPanelPosition.BottomLeft.name)
+    private val setCustomArrivalFeedbackComposer = MutableStateFlow(value = false)
+    private val setCustomContinueNavigationComposer = MutableStateFlow(value = false)
+    private val setCustomGuidanceComposer = MutableStateFlow(value = false)
     private val setCustomSearchPanel = MutableStateFlow(value = false)
     private val setCustomMarkerFactory = MutableStateFlow(value = false)
     private val setCustomPlacesListComposer = MutableStateFlow(value = false)
@@ -560,6 +568,57 @@ class MainActivity : DrawerActivity() {
         }
 
         bindSwitch(
+            switch = menuBinding.toggleCustomArrivalFeedbackComposer,
+            state = setCustomArrivalFeedbackComposer,
+        ) { enabled ->
+            getDashNavigationFragment()?.let { fragment ->
+                if (enabled) {
+                    fragment.setArrivalFeedback { modifier, state ->
+                        SampleArrivalFeedback(modifier, state)
+                    }
+                } else {
+                    fragment.setArrivalFeedback { modifier, state ->
+                        DefaultArrivalFeedbackView(modifier, state)
+                    }
+                }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleCustomContinueComposer,
+            state = setCustomContinueNavigationComposer,
+        ) { enabled ->
+            getDashNavigationFragment()?.let { fragment ->
+                if (enabled) {
+                    fragment.setContinueNavigation { modifier, state ->
+                        SampleContinueNavigation(modifier, state)
+                    }
+                } else {
+                    fragment.setContinueNavigation { modifier, state ->
+                        DefaultContinueNavigationView(modifier, state)
+                    }
+                }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleCustomGuidanceComposer,
+            state = setCustomGuidanceComposer,
+        ) { enabled ->
+            getDashNavigationFragment()?.let { fragment ->
+                if (enabled) {
+                    fragment.setManeuver { modifier, state ->
+                        SampleGuidanceBanner(modifier, state)
+                    }
+                } else {
+                    fragment.setManeuver { modifier, state ->
+                        DefaultManeuverView(modifier, state)
+                    }
+                }
+            }
+        }
+
+        bindSwitch(
             switch = menuBinding.toggleCustomSearchPanel,
             state = setCustomSearchPanel,
         ) { enabled ->
@@ -878,10 +937,12 @@ class MainActivity : DrawerActivity() {
             println(">> Search results. Items count = ${results.size}")
             fun List<DashSearchResult>.logEtaAndDistance() {
                 forEachIndexed { index, result ->
-                    println(">> Search result [$index]: " +
+                    println(
+                        ">> Search result [$index]: " +
                             "name = ${result.name}, " +
                             "eta = ${result.etaMinutes}, " +
-                            "distance = ${result.distanceMeters}")
+                            "distance = ${result.distanceMeters}"
+                    )
                 }
             }
             results.logEtaAndDistance()
