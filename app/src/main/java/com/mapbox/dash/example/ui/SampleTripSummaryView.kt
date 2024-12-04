@@ -28,7 +28,6 @@ import com.mapbox.dash.destination.preview.domain.model.TripOverviewItem
 import com.mapbox.dash.driver.R
 import com.mapbox.dash.driver.presentation.end.TripSummaryUiState
 import com.mapbox.dash.example.WeatherViewModel
-import com.mapbox.dash.models.RemainingArrivalMetricType
 import com.mapbox.dash.models.TripSummaryModel
 import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.theming.compose.AppTheme
@@ -130,10 +129,12 @@ private fun RowScope.SampleTripSummaryActionButton(
 internal fun Preview_SampleTripSummaryView() {
     val model = TripSummaryModel(
         traveledToRemainingRatio = 0.2f,
+        distanceRemaining = "2.1 mi",
+        timeRemaining = "10 min",
+        arrivalTime = "12:18 pm",
         legDistanceRemaining = "2.1 mi",
         legTimeRemaining = "10 min",
         legArrivalTime = "12:18 pm",
-        preferredRemainingArrivalMetricType = RemainingArrivalMetricType.Distance,
         isOffline = false,
         legStateOfCharge = 84,
         trafficGradientStops = listOf(
@@ -165,7 +166,7 @@ internal fun Preview_SampleTripSummaryView() {
                             override val type = SearchResultType.POI.toString()
                         },
                         etaMinutes = 10.0,
-                        arrivalStateOfCharge = 54,
+                        arrivalStateOfCharge = 54f,
                     ),
                 ),
             ),

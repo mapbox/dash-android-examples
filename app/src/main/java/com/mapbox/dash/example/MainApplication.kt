@@ -64,7 +64,7 @@ class MainApplication : Application() {
                 isSettingsMenuEnabled = true
             }
             mapStyle {
-                pixelRatio = applicationContext.resources.displayMetrics.density
+                pixelRatioMultiplier = 1F
             }
             locationSimulation {
                 // Example of a debug option that teleports the user to a specific location at each app launch.

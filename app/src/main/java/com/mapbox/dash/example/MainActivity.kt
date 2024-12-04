@@ -46,6 +46,7 @@ import com.mapbox.dash.destination.preview.presentation.compose.DefaultOfflineRo
 import com.mapbox.dash.driver.notification.presentation.DefaultDriverNotificationView
 import com.mapbox.dash.driver.presentation.DefaultArrivalFeedbackView
 import com.mapbox.dash.driver.presentation.edittrip.DefaultEditTripCard
+import com.mapbox.dash.driver.presentation.end.DefaultTripSummary
 import com.mapbox.dash.driver.presentation.search.DefaultSearchPanelView
 import com.mapbox.dash.driver.presentation.waypoint.DefaultContinueNavigationView
 import com.mapbox.dash.example.databinding.ActivityMainBinding
@@ -327,22 +328,6 @@ class MainActivity : DrawerActivity() {
                 Dash.applyUpdate {
                     ui {
                         mapStyleTheme = theme
-                    }
-                }
-            },
-        )
-
-        val mapStyleLightingNames = mapStyleVM.mapStyleLightingNames
-        val lightingAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, mapStyleLightingNames)
-        lightingAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        menuBinding.mapStyleLighting.adapter = lightingAdapter
-        bindSpinner(
-            spinner = menuBinding.mapStyleLighting,
-            state = mapStyleVM.mapStyleLighting,
-            onSelected = { lighting ->
-                Dash.applyUpdate {
-                    ui {
-                        mapStyleLighting = lighting
                     }
                 }
             },
@@ -723,7 +708,9 @@ class MainActivity : DrawerActivity() {
                         SampleTripSummaryView(modifier, tripSummaryUiState, weatherVM)
                     }
                 } else {
-                    fragment.setTripSummary(null)
+                    fragment.setTripSummary { modifier, tripSummaryUiState ->  
+                        DefaultTripSummary(modifier, tripSummaryUiState)
+                    }
                 }
             }
         }
