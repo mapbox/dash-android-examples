@@ -103,7 +103,7 @@ private fun TripOverviewItem(
     color: Color = AppTheme.colors.textColor.primary,
     formatter: ArrivalInformationFormatter = StubDistanceAndTimeFormatter,
     etaMinutes: Double? = null,
-    stateOfCharge: Int? = null,
+    stateOfCharge: Float? = null,
     chargeData: ChargeData? = null,
     onClick: (() -> Unit)? = null,
     weatherForecast: List<WeatherForecastItem>? = null,
@@ -175,8 +175,8 @@ private fun TripOverviewItem(
 private fun SampleTripOverviewArrivalInformation(
     formatter: ArrivalInformationFormatter,
     etaMinutes: Double?,
-    chargeFromPercent: Int?,
-    chargeToPercent: Int?,
+    chargeFromPercent: Float?,
+    chargeToPercent: Float?,
     weatherForecast: List<WeatherForecastItem>? = null,
 ) {
     if (etaMinutes != null || chargeFromPercent != null) {
@@ -200,7 +200,7 @@ private fun SampleTripOverviewArrivalInformation(
             if (chargeFromPercent != null) {
                 Image(
                     modifier = Modifier.size(dimensionResource(id = R.dimen.trip_overview_battery_icon_size)),
-                    painter = painterResource(id = chargeFromPercent.getStateOfChargeIcon()),
+                    painter = painterResource(id = chargeFromPercent.toInt().getStateOfChargeIcon()),
                     contentDescription = null,
                 )
                 if (chargeFromPercent >= 0) {

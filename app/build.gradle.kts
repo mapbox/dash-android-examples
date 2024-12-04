@@ -83,8 +83,8 @@ android {
 }
 
 dependencies {
-    implementation("com.mapbox.navigationux:android:1.0.0-beta.41.1")
-    implementation("com.mapbox.navigationux:cluster:1.0.0-beta.41.1")
+    implementation("com.mapbox.navigationux:android:1.0.0-beta.42")
+    implementation("com.mapbox.navigationux:cluster:1.0.0-beta.42")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
