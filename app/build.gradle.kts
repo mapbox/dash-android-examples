@@ -84,7 +84,7 @@ android {
 
 dependencies {
     implementation("com.mapbox.navigationux:android:1.0.0-beta.41.1")
-    implementation("com.mapbox.maps:android-core-internal:11.8.0-SNAPSHOT.1203T1343Z.c0c9369")
+    implementation("com.mapbox.maps:android-core-internal:11.8.0-SNAPSHOT.1204T0810Z.4ce527f")
     modules {
         module("com.mapbox.maps:android-core") {
             replacedBy("com.mapbox.maps:android-core-internal")
