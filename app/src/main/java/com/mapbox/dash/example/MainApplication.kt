@@ -23,6 +23,7 @@ import com.mapbox.dash.sdk.config.dsl.cluster
 import com.mapbox.dash.sdk.config.dsl.debugSettings
 import com.mapbox.dash.sdk.config.dsl.destinationPreview
 import com.mapbox.dash.sdk.config.dsl.driverNotification
+import com.mapbox.dash.sdk.config.dsl.ev
 import com.mapbox.dash.sdk.config.dsl.fasterRouteNotification
 import com.mapbox.dash.sdk.config.dsl.incidentNotification
 import com.mapbox.dash.sdk.config.dsl.locationSimulation
@@ -94,6 +95,8 @@ class MainApplication : Application() {
             debugSettings {
                 showSendDebugInfoButton = true
                 showDisplaySendDebugInfoButtonOption = true
+                showElectricOptionsItem = true
+                showSimulateLocationOption = true
             }
             ui {
                 screenDirectionality = ScreenDirectionality.LEFT_TO_RIGHT
@@ -101,10 +104,14 @@ class MainApplication : Application() {
             }
             camera {
                 freeDrive3DMode = SimpleDefaults(zoom = 16.5, pitch = 30.0)
-                lookAheadMeters = 0.0
+                activeGuidanceDefaults = SimpleDefaults(zoom = 16.5, pitch = 45.0)
+                lookAheadMeters = 10.0
             }
             destinationPreview {
                 skipDestinationPreview = false
+            }
+            ev {
+                autoAddChargingStationOnRoutePlanning = true
             }
 
             // Setup small thresholds to be able to reproduce driver notifications easily
@@ -151,9 +158,10 @@ class MainApplication : Application() {
             }
 
             engineType = EngineType.ELECTRIC
-            device = DashDeviceType.Automobile
+            device = DashDeviceType.Handheld
 
-            customValues[CustomKeys.ENABLE_QUICK_SEARCH_SUGGESTIONS_IN_ACTIVE_GUIDANCE] = false
+            customValues[CustomKeys.ENABLE_QUICK_SEARCH_SUGGESTIONS_IN_ACTIVE_GUIDANCE] = true
+            customValues[CustomKeys.HISTORY_RECORDING_ENABLED] = true
         }
 
         configureEvProvider()
