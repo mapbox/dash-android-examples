@@ -942,6 +942,9 @@ class MainActivity : DrawerActivity() {
                 println(">> Search suggestion | $it")
             }
         }
+        Dash.controller.observeDebugBundleReady().observeWhenStarted(this) { file ->
+            println(">> Debug bundle ${file.absolutePath} is ready")
+        }
     }
 
     internal enum class CustomDashTheme(
