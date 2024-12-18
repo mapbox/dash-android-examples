@@ -30,14 +30,16 @@ import com.mapbox.dash.example.toIcon
 import com.mapbox.dash.models.ArrivalInformationFormatter
 import com.mapbox.dash.models.ChargeData
 import com.mapbox.dash.sdk.search.api.DashSearchResult
-import com.mapbox.dash.sdk.weather.api.model.WeatherForecastItem
-import com.mapbox.dash.sdk.weather.api.model.WeatherSystemOfMeasurement
 import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.geojson.Point
+import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
+import com.mapbox.navigation.weather.model.WeatherForecastItem
+import com.mapbox.navigation.weather.model.WeatherSystemOfMeasurement
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 
+@OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
 @Suppress("LongParameterList")
 @Composable
 internal fun SampleTripOverviewItems(
@@ -95,6 +97,7 @@ internal fun SampleTripOverviewItems(
     }
 }
 
+@OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
 @Suppress("LongParameterList", "LongMethod")
 @Composable
 private fun TripOverviewItem(
@@ -171,6 +174,7 @@ private fun TripOverviewItem(
     }
 }
 
+@OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
 @Composable
 private fun SampleTripOverviewArrivalInformation(
     formatter: ArrivalInformationFormatter,

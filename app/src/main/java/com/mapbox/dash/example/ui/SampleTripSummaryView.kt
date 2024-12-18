@@ -22,19 +22,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mapbox.dash.destination.preview.domain.model.TripOverviewItem
 import com.mapbox.dash.driver.R
 import com.mapbox.dash.driver.presentation.end.TripSummaryUiState
 import com.mapbox.dash.example.WeatherViewModel
-import com.mapbox.dash.models.TripSummaryModel
-import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.theming.compose.AppTheme
-import com.mapbox.dash.theming.compose.PreviewDashTheme
-import com.mapbox.geojson.Point
-import com.mapbox.search.result.SearchResultType
+import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 
+@OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
 @Composable
 fun SampleTripSummaryView(
     modifier: Modifier = Modifier,
@@ -71,7 +66,7 @@ fun SampleTripSummaryView(
             remainingTime = model.legTimeRemaining,
             isOffline = model.isOffline,
             stateOfCharge = model.legStateOfCharge,
-            traveledToRemainingRatio = model.traveledToRemainingRatio,
+            fractionTraveled = model.fractionTraveled,
             trafficGradientStops = model.trafficGradientStops.toTypedArray(),
             waypointsData = model.waypointsData,
         )
@@ -123,54 +118,3 @@ private fun RowScope.SampleTripSummaryActionButton(
         )
 }
 
-@Composable
-@SuppressWarnings("MagicNumber")
-@Preview
-internal fun Preview_SampleTripSummaryView() {
-    val model = TripSummaryModel(
-        traveledToRemainingRatio = 0.2f,
-        distanceRemaining = "2.1 mi",
-        timeRemaining = "10 min",
-        arrivalTime = "12:18 pm",
-        legDistanceRemaining = "2.1 mi",
-        legTimeRemaining = "10 min",
-        legArrivalTime = "12:18 pm",
-        isOffline = false,
-        legStateOfCharge = 84,
-        trafficGradientStops = listOf(
-            (0.150f to Color.Yellow),
-            (0.450f to Color.Blue),
-            (0.650f to Color.Green),
-        ),
-    )
-
-    PreviewDashTheme {
-        SampleTripSummaryView(
-            tripSummaryUiState = TripSummaryUiState(
-                tripSummaryModel = model,
-                tripOverviewItems = listOf(
-                    TripOverviewItem.Destination(
-                        searchResult = object : DashSearchResult {
-                            override val address = null
-                            override val coordinate = Point.fromLngLat(1.0, 2.0)
-                            override val customName: String? = null
-                            override val id = "id-1"
-                            override val mapboxId = "mapbox-id-1"
-                            override val name = "Mapbox DC Office"
-                            override val categories = emptyList<String>()
-                            override val description = "description"
-                            override val distanceMeters = 0.0
-                            override val etaMinutes = 1.0
-                            override val pinCoordinate = Point.fromLngLat(1.0, 2.0)
-                            override val metadata = null
-                            override val type = SearchResultType.POI.toString()
-                        },
-                        etaMinutes = 10.0,
-                        arrivalStateOfCharge = 54f,
-                    ),
-                ),
-            ),
-            weatherViewModel = WeatherViewModel(),
-        )
-    }
-}

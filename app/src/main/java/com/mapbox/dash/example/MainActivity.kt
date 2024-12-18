@@ -92,13 +92,14 @@ import com.mapbox.dash.sdk.search.api.DashFavoriteType
 import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.sdk.search.api.DashSearchResultType
 import com.mapbox.dash.sdk.storage.ExternalProfile
-import com.mapbox.dash.sdk.weather.api.model.WeatherAlert
-import com.mapbox.dash.sdk.weather.api.model.WeatherCondition
-import com.mapbox.dash.sdk.weather.api.model.WeatherSystemOfMeasurement
 import com.mapbox.dash.showcase.app.ui.custom.edittrip.SampleEditTrip
 import com.mapbox.dash.state.defaults.camera.SimpleDefaults
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
+import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
+import com.mapbox.navigation.weather.model.WeatherAlert
+import com.mapbox.navigation.weather.model.WeatherCondition
+import com.mapbox.navigation.weather.model.WeatherSystemOfMeasurement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -423,6 +424,7 @@ class MainActivity : DrawerActivity() {
         }
     }
 
+    @OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
     private fun dashCoordination() {
         // force a new destination and show a route preview
         bindButton(button = menuBinding.btnSetDestination) {
@@ -1009,6 +1011,7 @@ class MainActivity : DrawerActivity() {
     }
 }
 
+@OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
 @Composable
 private fun WeatherAlertWidget(modifier: Modifier, weatherAlertAtMapCenter: Flow<List<WeatherAlert>>) {
     val alerts = weatherAlertAtMapCenter.collectAsState(null).value?.joinToString("\n") { it.title }
@@ -1029,6 +1032,7 @@ private fun WeatherAlertWidget(modifier: Modifier, weatherAlertAtMapCenter: Flow
     )
 }
 
+@OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
 @Composable
 private fun CurrentWeatherWidget(modifier: Modifier, weatherConditionAtMapCenter: Flow<WeatherCondition>) {
     val conditions = weatherConditionAtMapCenter.collectAsState(null).value ?: return
