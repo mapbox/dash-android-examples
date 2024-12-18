@@ -1,10 +1,13 @@
+@file:OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
+
 package com.mapbox.dash.example
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.mapbox.dash.sdk.Dash
-import com.mapbox.dash.sdk.weather.api.WeatherApi
-import com.mapbox.dash.sdk.weather.api.model.WeatherCondition
+import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
+import com.mapbox.navigation.weather.MapboxWeatherApi
+import com.mapbox.navigation.weather.model.WeatherCondition
 import com.mapbox.turf.TurfMeasurement
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -16,7 +19,7 @@ import kotlin.time.Duration.Companion.seconds
 @OptIn(FlowPreview::class)
 class WeatherViewModel : ViewModel() {
 
-    private val weatherApi: WeatherApi = Dash.weatherApi
+    private val weatherApi = MapboxWeatherApi()
     private val observeCameraCenter = Dash.controller.observeCameraState()
         .debounce(1.seconds)
         .mapNotNull { it.center }

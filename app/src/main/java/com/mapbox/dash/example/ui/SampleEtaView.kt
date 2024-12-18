@@ -1,9 +1,6 @@
 package com.mapbox.dash.example.ui
 
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
@@ -45,7 +41,7 @@ internal fun SampleEtaView(
     remainingTime: String = "10 min",
     isOffline: Boolean = false,
     stateOfCharge: Int? = null,
-    traveledToRemainingRatio: Float = 2.0f,
+    fractionTraveled: Float = 0.6f,
     trafficGradientStops: Array<Pair<Float, Color?>> = arrayOf(
         (0.150f to Color.Yellow),
         (0.450f to Color.Red),
@@ -118,7 +114,7 @@ internal fun SampleEtaView(
 
         SampleTripProgress(
             Modifier.padding(bottom = 8.dp),
-            traveledToRemainingRatio,
+            fractionTraveled,
             trafficGradientStops,
             waypointsData,
         )
@@ -129,7 +125,7 @@ internal fun SampleEtaView(
 @SuppressWarnings("MagicNumber", "LongParameterList", "LongMethod")
 private fun SampleTripProgress(
     modifier: Modifier = Modifier,
-    traveledToRemainingRatio: Float = 2.0f,
+    fractionTraveled: Float = 0.6f,
     trafficGradientStops: Array<Pair<Float, Color?>> = arrayOf(
         (0.150f to Color.Yellow),
         (0.450f to Color.Red),
@@ -186,25 +182,13 @@ private fun SampleTripProgress(
             )
         }
 
-        val animSpec = tween<Float>(
-            durationMillis = 1000,
-            easing = LinearEasing,
-        )
-        val puckBias by animateFloatAsState(
-            targetValue = (traveledToRemainingRatio - 1) / (traveledToRemainingRatio + 1),
-            animationSpec = animSpec, label = "",
-        )
-        ThemeIcon(
+        Image(
             modifier = Modifier
                 .size(15.dp)
                 .wrapContentSize(unbounded = true)
-                .align(
-                    BiasAlignment(
-                        horizontalBias = puckBias,
-                        verticalBias = 0.0f,
-                    ),
-                ),
-            icon = AppTheme.icons.tripProgress.puck,
+                .align(BiasAlignment(horizontalBias = 2 * fractionTraveled - 1, verticalBias = 0.0f)),
+            painter = painterResource(R.drawable.ic_navux_trip_progress_puck),
+            contentDescription = null,
         )
     }
 }
@@ -215,6 +199,7 @@ fun Int.getStateOfChargeTextColor(): Color =
         this < 0 -> {
             AppTheme.colors.textColor.red
         }
+
         else -> {
             AppTheme.colors.textColor.secondary
         }
