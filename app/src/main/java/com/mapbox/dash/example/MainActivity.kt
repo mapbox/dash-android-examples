@@ -57,6 +57,7 @@ import com.mapbox.dash.example.ui.SampleContinueNavigation
 import com.mapbox.dash.example.ui.SampleDestinationPreview
 import com.mapbox.dash.example.ui.SampleDriverNotificationView
 import com.mapbox.dash.example.ui.SampleEditFavoriteScreen
+import com.mapbox.dash.example.ui.SampleEditTrip
 import com.mapbox.dash.example.ui.SampleFavoritesScreen
 import com.mapbox.dash.example.ui.SampleFullScreenSearch
 import com.mapbox.dash.example.ui.SampleGuidanceBanner
@@ -92,7 +93,6 @@ import com.mapbox.dash.sdk.search.api.DashFavoriteType
 import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.sdk.search.api.DashSearchResultType
 import com.mapbox.dash.sdk.storage.ExternalProfile
-import com.mapbox.dash.showcase.app.ui.custom.edittrip.SampleEditTrip
 import com.mapbox.dash.state.defaults.camera.SimpleDefaults
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
@@ -256,7 +256,6 @@ class MainActivity : DrawerActivity() {
             ArrayAdapter(this, android.R.layout.simple_spinner_item, themes).apply {
                 setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             }
-        menuBinding.themeSpinner.setSelection(themes.indexOf(themeVM.dashTheme.value))
         bindSpinner(
             menuBinding.themeSpinner,
             themeVM.dashTheme,

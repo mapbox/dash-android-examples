@@ -21,12 +21,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.mapbox.dash.driver.R
 import com.mapbox.dash.driver.presentation.end.TripSummaryUiState
 import com.mapbox.dash.example.WeatherViewModel
-import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 
 @OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
@@ -46,7 +47,7 @@ fun SampleTripSummaryView(
             .fillMaxHeight()
             .wrapContentHeight(align = Alignment.Bottom)
             .background(
-                color = AppTheme.colors.buttonColors.secondary,
+                color = Color(red = 16, green = 18, blue = 23),
                 shape = RoundedCornerShape(16.dp),
             ),
     ) {
@@ -67,7 +68,7 @@ fun SampleTripSummaryView(
             isOffline = model.isOffline,
             stateOfCharge = model.legStateOfCharge,
             fractionTraveled = model.fractionTraveled,
-            trafficGradientStops = model.trafficGradientStops.toTypedArray(),
+            trafficGradientStops = model.trafficGradientStops,
             waypointsData = model.waypointsData,
         )
 
@@ -85,13 +86,13 @@ fun SampleTripSummaryView(
 
             SampleTripSummaryActionButton(
                 textId = R.string.dash_end_active_guidance_edit_trip,
-                backgroundColor = AppTheme.colors.buttonColors.primary,
+                backgroundColor = Color(red = 0, green = 122, blue = 255),
                 onClick = tripSummaryUiState.onEditTripClick
             )
 
             SampleTripSummaryActionButton(
                 textId = R.string.dash_end_active_guidance_end_route,
-                backgroundColor = AppTheme.colors.buttonColors.red,
+                backgroundColor = Color(red = 255, green = 59, blue = 48),
                 onClick = tripSummaryUiState.onEndActiveGuidanceClick
             )
 
@@ -107,14 +108,17 @@ private fun RowScope.SampleTripSummaryActionButton(
 ) {
     Text(
         text = stringResource(id = textId),
-        color = AppTheme.colors.textColor.inverted,
+        fontSize = 36.sp,
+        lineHeight = 48.sp,
+        fontWeight = FontWeight.Normal,
+        color = Color.White,
         textAlign = TextAlign.Center,
         modifier = Modifier
             .weight(1f)
-            .clip(shape = AppTheme.shapes.actionButtonBackground)
+            .clip(shape = RoundedCornerShape(8.dp))
             .background(backgroundColor)
             .clickable(onClick = onClick)
             .padding(dimensionResource(R.dimen.default_margin)),
-        )
+    )
 }
 
