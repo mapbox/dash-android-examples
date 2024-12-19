@@ -1,4 +1,4 @@
-package com.mapbox.dash.showcase.app.ui.custom.edittrip
+package com.mapbox.dash.example.ui
 
 import android.content.res.Configuration
 import androidx.compose.animation.core.animateDpAsState

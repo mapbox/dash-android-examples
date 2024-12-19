@@ -11,7 +11,6 @@ import com.mapbox.dash.ev.api.EvDataProvider
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.base.device.DashDeviceType
 import com.mapbox.dash.sdk.base.units.Gb
-import com.mapbox.dash.sdk.config.api.CustomKeys
 import com.mapbox.dash.sdk.config.api.EngineType
 import com.mapbox.dash.sdk.config.api.ScreenDirectionality
 import com.mapbox.dash.sdk.config.dsl.DEFAULT_3D_STYLE
@@ -58,6 +57,7 @@ class MainApplication : Application() {
             theme {
                 // Example of providing a custom theme to change the look-and-feel of Dash's UI components.
                 dayStyleRes = R.style.MyDashTheme_Day
+                nightStyleRes = R.style.MyDashTheme_Night
             }
             mapGpt {
                 // Example of managing the visibility of user-accessible settings for MapGPT.
@@ -152,8 +152,6 @@ class MainApplication : Application() {
 
             engineType = EngineType.ELECTRIC
             device = DashDeviceType.Automobile
-
-            customValues[CustomKeys.ENABLE_QUICK_SEARCH_SUGGESTIONS_IN_ACTIVE_GUIDANCE] = false
         }
 
         configureEvProvider()

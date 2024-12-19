@@ -1,4 +1,4 @@
-package com.mapbox.dash.showcase.app.ui.custom.edittrip
+package com.mapbox.dash.example.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress

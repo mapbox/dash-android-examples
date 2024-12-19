@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
@@ -23,17 +24,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.mapbox.dash.compose.component.Body5
-import com.mapbox.dash.compose.component.Title5
+import androidx.compose.ui.unit.sp
 import com.mapbox.dash.driver.R
 import com.mapbox.dash.models.WaypointData
-import com.mapbox.dash.theming.compose.AppTheme
-import com.mapbox.dash.theming.compose.ThemeIcon
 
 @Composable
-@SuppressWarnings("MagicNumber", "LongParameterList", "LongMethod")
 internal fun SampleEtaView(
     modifier: Modifier,
     arrivalTime: String = "12:18 pm",
@@ -42,16 +40,12 @@ internal fun SampleEtaView(
     isOffline: Boolean = false,
     stateOfCharge: Int? = null,
     fractionTraveled: Float = 0.6f,
-    trafficGradientStops: Array<Pair<Float, Color?>> = arrayOf(
+    trafficGradientStops: List<Pair<Float, Color?>> = listOf(
         (0.150f to Color.Yellow),
         (0.450f to Color.Red),
         (0.650f to Color.Blue),
     ),
-    waypointsData: List<WaypointData> = listOf(
-        WaypointData(-0.9f, false),
-        WaypointData(0f, false),
-        WaypointData(0.7f, true),
-    ),
+    waypointsData: List<WaypointData>,
 ) {
     Column(
         modifier = modifier,
@@ -71,10 +65,13 @@ internal fun SampleEtaView(
                 verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
                 horizontalAlignment = Alignment.Start,
             ) {
-                Title5(
+                Text(
                     text = if (isOffline) "≈ $arrivalTime" else arrivalTime,
                     textAlign = TextAlign.Center,
-                    color = AppTheme.colors.textColor.primary,
+                    fontSize = 32.sp,
+                    lineHeight = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(red = 52, green = 199, blue = 89),
                 )
 
                 Row(
@@ -101,11 +98,7 @@ internal fun SampleEtaView(
                         )
 
                         if (stateOfCharge > 0) {
-                            Body5(
-                                modifier = Modifier,
-                                text = "$stateOfCharge%",
-                                color = stateOfCharge.getStateOfChargeTextColor(),
-                            )
+                            SecondaryText(text = "$stateOfCharge%")
                         }
                     }
                 }
@@ -122,27 +115,19 @@ internal fun SampleEtaView(
 }
 
 @Composable
-@SuppressWarnings("MagicNumber", "LongParameterList", "LongMethod")
 private fun SampleTripProgress(
     modifier: Modifier = Modifier,
     fractionTraveled: Float = 0.6f,
-    trafficGradientStops: Array<Pair<Float, Color?>> = arrayOf(
+    trafficGradientStops: List<Pair<Float, Color?>> = listOf(
         (0.150f to Color.Yellow),
         (0.450f to Color.Red),
         (0.650f to Color.Blue),
     ),
-    waypointsData: List<WaypointData> = listOf(
-        WaypointData(-0.9f, false),
-        WaypointData(0f, false),
-        WaypointData(0.7f, true),
-    ),
+    waypointsData: List<WaypointData>,
 ) {
     Box(
         modifier = modifier
-            .padding(
-                start = dimensionResource(id = R.dimen.default_margin),
-                end = dimensionResource(id = R.dimen.default_margin),
-            )
+            .padding(horizontal = dimensionResource(id = R.dimen.default_margin))
             .height(40.dp)
             .fillMaxWidth(),
         contentAlignment = Alignment.Center,
@@ -157,28 +142,27 @@ private fun SampleTripProgress(
                     Brush.horizontalGradient(
                         startX = 0f,
                         endX = Float.POSITIVE_INFINITY,
-                        colorStops = trafficGradientStops
-                            .map { it.first to (it.second ?: AppTheme.colors.backgroundColors.tertiary) }
-                            .toTypedArray(),
+                        colorStops = Array(trafficGradientStops.size) { index ->
+                            val (offset, color) = trafficGradientStops[index]
+                            offset to (color ?: Color.White.copy(alpha = 0.2f))
+                        },
                     ),
                 ),
         )
 
-        waypointsData.forEach {
-            ThemeIcon(
+        for (waypointData in waypointsData) {
+            Image(
                 modifier = Modifier
                     .size(36.dp)
-                    .align(
-                        BiasAlignment(
-                            horizontalBias = it.iconBias,
-                            verticalBias = 0.0f,
-                        ),
-                    ),
-                icon = if (it.isChargingStation) {
-                    AppTheme.icons.tripProgress.charging
-                } else {
-                    AppTheme.icons.tripProgress.waypoint
-                },
+                    .align(BiasAlignment(horizontalBias = waypointData.iconBias, verticalBias = 0.0f)),
+                painter = painterResource(
+                    if (waypointData.isChargingStation) {
+                        R.drawable.ic_navux_trip_progress_charging
+                    } else {
+                        R.drawable.ic_navux_trip_progress_waypoint
+                    },
+                ),
+                contentDescription = null,
             )
         }
 
@@ -193,41 +177,31 @@ private fun SampleTripProgress(
     }
 }
 
-@Composable
-fun Int.getStateOfChargeTextColor(): Color =
-    when {
-        this < 0 -> {
-            AppTheme.colors.textColor.red
-        }
-
-        else -> {
-            AppTheme.colors.textColor.secondary
-        }
-    }
-
-@Suppress("MagicNumber")
 @DrawableRes
 fun Int.getStateOfChargeIcon(): Int {
     return when {
-        this < 0 -> com.mapbox.dash.sdk.base.R.drawable.ic_soc_out_of_reach
-        this == 0 -> com.mapbox.dash.sdk.base.R.drawable.ic_soc_0
-        this in 1..10 -> com.mapbox.dash.sdk.base.R.drawable.ic_soc_0_10
-        this in 11..20 -> com.mapbox.dash.sdk.base.R.drawable.ic_soc_10_20
-        this in 21..30 -> com.mapbox.dash.sdk.base.R.drawable.ic_soc_20_30
-        this in 31..40 -> com.mapbox.dash.sdk.base.R.drawable.ic_soc_30_40
-        this in 41..50 -> com.mapbox.dash.sdk.base.R.drawable.ic_soc_40_50
-        this in 51..60 -> com.mapbox.dash.sdk.base.R.drawable.ic_soc_50_60
-        this in 61..70 -> com.mapbox.dash.sdk.base.R.drawable.ic_soc_60_70
-        this in 71..80 -> com.mapbox.dash.sdk.base.R.drawable.ic_soc_70_80
-        this in 81..90 -> com.mapbox.dash.sdk.base.R.drawable.ic_soc_80_90
-        else -> com.mapbox.dash.sdk.base.R.drawable.ic_soc_90_100
+        this < 0 -> R.drawable.ic_soc_out_of_reach
+        this == 0 -> R.drawable.ic_soc_0
+        this in 1..10 -> R.drawable.ic_soc_0_10
+        this in 11..20 -> R.drawable.ic_soc_10_20
+        this in 21..30 -> R.drawable.ic_soc_20_30
+        this in 31..40 -> R.drawable.ic_soc_30_40
+        this in 41..50 -> R.drawable.ic_soc_40_50
+        this in 51..60 -> R.drawable.ic_soc_50_60
+        this in 61..70 -> R.drawable.ic_soc_60_70
+        this in 71..80 -> R.drawable.ic_soc_70_80
+        this in 81..90 -> R.drawable.ic_soc_80_90
+        else -> R.drawable.ic_soc_90_100
     }
 }
 
 @Composable
 private fun SecondaryText(text: String) {
-    Body5(
+    Text(
         text = text,
-        color = AppTheme.colors.textColor.secondary,
+        fontSize = 32.sp,
+        lineHeight = 40.sp,
+        fontWeight = FontWeight.Light,
+        color = Color(red = 197, green = 197, blue = 201),
     )
 }

@@ -36,7 +36,7 @@ class ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
         override val etaMinutes = null
         override val id = "customSearchResultId1122334455"
         override val mapboxId: String? = null
-        override val metadata: Map<String, String>? = emptyMap()
+        override val metadata = emptyMap<String, String>()
         override val name = "The search result for the custom suggestion"
         override val pinCoordinate: Point = coordinate
         override val type = DashSearchResultType.ADDRESS
