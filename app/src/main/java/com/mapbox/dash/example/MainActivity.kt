@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -37,6 +38,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.commitNow
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.slider.Slider
 import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
@@ -102,6 +106,7 @@ import com.mapbox.navigation.weather.model.WeatherCondition
 import com.mapbox.navigation.weather.model.WeatherSystemOfMeasurement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -114,12 +119,13 @@ class MainActivity : DrawerActivity() {
 
     private val themeVM: ThemeViewModel by viewModels()
     private val mapStyleVM: MapStyleViewModel by viewModels()
-    private val weatherVM: WeatherViewModel by viewModels()
-
+private val weatherVM: WeatherViewModel by viewModels()
     private val headlessMode = MutableStateFlow(false)
 
     private val searchItem = buildSearchItem()
     private val favoriteItem = buildSearchItem()
+
+    private var sampleSensorEventManager: SampleSensorEventManager? = null
 
     private fun buildSearchItem() =
         object : DashSearchResult {
@@ -183,6 +189,22 @@ class MainActivity : DrawerActivity() {
                 .replace(R.id.container, fragment)
                 .commitNow()
         }
+        sampleSensorEventManager = SampleSensorEventManager(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sampleSensorEventManager?.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sampleSensorEventManager?.onPause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        sampleSensorEventManager = null
     }
 
     override fun onCreateContentView(): View {
@@ -198,6 +220,7 @@ class MainActivity : DrawerActivity() {
     private val setMap3dStyle = MutableStateFlow(value = true)
     private val addMapLayer = MutableStateFlow(value = false)
     private val setOfflineTts = MutableStateFlow(value = false)
+    private val setCustomCompassDataInputs = MutableStateFlow(value = false)
     private val showRouteOptionsInSettings = MutableStateFlow(value = false)
     private val showSpeedLimitsOptionsInSettings = MutableStateFlow(value = false)
     private val leftSidebarMode = MutableStateFlow(SidebarMode.Transparent.name)
@@ -437,6 +460,22 @@ class MainActivity : DrawerActivity() {
         bindButton(button = menuBinding.btnStopNavigation) {
             val controller = Dash.controller
             controller.stopNavigation()
+        }
+
+        menuBinding.customCompassDataInputs.setOnCheckedChangeListener { _, isChecked ->
+            setCustomCompassDataInputs.value = isChecked
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                setCustomCompassDataInputs.collectLatest { enabled ->
+                    if (!enabled) return@collectLatest
+                    sampleSensorEventManager?.compassData?.collect { compassData ->
+                        Log.d(TAG, "Updating compass data: $compassData")
+                        Dash.controller.updateCompassData(compassData)
+                    }
+                }
+            }
         }
 
         menuBinding.cleanHistory.bindAction {
@@ -709,7 +748,7 @@ class MainActivity : DrawerActivity() {
                         SampleTripSummaryView(modifier, tripSummaryUiState, weatherVM)
                     }
                 } else {
-                    fragment.setTripSummary { modifier, tripSummaryUiState ->  
+                    fragment.setTripSummary { modifier, tripSummaryUiState ->
                         DefaultTripSummary(modifier, tripSummaryUiState)
                     }
                 }

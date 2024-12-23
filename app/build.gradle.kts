@@ -26,6 +26,9 @@ android {
         create("CustomCluster") {
             dimension = "devMenuDefaults"
         }
+        create("PrivateSdk") {
+            dimension = "devMenuDefaults"
+        }
     }
 
     buildTypes {
@@ -86,6 +89,7 @@ dependencies {
     implementation("com.mapbox.navigationux:android:1.0.0-beta.43")
     implementation("com.mapbox.navigationux:cluster:1.0.0-beta.43")
     implementation("com.mapbox.navigationux:weather-api:1.0.0-beta.43")
+    implementation("com.mapbox.navigationux:data-inputs:1.0.0-beta.43")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -99,4 +103,8 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     testImplementation("junit:junit:4.13.2")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+}
+
+fun DependencyHandler.privateSdk(dependencyNotation: String) {
+    add("PrivateSdkImplementation", dependencyNotation)
 }
