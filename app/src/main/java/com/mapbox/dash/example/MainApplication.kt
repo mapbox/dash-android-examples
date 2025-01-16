@@ -10,6 +10,7 @@ import com.mapbox.dash.driver.notification.presentation.DashIncidentType
 import com.mapbox.dash.ev.api.EvDataProvider
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.base.device.DashDeviceType
+import com.mapbox.dash.sdk.base.domain.model.BatteryComfortLevel
 import com.mapbox.dash.sdk.base.units.Gb
 import com.mapbox.dash.sdk.config.api.EngineType
 import com.mapbox.dash.sdk.config.api.ScreenDirectionality
@@ -22,6 +23,7 @@ import com.mapbox.dash.sdk.config.dsl.cluster
 import com.mapbox.dash.sdk.config.dsl.debugSettings
 import com.mapbox.dash.sdk.config.dsl.destinationPreview
 import com.mapbox.dash.sdk.config.dsl.driverNotification
+import com.mapbox.dash.sdk.config.dsl.ev
 import com.mapbox.dash.sdk.config.dsl.fasterRouteNotification
 import com.mapbox.dash.sdk.config.dsl.incidentNotification
 import com.mapbox.dash.sdk.config.dsl.locationSimulation
@@ -58,6 +60,10 @@ class MainApplication : Application() {
                 // Example of providing a custom theme to change the look-and-feel of Dash's UI components.
                 dayStyleRes = R.style.MyDashTheme_Day
                 nightStyleRes = R.style.MyDashTheme_Night
+            }
+            ev {
+                autoAddChargingStationOnRoutePlanning = true
+                batteryComfortLevel = BatteryComfortLevel.Range(kilometers = 80.0)
             }
             mapGpt {
                 // Example of managing the visibility of user-accessible settings for MapGPT.
@@ -153,7 +159,6 @@ class MainApplication : Application() {
             engineType = EngineType.ELECTRIC
             device = DashDeviceType.Automobile
         }
-
         configureEvProvider()
     }
 
