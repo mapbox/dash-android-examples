@@ -67,6 +67,7 @@ import com.mapbox.dash.example.ui.SampleFullScreenSearch
 import com.mapbox.dash.example.ui.SampleGuidanceBanner
 import com.mapbox.dash.example.ui.SampleOfflineRouteAlert
 import com.mapbox.dash.example.ui.SamplePlacesView
+import com.mapbox.dash.example.ui.SampleResumeGuidanceView
 import com.mapbox.dash.example.ui.SampleRoutesOverview
 import com.mapbox.dash.example.ui.SampleSearchPanel
 import com.mapbox.dash.example.ui.SampleTripSummaryView
@@ -75,6 +76,7 @@ import com.mapbox.dash.fullscreen.search.favorites.DefaultFavoritesScreen
 import com.mapbox.dash.fullscreen.search.favorites.presenation.DefaultEditFavoriteScreen
 import com.mapbox.dash.logging.LogsExtra
 import com.mapbox.dash.maneuver.presentation.ui.DefaultManeuverView
+import com.mapbox.dash.route.restore.DefaultResumeGuidanceView
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.DashNavigationFragment
 import com.mapbox.dash.sdk.config.api.DashSidebarControl
@@ -239,6 +241,7 @@ private val weatherVM: WeatherViewModel by viewModels()
     private val setCustomEditTripComposer = MutableStateFlow(value = false)
     private val setCustomSearchScreen = MutableStateFlow(value = false)
     private val setCustomOfflineRouteAlert = MutableStateFlow(value = false)
+    private val setCustomResumeGuidanceView = MutableStateFlow(value = false)
     private val showTripProgress = MutableStateFlow(value = true)
     private val simpleCardHeader = MutableStateFlow(value = false)
     private val setCustomVoicePlayer = MutableStateFlow(value = false)
@@ -810,10 +813,20 @@ private val weatherVM: WeatherViewModel by viewModels()
             }
         }
 
-        bindSwitch(
-            switch = menuBinding.toggleCustomVoicePlayer,
-            state = setCustomVoicePlayer,
-        ) { enabled ->
+        bindSwitch(menuBinding.toggleCustomResumeGuidanceView, setCustomResumeGuidanceView) { enabled ->
+            val fragment = getDashNavigationFragment() ?: return@bindSwitch
+            if (enabled) {
+                fragment.setResumeGuidanceView { modifier, resumeGuidanceViewState ->
+                    SampleResumeGuidanceView(modifier, resumeGuidanceViewState)
+                }
+            } else {
+                fragment.setResumeGuidanceView { modifier, resumeGuidanceViewState ->
+                    DefaultResumeGuidanceView(modifier, resumeGuidanceViewState)
+                }
+            }
+        }
+
+        bindSwitch(menuBinding.toggleCustomVoicePlayer, setCustomVoicePlayer) { enabled ->
             if (enabled) {
                 Dash.controller.setVoicePlayerMiddleware(LocalVoicePlayerMiddleware())
             } else {
