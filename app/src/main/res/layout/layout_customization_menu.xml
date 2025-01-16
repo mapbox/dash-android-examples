@@ -547,6 +547,14 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleUpcomingLaneGuidance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Show lane guidance for upcoming maneuvers"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/toggleTabletLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

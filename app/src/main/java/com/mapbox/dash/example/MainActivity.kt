@@ -87,6 +87,7 @@ import com.mapbox.dash.sdk.config.dsl.camera
 import com.mapbox.dash.sdk.config.dsl.destinationPreview
 import com.mapbox.dash.sdk.config.dsl.etaPanel
 import com.mapbox.dash.sdk.config.dsl.leftSidebar
+import com.mapbox.dash.sdk.config.dsl.maneuverView
 import com.mapbox.dash.sdk.config.dsl.mapStyle
 import com.mapbox.dash.sdk.config.dsl.rightSidebar
 import com.mapbox.dash.sdk.config.dsl.searchPanel
@@ -244,6 +245,7 @@ private val weatherVM: WeatherViewModel by viewModels()
     private val setCustomResumeGuidanceView = MutableStateFlow(value = false)
     private val showTripProgress = MutableStateFlow(value = true)
     private val simpleCardHeader = MutableStateFlow(value = false)
+    private val upcomingLaneGuidance = MutableStateFlow(value = false)
     private val setCustomVoicePlayer = MutableStateFlow(value = false)
     private val setCustomDriverNotification = MutableStateFlow(value = false)
 
@@ -848,10 +850,17 @@ private val weatherVM: WeatherViewModel by viewModels()
             }
         }
 
-        bindSwitch(
-            switch = menuBinding.toggleCustomDriverNotification,
-            state = setCustomDriverNotification,
-        ) { enabled ->
+        bindSwitch(menuBinding.toggleUpcomingLaneGuidance, upcomingLaneGuidance) { enabled ->
+            Dash.applyUpdate {
+                ui {
+                    maneuverView {
+                        showUpcomingLaneGuidance = enabled
+                    }
+                }
+            }
+        }
+
+        bindSwitch(menuBinding.toggleCustomDriverNotification, setCustomDriverNotification) { enabled ->
             getDashNavigationFragment()?.let { fragment ->
                 if (enabled) {
                     fragment.setDriverNotification { modifier, uiState ->
