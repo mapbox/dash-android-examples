@@ -27,16 +27,10 @@ import com.mapbox.dash.compose.component.Title7
 import com.mapbox.dash.destination.preview.R
 import com.mapbox.dash.destination.preview.domain.model.TripOverviewItem
 import com.mapbox.dash.example.DestinationWeatherForecast
-import com.mapbox.dash.example.toIcon
-import com.mapbox.dash.models.ArrivalInformationFormatter
 import com.mapbox.dash.models.ChargeData
 import com.mapbox.dash.sdk.search.api.DashSearchResult
-import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.geojson.Point
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
-import com.mapbox.navigation.weather.model.WeatherForecastItem
-import com.mapbox.navigation.weather.model.WeatherSystemOfMeasurement
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 
@@ -71,7 +65,7 @@ internal fun SampleTripOverviewItems(
                 is TripOverviewItem.NoBatteryCharge -> TripOverviewItem(
                     iconId = R.drawable.ic_trip_overview_end_of_charge,
                     title = stringResource(id = R.string.dash_poi_charging_stop_needed),
-                    color = AppTheme.colors.textColor.red,
+                    color = ExampleAppTheme.colors.textColor.red,
                     onClick = onEndOfChargeClick?.forward(item.routePoints),
                 )
 
@@ -104,8 +98,7 @@ internal fun SampleTripOverviewItems(
 private fun TripOverviewItem(
     @DrawableRes iconId: Int,
     title: String,
-    color: Color = AppTheme.colors.textColor.primary,
-    formatter: ArrivalInformationFormatter = StubDistanceAndTimeFormatter,
+    color: Color = ExampleAppTheme.colors.textColor.primary,
     etaMinutes: Double? = null,
     stateOfCharge: Float? = null,
     chargeData: ChargeData? = null,
@@ -120,7 +113,7 @@ private fun TripOverviewItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
-            modifier = Modifier.background(AppTheme.colors.backgroundColors.primary),
+            modifier = Modifier.background(ExampleAppTheme.colors.backgroundColors.primary),
             painter = painterResource(id = iconId),
             contentDescription = null,
         )
@@ -135,7 +128,6 @@ private fun TripOverviewItem(
                 overflow = TextOverflow.Ellipsis,
             )
             SampleTripOverviewArrivalInformation(
-                formatter = formatter,
                 etaMinutes = etaMinutes,
                 chargeFromPercent = chargeData?.chargeFromPercent ?: stateOfCharge,
                 chargeToPercent = chargeData?.chargeToPercent,
@@ -153,11 +145,8 @@ private fun TripOverviewItem(
                         contentDescription = null,
                     )
                     Body5(
-                        text = formatter.formatDuration(
-                            duration = chargeData.chargeForMin.minutes,
-                            truncateDurationUnit = DurationUnit.MINUTES,
-                        ),
-                        color = AppTheme.colors.textColor.secondary,
+                        text = chargeData.chargeForMin.minutes.toString(unit = DurationUnit.MINUTES),
+                        color = ExampleAppTheme.colors.textColor.secondary,
                     )
                 }
             }
@@ -166,7 +155,7 @@ private fun TripOverviewItem(
             Image(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(color = AppTheme.colors.backgroundColors.secondary, shape = CircleShape)
+                    .background(color = ExampleAppTheme.colors.backgroundColors.secondary, shape = CircleShape)
                     .padding(all = 5.dp),
                 painter = painterResource(id = R.drawable.ic_arrow_right),
                 contentDescription = null,
@@ -178,7 +167,6 @@ private fun TripOverviewItem(
 @OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
 @Composable
 private fun SampleTripOverviewArrivalInformation(
-    formatter: ArrivalInformationFormatter,
     etaMinutes: Double?,
     chargeFromPercent: Float?,
     chargeToPercent: Float?,
@@ -188,17 +176,14 @@ private fun SampleTripOverviewArrivalInformation(
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (etaMinutes != null) {
                 Body5(
-                    text = formatter.formatDuration(
-                        duration = etaMinutes.minutes,
-                        truncateDurationUnit = DurationUnit.MINUTES,
-                    ),
-                    color = AppTheme.colors.textColor.secondary,
+                    text = etaMinutes.minutes.toString(unit = DurationUnit.MINUTES),
+                    color = ExampleAppTheme.colors.textColor.secondary,
                 )
             }
             if (etaMinutes != null && chargeFromPercent != null) {
                 Body5(
                     text = "·",
-                    color = AppTheme.colors.textColor.secondary,
+                    color = ExampleAppTheme.colors.textColor.secondary,
                     modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.eta_point_margin)),
                 )
             }
@@ -218,7 +203,7 @@ private fun SampleTripOverviewArrivalInformation(
                         } else {
                             "$chargeFromPercent%"
                         },
-                        color = AppTheme.colors.textColor.secondary,
+                        color = ExampleAppTheme.colors.textColor.secondary,
                     )
                 }
             }
@@ -226,7 +211,7 @@ private fun SampleTripOverviewArrivalInformation(
             if (weatherForecast != null) {
                 Body5(
                     text = " · ",
-                    color = AppTheme.colors.textColor.secondary,
+                    color = ExampleAppTheme.colors.textColor.secondary,
                     modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.eta_point_margin)),
                 )
                 Image(
@@ -239,19 +224,12 @@ private fun SampleTripOverviewArrivalInformation(
                 )
                 Body5(
                     text = weatherForecast.text,
-                    color = AppTheme.colors.textColor.secondary,
+                    color = ExampleAppTheme.colors.textColor.secondary,
                     modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.eta_point_margin)),
                 )
             }
         }
     }
-}
-
-private object StubDistanceAndTimeFormatter : ArrivalInformationFormatter {
-    override fun formatDistance(distanceInMeters: Double) = "$distanceInMeters m"
-
-    override fun formatDuration(duration: Duration, truncateDurationUnit: DurationUnit): String =
-        duration.toString(truncateDurationUnit)
 }
 
 private fun <T> ((T) -> Unit).forward(arg: T): () -> Unit {

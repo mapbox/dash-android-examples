@@ -1,5 +1,6 @@
 package com.mapbox.dash.example.ui
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
@@ -52,7 +53,7 @@ import com.mapbox.dash.driver.presentation.edittrip.EditTripItem
 import com.mapbox.dash.driver.presentation.edittrip.EditTripUiState
 import com.mapbox.dash.sdk.map.presentation.ui.BackCloseButtonState
 import com.mapbox.dash.theming.R
-import com.mapbox.dash.theming.compose.AppTheme
+import com.mapbox.dash.example.theme.ExampleAppTheme
 import com.mapbox.dash.theming.compose.PreviewDashTheme
 
 @Composable
@@ -170,14 +171,14 @@ private fun AddNewWaypoint(elevation: Dp, onOpenFullScreenSearchClick: () -> Uni
         Image(
             modifier = Modifier
                 .size(40.dp),
-            colorFilter = ColorFilter.tint(AppTheme.colors.iconColor.secondary),
+            colorFilter = ColorFilter.tint(ExampleAppTheme.colors.iconColor.secondary),
             imageVector = Icons.Default.Add,
             contentDescription = null,
         )
         Text(
             modifier = Modifier.weight(1f),
             text = "Add new waypoint",
-            color = AppTheme.colors.textColor.secondary,
+            color = ExampleAppTheme.colors.textColor.secondary,
             fontSize = 28.sp,
             lineHeight = 34.sp,
             fontWeight = FontWeight.Normal,
@@ -187,7 +188,7 @@ private fun AddNewWaypoint(elevation: Dp, onOpenFullScreenSearchClick: () -> Uni
                 .size(40.dp)
                 .clip(CircleShape)
                 .padding(8.dp),
-            colorFilter = ColorFilter.tint(AppTheme.colors.iconColor.secondary),
+            colorFilter = ColorFilter.tint(ExampleAppTheme.colors.iconColor.secondary),
             imageVector = Icons.Default.Menu,
             contentDescription = null,
         )
@@ -224,7 +225,7 @@ private fun WaypointItem(elevation: Dp, removeModifier: Modifier, index: Int, te
         }
         Text(
             text = text,
-            color = AppTheme.colors.textColor.inverted,
+            color = ExampleAppTheme.colors.textColor.inverted,
             modifier = Modifier.weight(1f),
             fontSize = 28.sp,
             lineHeight = 34.sp,
@@ -236,8 +237,8 @@ private fun WaypointItem(elevation: Dp, removeModifier: Modifier, index: Int, te
                 .size(40.dp)
                 .clip(CircleShape)
                 .padding(8.dp),
-            colorFilter = ColorFilter.tint(AppTheme.colors.iconColor.inverted),
-            painter = painterResource(id = AppTheme.icons.controls.cross),
+            colorFilter = ColorFilter.tint(ExampleAppTheme.colors.iconColor.inverted),
+            painter = painterResource(id = ExampleAppTheme.icons.controls.cross),
             contentDescription = null,
         )
         Image(
@@ -245,7 +246,7 @@ private fun WaypointItem(elevation: Dp, removeModifier: Modifier, index: Int, te
                 .size(40.dp)
                 .clip(CircleShape)
                 .padding(8.dp),
-            colorFilter = ColorFilter.tint(AppTheme.colors.iconColor.inverted),
+            colorFilter = ColorFilter.tint(ExampleAppTheme.colors.iconColor.inverted),
             imageVector = Icons.Default.Menu,
             contentDescription = null,
         )
@@ -285,14 +286,14 @@ private fun Header(
         )
         Text(
             text = "Done",
-            color = AppTheme.colors.textColor.inverted,
+            color = ExampleAppTheme.colors.textColor.inverted,
             fontSize = 32.sp,
             lineHeight = 38.sp,
             modifier = Modifier
                 .padding(end = dimensionResource(R.dimen.default_margin))
                 .height(dimensionResource(id = R.dimen.button_height))
-                .clip(shape = AppTheme.shapes.actionButtonBackground)
-                .background(AppTheme.colors.buttonColors.primary)
+                .clip(shape = ExampleAppTheme.shapes.actionButtonBackground)
+                .background(ExampleAppTheme.colors.buttonColors.primary)
                 .clickable(onClick = onDoneClick)
                 .padding(dimensionResource(R.dimen.default_margin))
                 .wrapContentSize(),
@@ -304,6 +305,7 @@ private fun Header(
 @Preview(name = "Light", device = Devices.TABLET)
 @SuppressWarnings("MagicNumber")
 @Preview
+@SuppressLint("RestrictedApi")
 internal fun Preview_SampleEditTrip() {
     PreviewDashTheme {
         SampleEditTrip(
@@ -327,6 +329,7 @@ internal fun Preview_SampleEditTrip() {
 @Preview(name = "Light", device = Devices.TABLET)
 @SuppressWarnings("MagicNumber")
 @Preview
+@SuppressLint("RestrictedApi")
 internal fun Preview_SampleEditTrip_WaypointItem() {
     PreviewDashTheme {
         WaypointItem(removeModifier = Modifier, index = 4, text = "Whole Foods Market", elevation = 4.dp)

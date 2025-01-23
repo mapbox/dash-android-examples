@@ -30,12 +30,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.mapbox.dash.compose.component.Body1
-import com.mapbox.dash.compose.component.Title4
-import com.mapbox.dash.compose.component.Title5
+import com.mapbox.dash.example.theme.Body1
+import com.mapbox.dash.example.theme.Title4
+import com.mapbox.dash.example.theme.Title5
 import com.mapbox.dash.sdk.config.api.UiStates
 import com.mapbox.dash.sdk.map.presentation.ui.PlacesListUiState
-import com.mapbox.dash.theming.compose.AppTheme
+import com.mapbox.dash.example.theme.ExampleAppTheme
 import com.mapbox.dash.view.compose.R
 
 object SamplePlacesView {
@@ -55,8 +55,8 @@ object SamplePlacesView {
                 .fillMaxWidth()
                 .padding(8.dp)
                 .background(
-                    AppTheme.colors.backgroundColors.tertiary,
-                    shape = AppTheme.shapes.searchPanelBackground,
+                    ExampleAppTheme.colors.backgroundColors.tertiary,
+                    shape = ExampleAppTheme.shapes.searchPanelBackground,
                 ),
         ) {
             Column(
@@ -67,17 +67,17 @@ object SamplePlacesView {
             ) {
                 Body1(
                     text = "#$number",
-                    color = AppTheme.colors.textColor.primary,
+                    color = ExampleAppTheme.colors.textColor.primary,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Title4(
                     text = title,
-                    color = AppTheme.colors.textColor.primary,
+                    color = ExampleAppTheme.colors.textColor.primary,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Title5(
                     text = "ETA: $eta",
-                    color = AppTheme.colors.textColor.secondary,
+                    color = ExampleAppTheme.colors.textColor.secondary,
                 )
             }
         }
@@ -106,7 +106,7 @@ object SamplePlacesView {
     ) {
         Column(
             modifier = modifier
-                .background(AppTheme.colors.backgroundColors.primary, shape = AppTheme.shapes.poiCardBackground),
+                .background(ExampleAppTheme.colors.backgroundColors.primary, shape = ExampleAppTheme.shapes.poiCardBackground),
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 placesListUiState.backCloseButtonState?.takeUnless { it.isFinalAction }?.let { backCloseButtonState ->
@@ -114,17 +114,17 @@ object SamplePlacesView {
                         modifier = Modifier
                             .size(dimensionResource(id = R.dimen.card_header_button_size))
                             .clip(CircleShape)
-                            .background(AppTheme.colors.buttonColors.primary)
+                            .background(ExampleAppTheme.colors.buttonColors.primary)
                             .clickable(onClick = backCloseButtonState.onBackClicked)
                             .padding(dimensionResource(id = R.dimen.card_header_button_padding)),
-                        painter = painterResource(id = AppTheme.icons.controls.longArrowLeft),
+                        painter = painterResource(id = ExampleAppTheme.icons.controls.longArrowLeft),
                         contentDescription = null,
                     )
                 }
                 Title5(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
-                    text = placesListUiState.title.content ?: "", color = AppTheme.colors.textColor.primary,
+                    text = placesListUiState.title.content ?: "", color = ExampleAppTheme.colors.textColor.primary,
                 )
                 placesListUiState.backCloseButtonState?.let { backCloseButtonState ->
                     Image(
@@ -132,10 +132,10 @@ object SamplePlacesView {
                             .weight(0.5f)
                             .size(dimensionResource(id = R.dimen.card_header_button_size))
                             .clip(CircleShape)
-                            .background(AppTheme.colors.buttonColors.primary)
+                            .background(ExampleAppTheme.colors.buttonColors.primary)
                             .clickable(onClick = backCloseButtonState.onCloseClicked)
                             .padding(dimensionResource(id = R.dimen.card_header_button_padding)),
-                        painter = painterResource(id = AppTheme.icons.controls.cross),
+                        painter = painterResource(id = ExampleAppTheme.icons.controls.cross),
                         contentDescription = null,
                     )
                 }

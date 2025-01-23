@@ -83,6 +83,10 @@ android {
             )
         }
     }
+    lint {
+        checkOnly += "RestrictedApi"
+        error += "RestrictedApi"
+    }
 }
 
 dependencies {

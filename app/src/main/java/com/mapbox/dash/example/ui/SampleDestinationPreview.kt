@@ -25,12 +25,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.mapbox.dash.compose.component.Body5
-import com.mapbox.dash.compose.component.Title5
+import com.mapbox.dash.example.theme.Body5
+import com.mapbox.dash.example.theme.Title5
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.map.presentation.ui.DestinationPreviewUiState
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
-import com.mapbox.dash.theming.compose.AppTheme
+import com.mapbox.dash.example.theme.ExampleAppTheme
 import com.mapbox.dash.view.compose.R
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.minutes
@@ -47,8 +47,8 @@ object SampleDestinationPreview {
         val coroutineScope = rememberCoroutineScope()
         Column(
             modifier = modifier
-                .shadow(elevation = 8.dp, shape = AppTheme.shapes.poiCardBackground)
-                .background(AppTheme.colors.backgroundColors.primary)
+                .shadow(elevation = 8.dp, shape = ExampleAppTheme.shapes.poiCardBackground)
+                .background(ExampleAppTheme.colors.backgroundColors.primary)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
@@ -58,27 +58,27 @@ object SampleDestinationPreview {
                         modifier = Modifier
                             .size(dimensionResource(id = R.dimen.card_header_button_size))
                             .clip(CircleShape)
-                            .background(AppTheme.colors.buttonColors.primary)
+                            .background(ExampleAppTheme.colors.buttonColors.primary)
                             .clickable(onClick = backCloseButtonState.onBackClicked)
                             .padding(dimensionResource(id = R.dimen.card_header_button_padding)),
-                        painter = painterResource(id = AppTheme.icons.controls.longArrowLeft),
+                        painter = painterResource(id = ExampleAppTheme.icons.controls.longArrowLeft),
                         contentDescription = null,
                     )
                 }
                 Title5(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
-                    text = state.place.content?.origin?.name ?: "Loading...", color = AppTheme.colors.textColor.primary,
+                    text = state.place.content?.origin?.name ?: "Loading...", color = ExampleAppTheme.colors.textColor.primary,
                 )
                 state.backCloseButtonState?.let { backCloseButtonState ->
                     Image(
                         modifier = Modifier
                             .size(dimensionResource(id = R.dimen.card_header_button_size))
                             .clip(CircleShape)
-                            .background(AppTheme.colors.buttonColors.primary)
+                            .background(ExampleAppTheme.colors.buttonColors.primary)
                             .clickable(onClick = backCloseButtonState.onCloseClicked)
                             .padding(dimensionResource(id = R.dimen.card_header_button_padding)),
-                        painter = painterResource(id = AppTheme.icons.controls.cross),
+                        painter = painterResource(id = ExampleAppTheme.icons.controls.cross),
                         contentDescription = null,
                     )
                 }
@@ -91,7 +91,7 @@ object SampleDestinationPreview {
                             .padding(top = 8.dp),
                         textAlign = TextAlign.Start,
                         text = it,
-                        color = AppTheme.colors.textColor.primary,
+                        color = ExampleAppTheme.colors.textColor.primary,
                     )
                 } ?: place.origin.address?.let {
                     Title5(
@@ -102,7 +102,7 @@ object SampleDestinationPreview {
                         text = listOfNotNull(
                             it.country, it.region, it.district, it.place, it.street, it.houseNumber, it.postcode,
                         ).joinToString(", "),
-                        color = AppTheme.colors.textColor.primary,
+                        color = ExampleAppTheme.colors.textColor.primary,
                     )
                 }
 
@@ -113,7 +113,7 @@ object SampleDestinationPreview {
                             .padding(top = 8.dp),
                         textAlign = TextAlign.Start,
                         text = "${getFormattedEta()} · ${getFormattedDistance()}",
-                        color = AppTheme.colors.textColor.primary,
+                        color = ExampleAppTheme.colors.textColor.primary,
                     )
                 }
                 place.chargeData?.takeIf { it.chargeForMin > 1 }?.apply {
@@ -124,12 +124,12 @@ object SampleDestinationPreview {
                     ) {
                         Image(
                             modifier = Modifier.size(24.dp),
-                            painter = painterResource(id = AppTheme.icons.main.charging),
+                            painter = painterResource(id = ExampleAppTheme.icons.main.charging),
                             contentDescription = null,
                         )
                         Body5(
                             text = chargeForMin.minutes.toString(DurationUnit.MINUTES),
-                            color = AppTheme.colors.textColor.secondary,
+                            color = ExampleAppTheme.colors.textColor.secondary,
                         )
                     }
                 }
@@ -139,7 +139,7 @@ object SampleDestinationPreview {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            AppTheme.colors.buttonColors.primary,
+                            ExampleAppTheme.colors.buttonColors.primary,
                             shape = RoundedCornerShape(8.dp),
                         )
                         .clickable {
@@ -155,7 +155,7 @@ object SampleDestinationPreview {
                         .align(Alignment.CenterHorizontally),
                     textAlign = TextAlign.Center,
                     text = "${if (isFavorite) "Remove from" else "Add to"} favorites",
-                    color = AppTheme.colors.textColor.inverted,
+                    color = ExampleAppTheme.colors.textColor.inverted,
                 )
             }
 
@@ -164,7 +164,7 @@ object SampleDestinationPreview {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            AppTheme.colors.buttonColors.primary,
+                            ExampleAppTheme.colors.buttonColors.primary,
                             shape = RoundedCornerShape(8.dp),
                         )
                         .clickable {
@@ -174,7 +174,7 @@ object SampleDestinationPreview {
                         .align(Alignment.CenterHorizontally),
                     textAlign = TextAlign.Center,
                     text = it.toString(),
-                    color = AppTheme.colors.textColor.inverted,
+                    color = ExampleAppTheme.colors.textColor.inverted,
                 )
             }
 
@@ -183,7 +183,7 @@ object SampleDestinationPreview {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            AppTheme.colors.buttonColors.primary,
+                            ExampleAppTheme.colors.buttonColors.primary,
                             shape = RoundedCornerShape(8.dp),
                         )
                         .clickable {
@@ -193,7 +193,7 @@ object SampleDestinationPreview {
                         .align(Alignment.CenterHorizontally),
                     textAlign = TextAlign.Center,
                     text = it.toString(),
-                    color = AppTheme.colors.textColor.inverted,
+                    color = ExampleAppTheme.colors.textColor.inverted,
                 )
             }
         }

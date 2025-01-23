@@ -2,6 +2,7 @@
 
 package com.mapbox.dash.example
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.mapbox.dash.sdk.Dash
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(FlowPreview::class)
+@SuppressLint("RestrictedApi")
 class WeatherViewModel : ViewModel() {
 
     private val weatherApi = MapboxWeatherApi()

@@ -1,5 +1,6 @@
 package com.mapbox.dash.example.ui
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -40,21 +41,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mapbox.dash.compose.component.Body4
-import com.mapbox.dash.compose.component.Button1
-import com.mapbox.dash.compose.shadow
 import com.mapbox.dash.driver.notification.R
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.BorderCrossing
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.FasterAlternativeAvailable
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.RoadCamera
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.SlowTraffic
 import com.mapbox.dash.driver.notification.presentation.DriverNotificationUiState
+import com.mapbox.dash.example.shadow
+import com.mapbox.dash.example.theme.Body4
+import com.mapbox.dash.example.theme.Button1
 import com.mapbox.dash.sdk.config.api.RoadCameraType.RED_LIGHT
 import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CAMERA
 import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CAMERA_RED_LIGHT
 import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CONTROL_ZONE_ENTER
 import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CONTROL_ZONE_EXIT
-import com.mapbox.dash.theming.compose.AppTheme
+import com.mapbox.dash.example.theme.ExampleAppTheme
 import com.mapbox.dash.theming.compose.PreviewDashTheme
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
@@ -173,8 +174,8 @@ private fun DriverNotificationView(
     val defaultPadding = dimensionResource(R.dimen.driver_notification_view_padding)
     Column(
         modifier = modifier
-            .shadow(shape = AppTheme.shapes.driverNotificationBackground)
-            .background(color = AppTheme.colors.buttonColors.secondary)
+            .shadow(shape = ExampleAppTheme.shapes.driverNotificationBackground)
+            .background(color = ExampleAppTheme.colors.buttonColors.secondary)
             .padding(defaultPadding),
         verticalArrangement = Arrangement.spacedBy(defaultPadding),
     ) {
@@ -236,8 +237,8 @@ private fun DriverNotificationButtonsContainer(
 
         if (onAcceptClick != null) {
             DriverNotificationButton(
-                textColor = AppTheme.colors.textColor.inverted,
-                backgroundColor = AppTheme.colors.buttonColors.primary,
+                textColor = ExampleAppTheme.colors.textColor.inverted,
+                backgroundColor = ExampleAppTheme.colors.buttonColors.primary,
                 actionButtonText = acceptButtonText,
                 onActionButtonClick = onAcceptClick,
             )
@@ -254,8 +255,8 @@ private fun DriverNotificationButtonsContainer(
             }
 
             DriverNotificationButton(
-                textColor = AppTheme.colors.textColor.accent,
-                backgroundColor = AppTheme.colors.buttonColors.secondaryNew,
+                textColor = ExampleAppTheme.colors.textColor.accent,
+                backgroundColor = ExampleAppTheme.colors.buttonColors.secondaryNew,
                 actionButtonText = dismissButtonText,
                 onActionButtonClick = onDismissClick,
                 progress = progress,
@@ -284,14 +285,14 @@ fun DriverNotificationButton(
         modifier = modifier
             .height(dimensionResource(id = R.dimen.button_height))
             .fillMaxWidth()
-            .clip(AppTheme.shapes.driverNotificationButtonBackground)
+            .clip(ExampleAppTheme.shapes.driverNotificationButtonBackground)
             .background(
                 brush = if (progress == 0f) {
                     SolidColor(backgroundColor)
                 } else {
                     Brush.horizontalGradient(
-                        0f to AppTheme.colors.buttonColors.secondaryProgress,
-                        progress to AppTheme.colors.buttonColors.secondaryProgress,
+                        0f to ExampleAppTheme.colors.buttonColors.secondaryProgress,
+                        progress to ExampleAppTheme.colors.buttonColors.secondaryProgress,
                         progress to backgroundColor,
                         1f to backgroundColor,
                     )
@@ -308,6 +309,7 @@ fun DriverNotificationButton(
 @Preview(device = Devices.PIXEL_7, heightDp = 1200, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 @SuppressWarnings("MagicNumber")
+@SuppressLint("RestrictedApi")
 internal fun Preview_DriverNotifications() {
     val uiStates = listOf(
         DriverNotificationUiState(FasterAlternativeAvailable(1200000.0.milliseconds)),
@@ -321,7 +323,7 @@ internal fun Preview_DriverNotifications() {
     PreviewDashTheme {
         LazyColumn(
             modifier = Modifier
-                .background(AppTheme.colors.backgroundColors.tertiary)
+                .background(ExampleAppTheme.colors.backgroundColors.tertiary)
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             userScrollEnabled = true,

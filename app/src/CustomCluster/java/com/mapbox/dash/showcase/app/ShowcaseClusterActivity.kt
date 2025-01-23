@@ -1,4 +1,4 @@
-package com.mapbox.dash.showcase.app
+package com.mapbox.dash.example
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
