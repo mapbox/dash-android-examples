@@ -171,12 +171,11 @@ class MainApplication : Application() {
     private fun configureEvProvider() {
         val evDataProvider = object : EvDataProvider {
             override val stateOfCharge = flowOf(50f)
-            override val minBatteryRange = flowOf<Float?>(200f)
-            override val maxBatteryRange = flowOf<Float?>(240f)
             override val secondsRemainingToCharge = flowOf<Int?>(7200)
             override val isChargerPluggedIn = flowOf(true)
             override val maxCharge = flowOf(57500)
             override val connectorTypes = flowOf("ccs_combo_type1")
+            override val efficiency = flowOf(5f) // 5 kilometers per kWh
             override val energyConsumptionCurve = flowOf("0,300;20,160;80,140;120,180")
             override val chargingCurve = flowOf("0,100000;40000,70000;60000,30000;80000,10000")
         }
