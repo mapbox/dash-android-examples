@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
-import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -41,7 +40,6 @@ import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.slider.Slider
 import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultDestinationPreview
@@ -71,11 +69,13 @@ import com.mapbox.dash.example.ui.SampleResumeGuidanceView
 import com.mapbox.dash.example.ui.SampleRoutesOverview
 import com.mapbox.dash.example.ui.SampleSearchPanel
 import com.mapbox.dash.example.ui.SampleTripSummaryView
+import com.mapbox.dash.example.ui.SampleUpcomingManeuversBanner
 import com.mapbox.dash.fullscreen.search.DefaultFullScreenSearch
 import com.mapbox.dash.fullscreen.search.favorites.DefaultFavoritesScreen
 import com.mapbox.dash.fullscreen.search.favorites.presenation.DefaultEditFavoriteScreen
 import com.mapbox.dash.logging.LogsExtra
 import com.mapbox.dash.maneuver.presentation.ui.DefaultManeuverView
+import com.mapbox.dash.maneuver.presentation.ui.DefaultUpcomingManeuversView
 import com.mapbox.dash.route.restore.DefaultResumeGuidanceView
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.DashNavigationFragment
@@ -122,7 +122,7 @@ class MainActivity : DrawerActivity() {
 
     private val themeVM: ThemeViewModel by viewModels()
     private val mapStyleVM: MapStyleViewModel by viewModels()
-private val weatherVM: WeatherViewModel by viewModels()
+    private val weatherVM: WeatherViewModel by viewModels()
     private val headlessMode = MutableStateFlow(false)
 
     private val searchItem = buildSearchItem()
@@ -233,6 +233,7 @@ private val weatherVM: WeatherViewModel by viewModels()
     private val setCustomArrivalFeedbackComposer = MutableStateFlow(value = false)
     private val setCustomContinueNavigationComposer = MutableStateFlow(value = false)
     private val setCustomGuidanceComposer = MutableStateFlow(value = false)
+    private val setCustomUpcomingManeuversComposer = MutableStateFlow(value = false)
     private val setCustomSearchPanel = MutableStateFlow(value = false)
     private val setCustomMarkerFactory = MutableStateFlow(value = false)
     private val setCustomPlacesListComposer = MutableStateFlow(value = false)
@@ -649,6 +650,23 @@ private val weatherVM: WeatherViewModel by viewModels()
         }
 
         bindSwitch(
+            switch = menuBinding.toggleCustomUpcomingManeuvers,
+            state = setCustomUpcomingManeuversComposer,
+        ) { enabled ->
+            getDashNavigationFragment()?.let { fragment ->
+                if (enabled) {
+                    fragment.setUpcomingManeuvers { modifier, state ->
+                        SampleUpcomingManeuversBanner(modifier, state)
+                    }
+                } else {
+                    fragment.setUpcomingManeuvers { modifier, state ->
+                        DefaultUpcomingManeuversView(modifier, state)
+                    }
+                }
+            }
+        }
+
+        bindSwitch(
             switch = menuBinding.toggleCustomSearchPanel,
             state = setCustomSearchPanel,
         ) { enabled ->
@@ -1006,6 +1024,12 @@ private val weatherVM: WeatherViewModel by viewModels()
         }
         Dash.controller.observeDebugBundleReady().observeWhenStarted(this) { file ->
             println(">> Debug bundle ${file.absolutePath} is ready")
+        }
+        Dash.controller.observeRouteWaypoints().observeWhenStarted(this) { waypoints ->
+            println(">> observeRouteWaypoints. size = ${waypoints.size}")
+            waypoints.forEachIndexed { index, item ->
+                println(">> observeRouteWaypoints. waypoint[$index]: categories = ${item.categories}")
+            }
         }
     }
 
