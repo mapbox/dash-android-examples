@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -80,6 +81,18 @@ fun SampleRoutesOverview(
                 fontSize = 42.sp,
                 lineHeight = 56.sp,
                 fontWeight = FontWeight.Normal,
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+            Image(
+                imageVector = Icons.Filled.Create,
+                modifier = Modifier
+                    .size(112.dp)
+                    .clip(CircleShape)
+                    .clickable(onClick = routesOverviewState.onEditClicked)
+                    .padding(28.dp),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(Color.White),
             )
         }
         val newItemSelected = remember { mutableStateOf(value = false) }
