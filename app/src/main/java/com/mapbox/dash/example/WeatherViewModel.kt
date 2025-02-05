@@ -8,10 +8,12 @@ import com.mapbox.dash.sdk.Dash
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 import com.mapbox.navigation.weather.MapboxWeatherApi
 import com.mapbox.navigation.weather.model.WeatherCondition
+import com.mapbox.navigation.weather.model.WeatherSystemOfMeasurement
 import com.mapbox.turf.TurfMeasurement
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlin.time.Duration.Companion.seconds
@@ -60,6 +62,24 @@ class WeatherViewModel : ViewModel() {
                     Log.e(TAG, it.message.orEmpty(), it)
                     null
                 },
+            )
+        }
+        .filterNotNull()
+        .map { weatherForecast ->
+            val weatherCondition = weatherForecast.first().condition
+            val temperature = weatherCondition.temperature.toInt()
+            val weatherIcon = weatherCondition.toIcon()
+            val maxTemp = weatherForecast.maxOf { it.condition.temperature }.toInt()
+            val minTemp = weatherForecast.minOf { it.condition.temperature }.toInt()
+            val unit = when (weatherCondition.systemOfMeasurement) {
+                WeatherSystemOfMeasurement.Imperial -> "F"
+                WeatherSystemOfMeasurement.Metric -> "C"
+                else -> "C"
+            }
+
+            DestinationWeatherForecast(
+                text = "$temperature °$unit · H: $maxTemp L: $minTemp",
+                icon = weatherIcon,
             )
         }
 

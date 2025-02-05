@@ -26,6 +26,7 @@ import com.mapbox.dash.compose.component.Body5
 import com.mapbox.dash.compose.component.Title7
 import com.mapbox.dash.destination.preview.R
 import com.mapbox.dash.destination.preview.domain.model.TripOverviewItem
+import com.mapbox.dash.example.DestinationWeatherForecast
 import com.mapbox.dash.example.toIcon
 import com.mapbox.dash.models.ArrivalInformationFormatter
 import com.mapbox.dash.models.ChargeData
@@ -45,7 +46,7 @@ import kotlin.time.DurationUnit
 internal fun SampleTripOverviewItems(
     modifier: Modifier = Modifier,
     items: List<TripOverviewItem>,
-    weatherForecast: List<WeatherForecastItem>? = null,
+    weatherForecast: DestinationWeatherForecast? = null,
     onYourLocationClick: (() -> Unit)? = null,
     onWaypointClick: ((DashSearchResult) -> Unit)? = null,
     onEndOfChargeClick: ((List<Point>) -> Unit)? = null,
@@ -109,7 +110,7 @@ private fun TripOverviewItem(
     stateOfCharge: Float? = null,
     chargeData: ChargeData? = null,
     onClick: (() -> Unit)? = null,
-    weatherForecast: List<WeatherForecastItem>? = null,
+    weatherForecast: DestinationWeatherForecast? = null,
     showArrow: Boolean = false,
 ) {
     val modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
@@ -181,7 +182,7 @@ private fun SampleTripOverviewArrivalInformation(
     etaMinutes: Double?,
     chargeFromPercent: Float?,
     chargeToPercent: Float?,
-    weatherForecast: List<WeatherForecastItem>? = null,
+    weatherForecast: DestinationWeatherForecast? = null,
 ) {
     if (etaMinutes != null || chargeFromPercent != null) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -223,17 +224,6 @@ private fun SampleTripOverviewArrivalInformation(
             }
 
             if (weatherForecast != null) {
-                val weatherCondition = weatherForecast.first().condition
-                val temperature = weatherCondition.temperature.toInt()
-                val weatherIcon = weatherCondition.toIcon()
-                val maxTemp = weatherForecast.maxOf { it.condition.temperature }.toInt()
-                val minTemp = weatherForecast.minOf { it.condition.temperature }.toInt()
-                val unit = when (weatherCondition.systemOfMeasurement) {
-                    WeatherSystemOfMeasurement.Imperial -> "F"
-                    WeatherSystemOfMeasurement.Metric -> "C"
-                    else -> "C"
-                }
-
                 Body5(
                     text = " · ",
                     color = AppTheme.colors.textColor.secondary,
@@ -244,11 +234,11 @@ private fun SampleTripOverviewArrivalInformation(
                         .padding(1.dp)
                         .width(28.dp)
                         .height(28.dp),
-                    painter = painterResource(id = weatherIcon),
+                    painter = painterResource(id = weatherForecast.icon),
                     contentDescription = null,
                 )
                 Body5(
-                    text = "$temperature °$unit · H: $maxTemp L: $minTemp",
+                    text = weatherForecast.text,
                     color = AppTheme.colors.textColor.secondary,
                     modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.eta_point_margin)),
                 )
