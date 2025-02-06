@@ -39,7 +39,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -52,7 +51,8 @@ import androidx.compose.ui.unit.sp
 import com.mapbox.dash.driver.presentation.edittrip.EditTripItem
 import com.mapbox.dash.driver.presentation.edittrip.EditTripUiState
 import com.mapbox.dash.sdk.map.presentation.ui.BackCloseButtonState
-import com.mapbox.dash.theming.R
+import com.mapbox.dash.example.theme.SampleColors
+import com.mapbox.dash.example.theme.SampleIcons
 import com.mapbox.dash.theming.compose.PreviewDashTheme
 
 @Composable
@@ -164,20 +164,20 @@ private fun AddNewWaypoint(elevation: Dp, onOpenFullScreenSearchClick: () -> Uni
             .shadow(elevation)
             .fillMaxWidth()
             .defaultMinSize(minHeight = 40.dp),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.default_margin)),
+        horizontalArrangement = Arrangement.spacedBy(20.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
             modifier = Modifier
                 .size(40.dp),
-            colorFilter = ColorFilter.tint(ExampleAppTheme.colors.iconColor.secondary),
+            colorFilter = ColorFilter.tint(Color.White.copy(alpha = 0.7f)),
             imageVector = Icons.Default.Add,
             contentDescription = null,
         )
         Text(
             modifier = Modifier.weight(1f),
             text = "Add new waypoint",
-            color = ExampleAppTheme.colors.textColor.secondary,
+            color = SampleColors.textPrimary.copy(alpha = 0.7f),
             fontSize = 28.sp,
             lineHeight = 34.sp,
             fontWeight = FontWeight.Normal,
@@ -187,7 +187,7 @@ private fun AddNewWaypoint(elevation: Dp, onOpenFullScreenSearchClick: () -> Uni
                 .size(40.dp)
                 .clip(CircleShape)
                 .padding(8.dp),
-            colorFilter = ColorFilter.tint(ExampleAppTheme.colors.iconColor.secondary),
+            colorFilter = ColorFilter.tint(Color.White.copy(alpha = 0.7f)),
             imageVector = Icons.Default.Menu,
             contentDescription = null,
         )
@@ -202,13 +202,13 @@ private fun WaypointItem(elevation: Dp, removeModifier: Modifier, index: Int, te
             .padding(16.dp)
             .fillMaxWidth()
             .defaultMinSize(minHeight = 40.dp),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.default_margin)),
+        horizontalArrangement = Arrangement.spacedBy(20.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(
             modifier = Modifier
                 .size(40.dp)
-                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.round_button_corner_radius)))
+                .clip(RoundedCornerShape(24.dp))
                 .background(Color.White),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -224,7 +224,7 @@ private fun WaypointItem(elevation: Dp, removeModifier: Modifier, index: Int, te
         }
         Text(
             text = text,
-            color = ExampleAppTheme.colors.textColor.inverted,
+            color = SampleColors.textPrimary,
             modifier = Modifier.weight(1f),
             fontSize = 28.sp,
             lineHeight = 34.sp,
@@ -236,8 +236,8 @@ private fun WaypointItem(elevation: Dp, removeModifier: Modifier, index: Int, te
                 .size(40.dp)
                 .clip(CircleShape)
                 .padding(8.dp),
-            colorFilter = ColorFilter.tint(ExampleAppTheme.colors.iconColor.inverted),
-            painter = painterResource(id = ExampleAppTheme.icons.controls.cross),
+            colorFilter = ColorFilter.tint(SampleColors.textPrimary),
+            painter = painterResource(id = SampleIcons.cross),
             contentDescription = null,
         )
         Image(
@@ -245,7 +245,7 @@ private fun WaypointItem(elevation: Dp, removeModifier: Modifier, index: Int, te
                 .size(40.dp)
                 .clip(CircleShape)
                 .padding(8.dp),
-            colorFilter = ColorFilter.tint(ExampleAppTheme.colors.iconColor.inverted),
+            colorFilter = ColorFilter.tint(Color.White),
             imageVector = Icons.Default.Menu,
             contentDescription = null,
         )
@@ -285,16 +285,16 @@ private fun Header(
         )
         Text(
             text = "Done",
-            color = ExampleAppTheme.colors.textColor.inverted,
+            color = SampleColors.textPrimary,
             fontSize = 32.sp,
             lineHeight = 38.sp,
             modifier = Modifier
-                .padding(end = dimensionResource(R.dimen.default_margin))
-                .height(dimensionResource(id = R.dimen.button_height))
-                .clip(shape = ExampleAppTheme.shapes.actionButtonBackground)
-                .background(ExampleAppTheme.colors.buttonColors.primary)
+                .padding(end = 20.dp)
+                .height(90.dp)
+                .clip(shape = RoundedCornerShape(16.dp))
+                .background(SampleColors.primary)
                 .clickable(onClick = onDoneClick)
-                .padding(dimensionResource(R.dimen.default_margin))
+                .padding(20.dp)
                 .wrapContentSize(),
         )
     }
@@ -303,8 +303,8 @@ private fun Header(
 @Composable
 @Preview(name = "Light", device = Devices.TABLET)
 @SuppressWarnings("MagicNumber")
-@Preview
 @SuppressLint("RestrictedApi")
+@Preview
 internal fun Preview_SampleEditTrip() {
     PreviewDashTheme {
         SampleEditTrip(
@@ -327,8 +327,8 @@ internal fun Preview_SampleEditTrip() {
 @Composable
 @Preview(name = "Light", device = Devices.TABLET)
 @SuppressWarnings("MagicNumber")
-@Preview
 @SuppressLint("RestrictedApi")
+@Preview
 internal fun Preview_SampleEditTrip_WaypointItem() {
     PreviewDashTheme {
         WaypointItem(removeModifier = Modifier, index = 4, text = "Whole Foods Market", elevation = 4.dp)

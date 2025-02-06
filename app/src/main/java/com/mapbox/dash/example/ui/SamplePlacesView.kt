@@ -15,27 +15,30 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.mapbox.dash.example.theme.Body1
-import com.mapbox.dash.example.theme.Title4
-import com.mapbox.dash.example.theme.Title5
+import androidx.compose.ui.unit.sp
+import com.mapbox.dash.compose.shimmer
 import com.mapbox.dash.sdk.config.api.UiStates
 import com.mapbox.dash.sdk.map.presentation.ui.PlacesListUiState
-import com.mapbox.dash.view.compose.R
+import com.mapbox.dash.example.theme.SampleColors
+import com.mapbox.dash.example.theme.SampleIcons
 
 object SamplePlacesView {
 
@@ -50,33 +53,51 @@ object SamplePlacesView {
     fun InfoCard(number: Int, title: String, eta: String, onItemSelected: () -> Unit) {
         Card(
             shape = RoundedCornerShape(16.dp),
+            backgroundColor = SampleColors.backgroundLight,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
-                .background(
-                    ExampleAppTheme.colors.backgroundColors.tertiary,
-                    shape = ExampleAppTheme.shapes.searchPanelBackground,
-                ),
+                .wrapContentHeight()
+                .padding(top = 8.dp, bottom = 8.dp),
         ) {
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
                     .fillMaxWidth()
+                    .padding(16.dp)
                     .clickable(onClick = onItemSelected),
-            ) {
-                Body1(
+
+                ) {
+
+                Text(
+                    // body 1
+                    modifier = Modifier.wrapContentSize(),
+                    textAlign = TextAlign.Center,
                     text = "#$number",
-                    color = ExampleAppTheme.colors.textColor.primary,
+                    color = SampleColors.textPrimary.copy(alpha = 0.4f),
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Light,
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
-                Title4(
+
+                Text( // body 4
+                    modifier = Modifier.wrapContentSize(),
+                    textAlign = TextAlign.Center,
                     text = title,
-                    color = ExampleAppTheme.colors.textColor.primary,
+                    color = SampleColors.textPrimary.copy(alpha = 0.9f),
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.SemiBold,
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
-                Title5(
+
+                Text(
+                    // title 5
+                    modifier = Modifier.wrapContentSize(),
+                    textAlign = TextAlign.Center,
                     text = "ETA: $eta",
-                    color = ExampleAppTheme.colors.textColor.secondary,
+                    color = SampleColors.textPrimary.copy(alpha = 0.5f),
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Light,
                 )
             }
         }
@@ -105,36 +126,40 @@ object SamplePlacesView {
     ) {
         Column(
             modifier = modifier
-                .background(ExampleAppTheme.colors.backgroundColors.primary, shape = ExampleAppTheme.shapes.poiCardBackground),
+                .clip(RoundedCornerShape(16.dp))
+                .background(SampleColors.background)
+                .padding(16.dp),
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 placesListUiState.backCloseButtonState?.takeUnless { it.isFinalAction }?.let { backCloseButtonState ->
                     Image(
                         modifier = Modifier
-                            .size(dimensionResource(id = R.dimen.card_header_button_size))
+                            .size(60.dp)
                             .clip(CircleShape)
-                            .background(ExampleAppTheme.colors.buttonColors.primary)
+                            .background(SampleColors.primary)
                             .clickable(onClick = backCloseButtonState.onBackClicked)
-                            .padding(dimensionResource(id = R.dimen.card_header_button_padding)),
-                        painter = painterResource(id = ExampleAppTheme.icons.controls.longArrowLeft),
+                            .padding(12.dp),
+                        painter = painterResource(id = SampleIcons.longArrowLeft),
                         contentDescription = null,
                     )
                 }
-                Title5(
+                Text(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
-                    text = placesListUiState.title.content ?: "", color = ExampleAppTheme.colors.textColor.primary,
+                    text = placesListUiState.title.content ?: "",
+                    color = SampleColors.textPrimary,
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.SemiBold,
                 )
                 placesListUiState.backCloseButtonState?.let { backCloseButtonState ->
                     Image(
                         modifier = Modifier
-                            .weight(0.5f)
-                            .size(dimensionResource(id = R.dimen.card_header_button_size))
+                            .size(60.dp)
                             .clip(CircleShape)
-                            .background(ExampleAppTheme.colors.buttonColors.primary)
+                            .background(SampleColors.primary)
                             .clickable(onClick = backCloseButtonState.onCloseClicked)
-                            .padding(dimensionResource(id = R.dimen.card_header_button_padding)),
-                        painter = painterResource(id = ExampleAppTheme.icons.controls.cross),
+                            .padding(12.dp),
+                        painter = painterResource(id = SampleIcons.cross),
                         contentDescription = null,
                     )
                 }
@@ -142,7 +167,11 @@ object SamplePlacesView {
             placesListUiState.items.UiStates(
                 loading = {
                     LazyColumn(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(SampleColors.background)
+                            .clip(RoundedCornerShape(16.dp))
+                            .padding(top = 16.dp, bottom = 8.dp),
                         state = lazyListState,
                         contentPadding = PaddingValues(bottom = 8.dp),
                     ) {
@@ -156,7 +185,11 @@ object SamplePlacesView {
                 failure = {},
                 content = { content, _, _ ->
                     LazyColumn(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(SampleColors.background)
+                            .clip(RoundedCornerShape(16.dp))
+                            .padding(top = 16.dp, bottom = 8.dp),
                         state = lazyListState,
                         contentPadding = PaddingValues(bottom = 8.dp),
                     ) {
@@ -177,4 +210,3 @@ object SamplePlacesView {
         }
     }
 }
-

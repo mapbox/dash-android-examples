@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(FlowPreview::class)
-@SuppressLint("RestrictedApi")
 class WeatherViewModel : ViewModel() {
 
     private val weatherApi = MapboxWeatherApi()

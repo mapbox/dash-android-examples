@@ -90,10 +90,11 @@ android {
 }
 
 dependencies {
-    implementation("com.mapbox.navigationux:android:1.0.0-beta.45.2")
-    implementation("com.mapbox.navigationux:cluster:1.0.0-beta.45.2")
-    implementation("com.mapbox.navigationux:weather-api:1.0.0-beta.45.2")
-    implementation("com.mapbox.navigationux:data-inputs:1.0.0-beta.45.2")
+    val uxfVersion = "1.0.0-beta.45.2"
+    implementation("com.mapbox.navigationux:android:$uxfVersion")
+    implementation("com.mapbox.navigationux:cluster:$uxfVersion")
+    implementation("com.mapbox.navigationux:weather-api:$uxfVersion")
+    implementation("com.mapbox.navigationux:data-inputs:$uxfVersion")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")

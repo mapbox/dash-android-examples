@@ -128,12 +128,4 @@ abstract class DrawerActivity : AppCompatActivity() {
         }
         return null
     }
-
-    protected fun <T> Flow<T>.observeWhenStarted(lifecycleOwner: LifecycleOwner, action: FlowCollector<T>): Job {
-        return lifecycleOwner.lifecycleScope.launch {
-            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                collect(action)
-            }
-        }
-    }
 }
