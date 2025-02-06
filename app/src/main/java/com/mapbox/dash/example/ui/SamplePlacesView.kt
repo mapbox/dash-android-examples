@@ -35,7 +35,6 @@ import com.mapbox.dash.example.theme.Title4
 import com.mapbox.dash.example.theme.Title5
 import com.mapbox.dash.sdk.config.api.UiStates
 import com.mapbox.dash.sdk.map.presentation.ui.PlacesListUiState
-import com.mapbox.dash.example.theme.ExampleAppTheme
 import com.mapbox.dash.view.compose.R
 
 object SamplePlacesView {

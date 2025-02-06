@@ -30,7 +30,6 @@ import com.mapbox.dash.example.theme.Title5
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.map.presentation.ui.DestinationPreviewUiState
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
-import com.mapbox.dash.example.theme.ExampleAppTheme
 import com.mapbox.dash.view.compose.R
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.minutes

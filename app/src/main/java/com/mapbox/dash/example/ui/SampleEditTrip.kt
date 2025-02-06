@@ -53,7 +53,6 @@ import com.mapbox.dash.driver.presentation.edittrip.EditTripItem
 import com.mapbox.dash.driver.presentation.edittrip.EditTripUiState
 import com.mapbox.dash.sdk.map.presentation.ui.BackCloseButtonState
 import com.mapbox.dash.theming.R
-import com.mapbox.dash.example.theme.ExampleAppTheme
 import com.mapbox.dash.theming.compose.PreviewDashTheme
 
 @Composable

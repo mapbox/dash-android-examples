@@ -55,7 +55,6 @@ import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CAMERA
 import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CAMERA_RED_LIGHT
 import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CONTROL_ZONE_ENTER
 import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CONTROL_ZONE_EXIT
-import com.mapbox.dash.example.theme.ExampleAppTheme
 import com.mapbox.dash.theming.compose.PreviewDashTheme
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
