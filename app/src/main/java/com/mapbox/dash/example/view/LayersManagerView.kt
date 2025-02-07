@@ -7,8 +7,8 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import com.mapbox.dash.example.databinding.LayoutLayersManagerBinding
+import com.mapbox.dash.example.observeWhenStarted
 import com.mapbox.dash.sdk.Dash
-import com.mapbox.dash.sdk.base.flow.observeWhenStarted
 import com.mapbox.dash.sdk.base.layer.DashMapStyleLayer
 import com.mapbox.dash.sdk.base.layer.DashMapStyleLayersConfig
 import com.mapbox.dash.sdk.config.dsl.mapStyle

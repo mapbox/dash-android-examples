@@ -2,6 +2,7 @@
 
 package com.mapbox.dash.example
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.mapbox.dash.sdk.Dash

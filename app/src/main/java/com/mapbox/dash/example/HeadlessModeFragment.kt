@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.mapbox.dash.example.databinding.FragmentHeadlessModeBinding
-import com.mapbox.dash.logging.extension.className
 import com.mapbox.dash.sdk.Dash
-import com.mapbox.dash.sdk.base.flow.observeWhenStarted
 import com.mapbox.dash.sdk.event.NavigationState
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.first
@@ -27,7 +25,7 @@ class HeadlessModeFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         Dash.controller.observeNavigationState().observeWhenStarted(this) {
-            binding.tvNavigationState.text = it.className
+            binding.tvNavigationState.text = it.javaClass.simpleName
         }
 
         Dash.controller.observeRouteProgress().map { it.distanceRemaining.toInt() }
@@ -35,7 +33,7 @@ class HeadlessModeFragment : Fragment() {
                 binding.tvDistanceRemaining.text = "$it m."
             }
         Dash.controller.observeNavigationState()
-            .distinctUntilChangedBy { it.className }
+            .distinctUntilChangedBy { it.javaClass.simpleName }
             .observeWhenStarted(this) {
                 val button = binding.btnChangeNavigationState
                 val controller = Dash.controller

@@ -16,7 +16,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import com.mapbox.dash.example.R
 import com.mapbox.dash.example.getRandomDestinationAround
-import com.mapbox.dash.logging.extension.className
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.event.NavigationState
 import kotlinx.coroutines.CoroutineScope
@@ -48,7 +47,7 @@ internal class UXFBackgroundService : Service() {
             Toast.makeText(this, "Failed to start trip session", Toast.LENGTH_SHORT).show()
         }
         Dash.controller.observeNavigationState()
-            .distinctUntilChangedBy { it.className }
+            .distinctUntilChangedBy { it.javaClass.simpleName }
             .onEach {
                 val state = when (it) {
                     is NavigationState.ActiveGuidance -> UXFBackgroundState.ACTIVE_GUIDANCE

@@ -28,9 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.mapbox.dash.driver.R
 import com.mapbox.dash.driver.presentation.end.TripSummaryUiState
 import com.mapbox.dash.example.WeatherViewModel
-import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 
-@OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
 @Composable
 fun SampleTripSummaryView(
     modifier: Modifier = Modifier,

@@ -17,30 +17,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.mapbox.dash.compose.component.Body5
-import com.mapbox.dash.compose.component.Title7
+import androidx.compose.ui.unit.sp
 import com.mapbox.dash.destination.preview.R
 import com.mapbox.dash.destination.preview.domain.model.TripOverviewItem
 import com.mapbox.dash.example.DestinationWeatherForecast
-import com.mapbox.dash.example.toIcon
-import com.mapbox.dash.models.ArrivalInformationFormatter
+import com.mapbox.dash.example.theme.SampleColors
 import com.mapbox.dash.models.ChargeData
 import com.mapbox.dash.sdk.search.api.DashSearchResult
-import com.mapbox.dash.theming.compose.AppTheme
 import com.mapbox.geojson.Point
-import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
-import com.mapbox.navigation.weather.model.WeatherForecastItem
-import com.mapbox.navigation.weather.model.WeatherSystemOfMeasurement
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 
-@OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
 @Suppress("LongParameterList")
 @Composable
 internal fun SampleTripOverviewItems(
@@ -56,9 +47,10 @@ internal fun SampleTripOverviewItems(
             when (item) {
                 TripOverviewItem.YourLocation -> TripOverviewItem(
                     iconId = R.drawable.ic_trip_overview_your_location,
-                    title = stringResource(id = R.string.dash_trip_overview_your_location),
+                    title = "Your location",
                     onClick = onYourLocationClick,
                 )
+
                 is TripOverviewItem.Waypoint -> TripOverviewItem(
                     iconId = R.drawable.ic_trip_overview_waypoint,
                     title = item.searchResult.name,
@@ -70,8 +62,8 @@ internal fun SampleTripOverviewItems(
 
                 is TripOverviewItem.NoBatteryCharge -> TripOverviewItem(
                     iconId = R.drawable.ic_trip_overview_end_of_charge,
-                    title = stringResource(id = R.string.dash_poi_charging_stop_needed),
-                    color = AppTheme.colors.textColor.red,
+                    title = "Charging stop needed",
+                    color = SampleColors.error,
                     onClick = onEndOfChargeClick?.forward(item.routePoints),
                 )
 
@@ -84,6 +76,7 @@ internal fun SampleTripOverviewItems(
                     onClick = onWaypointClick?.forward(item.searchResult),
                     showArrow = true,
                 )
+
                 is TripOverviewItem.Destination -> TripOverviewItem(
                     iconId = R.drawable.ic_trip_overview_destination,
                     title = item.searchResult.name,
@@ -98,14 +91,27 @@ internal fun SampleTripOverviewItems(
     }
 }
 
-@OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
+@Composable
+private fun Text(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = SampleColors.textPrimary,
+) {
+    androidx.compose.material.Text(
+        modifier = modifier,
+        text = text,
+        color = color,
+        fontSize = 32.sp,
+        fontWeight = FontWeight.Normal,
+    )
+}
+
 @Suppress("LongParameterList", "LongMethod")
 @Composable
 private fun TripOverviewItem(
     @DrawableRes iconId: Int,
     title: String,
-    color: Color = AppTheme.colors.textColor.primary,
-    formatter: ArrivalInformationFormatter = StubDistanceAndTimeFormatter,
+    color: Color = SampleColors.textPrimary,
     etaMinutes: Double? = null,
     stateOfCharge: Float? = null,
     chargeData: ChargeData? = null,
@@ -115,27 +121,28 @@ private fun TripOverviewItem(
 ) {
     val modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
     Row(
-        modifier = modifier.padding(vertical = dimensionResource(id = R.dimen.poi_card_margin_top_medium)),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.default_margin)),
+        modifier = modifier.padding(vertical = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(20.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
-            modifier = Modifier.background(AppTheme.colors.backgroundColors.primary),
+            modifier = Modifier.background(SampleColors.background),
             painter = painterResource(id = iconId),
             contentDescription = null,
         )
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.poi_card_margin_top_small)),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Title7(
+            androidx.compose.material.Text(
                 text = title,
                 color = color,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Normal,
             )
             SampleTripOverviewArrivalInformation(
-                formatter = formatter,
                 etaMinutes = etaMinutes,
                 chargeFromPercent = chargeData?.chargeFromPercent ?: stateOfCharge,
                 chargeToPercent = chargeData?.chargeToPercent,
@@ -145,19 +152,16 @@ private fun TripOverviewItem(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement
-                        .spacedBy(dimensionResource(id = R.dimen.trip_overview_battery_icon_margin)),
+                        .spacedBy(4.dp),
                 ) {
                     Image(
-                        modifier = Modifier.size(dimensionResource(id = R.dimen.trip_overview_battery_icon_size)),
+                        modifier = Modifier.size(24.dp),
                         painter = painterResource(id = R.drawable.ic_trip_overview_charge_time),
                         contentDescription = null,
                     )
-                    Body5(
-                        text = formatter.formatDuration(
-                            duration = chargeData.chargeForMin.minutes,
-                            truncateDurationUnit = DurationUnit.MINUTES,
-                        ),
-                        color = AppTheme.colors.textColor.secondary,
+                    Text(
+                        text = chargeData.chargeForMin.minutes.toString(unit = DurationUnit.MINUTES),
+                        color = SampleColors.primary.copy(alpha = 0.7f),
                     )
                 }
             }
@@ -166,7 +170,7 @@ private fun TripOverviewItem(
             Image(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(color = AppTheme.colors.backgroundColors.secondary, shape = CircleShape)
+                    .background(color = SampleColors.backgroundLight, shape = CircleShape)
                     .padding(all = 5.dp),
                 painter = painterResource(id = R.drawable.ic_arrow_right),
                 contentDescription = null,
@@ -175,10 +179,9 @@ private fun TripOverviewItem(
     }
 }
 
-@OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
 @Composable
+@Suppress("LongMethod")
 private fun SampleTripOverviewArrivalInformation(
-    formatter: ArrivalInformationFormatter,
     etaMinutes: Double?,
     chargeFromPercent: Float?,
     chargeToPercent: Float?,
@@ -187,47 +190,46 @@ private fun SampleTripOverviewArrivalInformation(
     if (etaMinutes != null || chargeFromPercent != null) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (etaMinutes != null) {
-                Body5(
-                    text = formatter.formatDuration(
-                        duration = etaMinutes.minutes,
-                        truncateDurationUnit = DurationUnit.MINUTES,
-                    ),
-                    color = AppTheme.colors.textColor.secondary,
+                Text(
+                    text = etaMinutes.minutes.toString(unit = DurationUnit.MINUTES),
+                    color = SampleColors.primary.copy(alpha = 0.7f),
                 )
             }
             if (etaMinutes != null && chargeFromPercent != null) {
-                Body5(
+                Text(
                     text = "·",
-                    color = AppTheme.colors.textColor.secondary,
-                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.eta_point_margin)),
+                    color = SampleColors.primary.copy(alpha = 0.7f),
+                    modifier = Modifier.padding(horizontal = 8.dp),
                 )
             }
             if (chargeFromPercent != null) {
                 Image(
-                    modifier = Modifier.size(dimensionResource(id = R.dimen.trip_overview_battery_icon_size)),
-                    painter = painterResource(id = chargeFromPercent.toInt().getStateOfChargeIcon()),
+                    modifier = Modifier.size(24.dp),
+                    painter = painterResource(
+                        id = chargeFromPercent.toInt().getStateOfChargeIcon()
+                    ),
                     contentDescription = null,
                 )
                 if (chargeFromPercent >= 0) {
-                    Body5(
+                    Text(
                         modifier = Modifier
-                            .padding(start = dimensionResource(id = R.dimen.trip_overview_battery_icon_margin))
+                            .padding(start = 4.dp)
                             .wrapContentHeight(),
                         text = if (chargeToPercent != null) {
                             "$chargeFromPercent% → $chargeToPercent%"
                         } else {
                             "$chargeFromPercent%"
                         },
-                        color = AppTheme.colors.textColor.secondary,
+                        color = SampleColors.primary.copy(alpha = 0.7f),
                     )
                 }
             }
 
             if (weatherForecast != null) {
-                Body5(
+                Text(
                     text = " · ",
-                    color = AppTheme.colors.textColor.secondary,
-                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.eta_point_margin)),
+                    color = SampleColors.textPrimary.copy(alpha = 0.7f),
+                    modifier = Modifier.padding(horizontal = 8.dp),
                 )
                 Image(
                     modifier = Modifier
@@ -237,21 +239,14 @@ private fun SampleTripOverviewArrivalInformation(
                     painter = painterResource(id = weatherForecast.icon),
                     contentDescription = null,
                 )
-                Body5(
+                Text(
                     text = weatherForecast.text,
-                    color = AppTheme.colors.textColor.secondary,
-                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.eta_point_margin)),
+                    color = SampleColors.primary.copy(alpha = 0.7f),
+                    modifier = Modifier.padding(horizontal = 8.dp),
                 )
             }
         }
     }
-}
-
-private object StubDistanceAndTimeFormatter : ArrivalInformationFormatter {
-    override fun formatDistance(distanceInMeters: Double) = "$distanceInMeters m"
-
-    override fun formatDuration(duration: Duration, truncateDurationUnit: DurationUnit): String =
-        duration.toString(truncateDurationUnit)
 }
 
 private fun <T> ((T) -> Unit).forward(arg: T): () -> Unit {
