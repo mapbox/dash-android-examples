@@ -53,6 +53,19 @@ class WeatherViewModel : ViewModel() {
             )
         }
 
+    val weatherWarningsAlongRoute = Dash.controller.observeRoutes()
+        .map { event ->
+            event.routes.firstOrNull()?.let { route ->
+                weatherApi.getWarningsAlongRoute(route).fold(
+                    onSuccess = { it },
+                    onFailure = {
+                        Log.e(TAG, it.message.orEmpty(), it)
+                        null
+                    },
+                )
+            } ?: emptyList()
+        }
+
     val weatherForecastOnDestination = Dash.controller.observeRoutes()
         .mapNotNull { it.routes.lastOrNull()?.waypoints?.lastOrNull() }
         .distinctUntilChanged()
