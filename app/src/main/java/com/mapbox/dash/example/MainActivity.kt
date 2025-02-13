@@ -222,6 +222,7 @@ class MainActivity : DrawerActivity() {
     private val showDebugLogs = MutableStateFlow(value = true)
     private val setMap3dStyle = MutableStateFlow(value = true)
     private val addMapLayer = MutableStateFlow(value = false)
+    private val showWeatherWarningAlongRoute = MutableStateFlow(value = false)
     private val setOfflineTts = MutableStateFlow(value = false)
     private val setCustomCompassDataInputs = MutableStateFlow(value = false)
     private val showRouteOptionsInSettings = MutableStateFlow(value = false)
@@ -378,11 +379,31 @@ class MainActivity : DrawerActivity() {
             },
         )
         bindSwitch(
+            switch = menuBinding.showWeatherWarningAlongRoute,
+            state = showWeatherWarningAlongRoute,
+        ) { enableWeatherAlongRoute ->
+            getDashNavigationFragment()?.let { fragment ->
+                if (enableWeatherAlongRoute) {
+                    addMapLayer.value = false
+                    fragment.setMapLayer {
+                        topSlot {
+                            WeatherAlongRouteBlock(weatherVM.weatherWarningsAlongRoute) { message ->
+                                Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                } else {
+                    fragment.setMapLayer(DefaultMapLayerComposer)
+                }
+            }
+        }
+        bindSwitch(
             switch = menuBinding.addCustomMapLayer,
             state = addMapLayer,
         ) { enabled ->
             getDashNavigationFragment()?.let { fragment ->
                 if (enabled) {
+                    showWeatherWarningAlongRoute.value = false
                     fragment.setMapLayer {
 
                         middleSlot {
