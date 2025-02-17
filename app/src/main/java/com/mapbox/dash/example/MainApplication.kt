@@ -2,16 +2,20 @@ package com.mapbox.dash.example
 
 import android.app.Application
 import android.location.LocationManager
+import android.os.Debug
 import com.mapbox.common.location.Location
 import com.mapbox.dash.cluster.dayStyleUri
 import com.mapbox.dash.cluster.map3DStyleUri
 import com.mapbox.dash.cluster.nightStyleUri
+import com.mapbox.dash.compose.koinViewModel
+import com.mapbox.dash.di.DashKoinContext
 import com.mapbox.dash.driver.notification.presentation.DashIncidentType
 import com.mapbox.dash.ev.api.EvDataProvider
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.base.device.DashDeviceType
 import com.mapbox.dash.sdk.base.domain.model.BatteryComfortLevel
 import com.mapbox.dash.sdk.base.units.Gb
+import com.mapbox.dash.sdk.config.api.CustomKeys.FORCE_DEBUG
 import com.mapbox.dash.sdk.config.api.EngineType
 import com.mapbox.dash.sdk.config.api.ScreenDirectionality
 import com.mapbox.dash.sdk.config.dsl.DEFAULT_3D_STYLE
@@ -24,6 +28,7 @@ import com.mapbox.dash.sdk.config.dsl.debugSettings
 import com.mapbox.dash.sdk.config.dsl.destinationPreview
 import com.mapbox.dash.sdk.config.dsl.driverNotification
 import com.mapbox.dash.sdk.config.dsl.ev
+import com.mapbox.dash.sdk.config.dsl.evTripNotification
 import com.mapbox.dash.sdk.config.dsl.fasterRouteNotification
 import com.mapbox.dash.sdk.config.dsl.incidentNotification
 import com.mapbox.dash.sdk.config.dsl.locationSimulation
@@ -39,6 +44,7 @@ import com.mapbox.dash.sdk.config.dsl.theme
 import com.mapbox.dash.sdk.config.dsl.ui
 import com.mapbox.dash.sdk.config.dsl.uiSettings
 import com.mapbox.dash.state.defaults.camera.SimpleDefaults
+import com.mapbox.ev.core.data.DebugEvDataProvider
 import com.mapbox.maps.MapboxExperimental
 import kotlinx.coroutines.flow.flowOf
 import kotlin.time.Duration.Companion.minutes
@@ -147,6 +153,9 @@ class MainApplication : Application() {
                         DashIncidentType.UNKNOWN,
                     )
                     withSound = true
+                }
+                evTripNotification {
+                    evBetterRouteNotificationFreeze = 10.minutes
                 }
             }
             cluster {
