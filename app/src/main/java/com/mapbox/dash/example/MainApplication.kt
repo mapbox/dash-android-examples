@@ -24,6 +24,7 @@ import com.mapbox.dash.sdk.config.dsl.debugSettings
 import com.mapbox.dash.sdk.config.dsl.destinationPreview
 import com.mapbox.dash.sdk.config.dsl.driverNotification
 import com.mapbox.dash.sdk.config.dsl.ev
+import com.mapbox.dash.sdk.config.dsl.evTripNotification
 import com.mapbox.dash.sdk.config.dsl.fasterRouteNotification
 import com.mapbox.dash.sdk.config.dsl.incidentNotification
 import com.mapbox.dash.sdk.config.dsl.locationSimulation
@@ -147,6 +148,9 @@ class MainApplication : Application() {
                         DashIncidentType.UNKNOWN,
                     )
                     withSound = true
+                }
+                evTripNotification {
+                    evBetterRouteNotificationFreeze = 10.minutes
                 }
             }
             cluster {
