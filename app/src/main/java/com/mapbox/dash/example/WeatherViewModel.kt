@@ -33,29 +33,29 @@ class WeatherViewModel : ViewModel() {
 
     val weatherConditionAtMapCenter = observeCameraCenter
         .mapNotNull { center ->
-            weatherApi.getCondition(center).fold(
+/*            weatherApi.getCondition(center).fold(
                 onSuccess = { it },
                 onFailure = {
                     Log.e(TAG, it.message.orEmpty(), it)
                     null
                 },
-            )
+            )*/
         }
 
     val weatherAlertsAtMapCenter = observeCameraCenter
         .mapNotNull { center ->
-            weatherApi.getWeatherAlerts(center).fold(
+/*            weatherApi.getWeatherAlerts(center).fold(
                 onSuccess = { it },
                 onFailure = {
                     Log.e(TAG, it.message.orEmpty(), it)
                     null
                 },
-            )
+            )*/
         }
 
     val weatherWarningsAlongRoute = Dash.controller.observeRoutes()
         .map { event ->
-            event.routes.firstOrNull()?.let { route ->
+/*            event.routes.firstOrNull()?.let { route ->
                 weatherApi.getWarningsAlongRoute(route).fold(
                     onSuccess = { it },
                     onFailure = {
@@ -63,24 +63,24 @@ class WeatherViewModel : ViewModel() {
                         null
                     },
                 )
-            } ?: emptyList()
+            } ?: emptyList()*/
         }
 
     val weatherForecastOnDestination = Dash.controller.observeRoutes()
         .mapNotNull { it.routes.lastOrNull()?.waypoints?.lastOrNull() }
         .distinctUntilChanged()
         .map { lastWaypoint ->
-            weatherApi.getForecast(lastWaypoint.location()).fold(
+/*            weatherApi.getForecast(lastWaypoint.location()).fold(
                 onSuccess = { it },
                 onFailure = {
                     Log.e(TAG, it.message.orEmpty(), it)
                     null
                 },
-            )
+            )*/
         }
         .filterNotNull()
         .map { weatherForecast ->
-            val weatherCondition = weatherForecast.first().condition
+/*            val weatherCondition = weatherForecast.first().condition
             val temperature = weatherCondition.temperature.toInt()
             val weatherIcon = weatherCondition.toIcon()
             val maxTemp = weatherForecast.maxOf { it.condition.temperature }.toInt()
@@ -94,7 +94,7 @@ class WeatherViewModel : ViewModel() {
             DestinationWeatherForecast(
                 text = "$temperature °$unit · H: $maxTemp L: $minTemp",
                 icon = weatherIcon,
-            )
+            )*/
         }
 
     companion object {
@@ -105,10 +105,10 @@ class WeatherViewModel : ViewModel() {
 }
 
 internal fun WeatherCondition.toIcon(): Int {
-    return resolveConditionsToSummary(
+    return 0 /*resolveConditionsToSummary(
         getCloudLevel(this.cloudCover),
         getRainLevel(this.precipitationRate),
-    )
+    )*/
 }
 
 private fun resolveConditionsToSummary(
