@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
@@ -30,16 +29,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mapbox.dash.example.theme.SampleColors
+import com.mapbox.dash.example.theme.SampleIcons
 import com.mapbox.dash.models.ArrivalInformationFormatter
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.config.api.UiStates
 import com.mapbox.dash.sdk.map.presentation.ui.DestinationPreviewUiState
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
-import com.mapbox.dash.example.theme.SampleColors
-import com.mapbox.dash.example.theme.SampleIcons
-import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
-import com.mapbox.navigation.weather.model.WeatherForecastItem
-import com.mapbox.navigation.weather.model.WeatherSystemOfMeasurement
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
