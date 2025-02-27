@@ -49,6 +49,7 @@ import com.mapbox.dash.driver.notification.presentation.DefaultDriverNotificatio
 import com.mapbox.dash.driver.presentation.DefaultArrivalFeedbackView
 import com.mapbox.dash.driver.presentation.edittrip.DefaultEditTripCard
 import com.mapbox.dash.driver.presentation.end.DefaultTripSummary
+import com.mapbox.dash.driver.presentation.map.DefaultRangeMapInfoView
 import com.mapbox.dash.driver.presentation.search.DefaultSearchPanelView
 import com.mapbox.dash.driver.presentation.waypoint.DefaultContinueNavigationView
 import com.mapbox.dash.example.databinding.ActivityMainBinding
@@ -65,6 +66,7 @@ import com.mapbox.dash.example.ui.SampleFullScreenSearch
 import com.mapbox.dash.example.ui.SampleGuidanceBanner
 import com.mapbox.dash.example.ui.SampleOfflineRouteAlert
 import com.mapbox.dash.example.ui.SamplePlacesView
+import com.mapbox.dash.example.ui.SampleRangeMapInfoView
 import com.mapbox.dash.example.ui.SampleResumeGuidanceView
 import com.mapbox.dash.example.ui.SampleRoutesOverview
 import com.mapbox.dash.example.ui.SampleSearchPanel
@@ -250,6 +252,7 @@ class MainActivity : DrawerActivity() {
     private val upcomingLaneGuidance = MutableStateFlow(value = false)
     private val setCustomVoicePlayer = MutableStateFlow(value = false)
     private val setCustomDriverNotification = MutableStateFlow(value = false)
+    private val setCustomRangeMapInfoView = MutableStateFlow(value = false)
 
     private fun initCustomizationMenu() {
         headlessModeCustomization()
@@ -909,6 +912,19 @@ class MainActivity : DrawerActivity() {
                     fragment.setDriverNotification { modifier, uiState ->
                         DefaultDriverNotificationView(modifier, uiState)
                     }
+                }
+            }
+        }
+
+        bindSwitch(menuBinding.toggleCustomRangeMapInfoView, setCustomRangeMapInfoView) { enabled ->
+            val fragment = getDashNavigationFragment() ?: return@bindSwitch
+            if (enabled) {
+                fragment.setRangeMapInfoView { modifier, state ->
+                    SampleRangeMapInfoView(modifier, state)
+                }
+            } else {
+                fragment.setRangeMapInfoView { modifier, state ->
+                    DefaultRangeMapInfoView(modifier, state)
                 }
             }
         }
