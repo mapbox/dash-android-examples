@@ -154,6 +154,26 @@
             android:textAllCaps="true"
             />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnShowEvRangeMap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Show EV range map"
+            android:textAllCaps="true"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnHideEvRangeMap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Hide EV range map"
+            android:textAllCaps="true"
+            />
+
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/customCompassDataInputs"
             android:layout_width="match_parent"
