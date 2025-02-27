@@ -492,6 +492,14 @@ class MainActivity : DrawerActivity() {
             controller.stopNavigation()
         }
 
+        menuBinding.btnShowEvRangeMap.bindAction {
+            Dash.controller.showEvRangeMap()
+        }
+
+        menuBinding.btnHideEvRangeMap.bindAction {
+            Dash.controller.hideEvRangeMap()
+        }
+
         menuBinding.customCompassDataInputs.setOnCheckedChangeListener { _, isChecked ->
             setCustomCompassDataInputs.value = isChecked
         }
