@@ -55,7 +55,7 @@ fun SampleTripSummaryView(
             items = tripSummaryUiState.tripOverviewItems,
             onWaypointClick = tripSummaryUiState.onWaypointClick,
             onEndOfChargeClick = tripSummaryUiState.onOpenSearchForChargeClick,
-            weatherForecast = null /*weatherForecast*/,
+            weatherForecast = weatherForecast,
         )
 
         SampleEtaView(

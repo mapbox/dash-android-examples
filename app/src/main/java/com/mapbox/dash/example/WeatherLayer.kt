@@ -5,14 +5,18 @@ package com.mapbox.dash.example
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.res.imageResource
+import com.google.gson.JsonObject
 import com.mapbox.dash.example.theme.SampleColors
+import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMapComposable
+import com.mapbox.maps.extension.compose.style.BooleanValue
 import com.mapbox.maps.extension.compose.style.ColorValue
 import com.mapbox.maps.extension.compose.style.DoubleValue
 import com.mapbox.maps.extension.compose.style.PointListValue
@@ -32,7 +36,11 @@ import com.mapbox.maps.extension.style.sources.generated.ImageSource
 import com.mapbox.maps.extension.style.sources.getSourceAs
 import com.mapbox.maps.extension.style.sources.updateImage
 import com.mapbox.maps.interactions.FeatureState
+import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
+import com.mapbox.navigation.weather.model.WeatherResult
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 private const val TAG = "CustomMapLayer"
 private const val ID_IMAGE_SOURCE = "image_source-id"
@@ -142,42 +150,59 @@ fun FireHydrantsLayer() {
     }
 }
 
-//@Composable
-//@MapboxMapComposable
-//fun WeatherAlongRouteBlock(weatherWarningsAlongRoute: Flow<List<WeatherWarning>>, clickCallback: (String) -> Unit) {
-//    val warnings = weatherWarningsAlongRoute.collectAsState(null).value ?: return
-//    if (warnings.isEmpty()) return
-//
-//    val features = warnings.mapIndexed { index, weatherWarning ->
-//        val properties = JsonObject()
-//        val text = "${weatherWarning.text.ifEmpty { weatherWarning.weatherPhrase }} at ${weatherWarning.atTime}"
-//        properties.addProperty("text", text)
-//        Feature.fromGeometry(weatherWarning.nearLocation, properties, index.toString())
-//    }
-//
-//    val icon = rememberStyleImage(imageId = "severe-weather-icon", resourceId = R.drawable.cloudy)
-//
-//    MapEffect(key1 = features.size) {
-//        it.mapboxMap.getStyle { style ->
-//            style.addImage(icon.imageId, icon.image)
-//        }
-//    }
-//
-//    SymbolLayer(
-//        layerId = "weather-along-route",
-//        sourceState = rememberGeoJsonSourceState(
-//            key = warnings.size.toString(),
-//            sourceId = "weather-along-route-source",
-//        ) {
-//            data = GeoJSONData(features)
-//        },
-//    ) {
-//        iconAllowOverlap = BooleanValue(true)
-//        iconImage = ImageValue(icon)
-//        interactionsState.onClicked { interactiveFeature, _ ->
-//            val warningText = interactiveFeature.properties.getString("text")
-//            clickCallback(warningText)
-//            true
-//        }
-//    }
-//}
+@OptIn(MapboxExperimental::class, ExperimentalPreviewMapboxNavigationAPI::class)
+@SuppressLint("IncorrectNumberOfArgumentsInExpression")
+@SuppressWarnings("LongMethod")
+@Composable
+@MapboxMapComposable
+fun WeatherAlongRouteBlock(weatherWarningsAlongRoute: Flow<List<WeatherResult>>, clickCallback: (String) -> Unit) {
+    val warnings = weatherWarningsAlongRoute.collectAsState(null).value?.map { result ->
+        val location = result.location
+        result.conditions.map {
+            Warning(location, it.warning.orEmpty(), it.dateTime, it.fields.weatherPhrase.orEmpty())
+        }
+    }?.flatten() ?: return
+
+    if (warnings.isEmpty()) return
+
+    val features = warnings.mapIndexed { index, weatherWarning ->
+        val properties = JsonObject()
+
+        val text = "${weatherWarning.text.ifEmpty { weatherWarning.phrase }} at ${weatherWarning.atTime}"
+        properties.addProperty("text", text)
+        Feature.fromGeometry(weatherWarning.location, properties, index.toString())
+    }
+
+    val icon = rememberStyleImage(imageId = "severe-weather-icon", resourceId = R.drawable.cloudy)
+
+    MapEffect(key1 = features.size) {
+        it.mapboxMap.getStyle { style ->
+            style.addImage(icon.imageId, icon.image)
+        }
+    }
+
+    SymbolLayer(
+        layerId = "weather-along-route",
+        sourceState = rememberGeoJsonSourceState(
+            key = warnings.size.toString(),
+            sourceId = "weather-along-route-source",
+        ) {
+            data = GeoJSONData(features)
+        },
+    ) {
+        iconAllowOverlap = BooleanValue(true)
+        iconImage = ImageValue(icon)
+        interactionsState.onClicked { interactiveFeature, _ ->
+            val warningText = interactiveFeature.properties.getString("text")
+            clickCallback(warningText)
+            true
+        }
+    }
+}
+
+private data class Warning(
+    val location: Point,
+    val text: String,
+    val atTime: Date,
+    val phrase: String,
+)

@@ -378,7 +378,7 @@ class MainActivity : DrawerActivity() {
                 }
             },
         )
-/*        bindSwitch(
+        bindSwitch(
             switch = menuBinding.showWeatherWarningAlongRoute,
             state = showWeatherWarningAlongRoute,
         ) { enableWeatherAlongRoute ->
@@ -396,7 +396,7 @@ class MainActivity : DrawerActivity() {
                     fragment.setMapLayer(DefaultMapLayerComposer)
                 }
             }
-        }*/
+        }
         bindSwitch(
             switch = menuBinding.addCustomMapLayer,
             state = addMapLayer,
@@ -560,14 +560,14 @@ class MainActivity : DrawerActivity() {
                     rightSidebar {
                         controls = if (enabled) {
                             listOf(
-  /*                              DashSidebarControl.Custom(
+                                DashSidebarControl.Custom(
                                     content = { modifier ->
                                         WeatherAlertWidget(
                                             modifier = modifier,
                                             weatherAlertAtMapCenter = weatherVM.weatherAlertsAtMapCenter,
                                         )
                                     },
-                                ),*/
+                                ),
                                 DashSidebarControl.Button(
                                     iconId = R.drawable.baseline_remove_red_eye_24,
                                     onClick = {
@@ -588,9 +588,9 @@ class MainActivity : DrawerActivity() {
                                 ),
                                 DashSidebarControl.Routes,
                                 DashSidebarControl.Debug,
-/*                                DashSidebarControl.Custom {
+                                DashSidebarControl.Custom {
                                     CurrentWeatherWidget(it, weatherVM.weatherConditionAtMapCenter)
-                                },*/
+                                },
                             )
                         } else {
                             DashSidebarControl.defaultRightSidebarControls
@@ -1160,7 +1160,7 @@ private fun CurrentWeatherWidget(modifier: Modifier, weatherConditionAtMapCenter
                 .align(BiasAlignment(horizontalBias = 0.4f, verticalBias = 0.4f))
                 .size(40.dp),
             colorFilter = ColorFilter.tint(androidx.compose.ui.graphics.Color.Black),
-            painter = painterResource(conditions.toIcon()),
+            painter = painterResource(conditions.fields.toIcon()),
             contentDescription = null,
         )
         Text(
