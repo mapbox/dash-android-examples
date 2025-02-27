@@ -231,14 +231,6 @@ private fun SampleTripOverviewArrivalInformation(
                     color = SampleColors.textPrimary.copy(alpha = 0.7f),
                     modifier = Modifier.padding(horizontal = 8.dp),
                 )
-                Image(
-                    modifier = Modifier
-                        .padding(1.dp)
-                        .width(28.dp)
-                        .height(28.dp),
-                    painter = painterResource(id = weatherForecast.icon),
-                    contentDescription = null,
-                )
                 Text(
                     text = weatherForecast.text,
                     color = SampleColors.primary.copy(alpha = 0.7f),

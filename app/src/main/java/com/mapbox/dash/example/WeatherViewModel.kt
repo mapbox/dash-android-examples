@@ -2,24 +2,23 @@
 
 package com.mapbox.dash.example
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 import com.mapbox.navigation.weather.MapboxWeatherApi
-import com.mapbox.navigation.weather.model.WeatherCondition
+import com.mapbox.navigation.weather.model.WeatherFields
+import com.mapbox.navigation.weather.model.WeatherQuery
 import com.mapbox.navigation.weather.model.WeatherSystemOfMeasurement
 import com.mapbox.turf.TurfMeasurement
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlin.time.Duration.Companion.seconds
 
-@OptIn(FlowPreview::class)
+@OptIn(ExperimentalPreviewMapboxNavigationAPI::class, FlowPreview::class)
 class WeatherViewModel : ViewModel() {
 
     private val weatherApi = MapboxWeatherApi()
@@ -31,84 +30,90 @@ class WeatherViewModel : ViewModel() {
             distance < MIN_DISTANCE_IN_KM
         }
 
-    val weatherConditionAtMapCenter = observeCameraCenter
-        .mapNotNull { center ->
-/*            weatherApi.getCondition(center).fold(
-                onSuccess = { it },
-                onFailure = {
-                    Log.e(TAG, it.message.orEmpty(), it)
-                    null
-                },
-            )*/
-        }
-
-    val weatherAlertsAtMapCenter = observeCameraCenter
-        .mapNotNull { center ->
-/*            weatherApi.getWeatherAlerts(center).fold(
-                onSuccess = { it },
-                onFailure = {
-                    Log.e(TAG, it.message.orEmpty(), it)
-                    null
-                },
-            )*/
-        }
-
     val weatherWarningsAlongRoute = Dash.controller.observeRoutes()
         .map { event ->
-/*            event.routes.firstOrNull()?.let { route ->
-                weatherApi.getWarningsAlongRoute(route).fold(
+            event.routes.firstOrNull()?.let { route ->
+                val query = WeatherQuery.WarningsAlongRoute.Builder(route).build()
+                weatherApi.getConditions(query).fold(
                     onSuccess = { it },
                     onFailure = {
                         Log.e(TAG, it.message.orEmpty(), it)
                         null
                     },
                 )
-            } ?: emptyList()*/
+            } ?: emptyList()
+        }
+
+    val weatherConditionAtMapCenter = observeCameraCenter
+        .mapNotNull { center ->
+            val query = WeatherQuery.Current.Builder(center).build()
+            weatherApi.getConditions(query).fold(
+                onSuccess = { it.firstOrNull()?.conditions?.firstOrNull() },
+                onFailure = {
+                    Log.e(TAG, it.message.orEmpty(), it)
+                    null
+                },
+            )
+        }
+
+    val weatherAlertsAtMapCenter = observeCameraCenter
+        .mapNotNull { center ->
+            weatherApi.getWeatherAlerts(center).fold(
+                onSuccess = { it },
+                onFailure = {
+                    Log.e(TAG, it.message.orEmpty(), it)
+                    null
+                },
+            )
         }
 
     val weatherForecastOnDestination = Dash.controller.observeRoutes()
         .mapNotNull { it.routes.lastOrNull()?.waypoints?.lastOrNull() }
         .distinctUntilChanged()
         .map { lastWaypoint ->
-/*            weatherApi.getForecast(lastWaypoint.location()).fold(
-                onSuccess = { it },
+            val query = WeatherQuery.Daily.Builder(lastWaypoint.location())
+                .fields(
+                    listOf(
+                        WeatherQuery.Daily.Fields.TemperatureMax,
+                        WeatherQuery.Daily.Fields.TemperatureMin,
+                    ),
+                )
+                .build()
+            weatherApi.getConditions(query).fold(
+                onSuccess = {
+                    it.firstOrNull()?.conditions?.firstOrNull()?.fields?.let { fields ->
+                        val maxTemp = fields.temperatureMax?.toInt()
+                        val minTemp = fields.temperatureMin?.toInt()
+                        val unit = when (fields.systemOfMeasurement) {
+                            WeatherSystemOfMeasurement.Imperial -> "F"
+                            WeatherSystemOfMeasurement.Metric -> "C"
+                            else -> "C"
+                        }
+
+                        DestinationWeatherForecast(
+                            text = "H: $maxTemp°$unit    L: $minTemp°$unit",
+                        )
+                    }
+                },
                 onFailure = {
                     Log.e(TAG, it.message.orEmpty(), it)
                     null
                 },
-            )*/
+            )
         }
-        .filterNotNull()
-        .map { weatherForecast ->
-/*            val weatherCondition = weatherForecast.first().condition
-            val temperature = weatherCondition.temperature.toInt()
-            val weatherIcon = weatherCondition.toIcon()
-            val maxTemp = weatherForecast.maxOf { it.condition.temperature }.toInt()
-            val minTemp = weatherForecast.minOf { it.condition.temperature }.toInt()
-            val unit = when (weatherCondition.systemOfMeasurement) {
-                WeatherSystemOfMeasurement.Imperial -> "F"
-                WeatherSystemOfMeasurement.Metric -> "C"
-                else -> "C"
-            }
 
-            DestinationWeatherForecast(
-                text = "$temperature °$unit · H: $maxTemp L: $minTemp",
-                icon = weatherIcon,
-            )*/
-        }
 
     companion object {
-
         private const val TAG = "WeatherViewModel"
         private const val MIN_DISTANCE_IN_KM = 25
     }
 }
 
-internal fun WeatherCondition.toIcon(): Int {
-    return 0 /*resolveConditionsToSummary(
+internal fun WeatherFields.toIcon(): Int {
+    return resolveConditionsToSummary(
         getCloudLevel(this.cloudCover),
         getRainLevel(this.precipitationRate),
-    )*/
+    )
 }
 
 private fun resolveConditionsToSummary(
