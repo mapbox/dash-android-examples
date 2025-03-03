@@ -96,10 +96,11 @@ class MainApplication : Application() {
             }
             offline {
                 tilesPath = applicationContext.filesDir.absolutePath + "/prepared_tilestore"
-                tilesDiskQuota = 30.Gb
+                tilesDiskQuota = 50.Gb
             }
             debugSettings {
                 showSendDebugInfoButton = true
+                showSimulateLocationOption = true
                 showDisplaySendDebugInfoButtonOption = true
             }
             ui {
