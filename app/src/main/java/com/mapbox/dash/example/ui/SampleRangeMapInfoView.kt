@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mapbox.dash.sdk.map.domain.RangeMapInfoUiState
+import com.mapbox.dash.sdk.ev.domain.model.RangeMapInfoUiState
 
 @Composable
 fun SampleRangeMapInfoView(modifier: Modifier, state: RangeMapInfoUiState) {

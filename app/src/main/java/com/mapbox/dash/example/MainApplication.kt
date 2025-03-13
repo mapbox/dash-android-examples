@@ -6,12 +6,12 @@ import com.mapbox.common.location.Location
 import com.mapbox.dash.cluster.dayStyleUri
 import com.mapbox.dash.cluster.map3DStyleUri
 import com.mapbox.dash.cluster.nightStyleUri
-import com.mapbox.dash.driver.notification.presentation.DashIncidentType
 import com.mapbox.dash.ev.api.EvDataProvider
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.base.device.DashDeviceType
 import com.mapbox.dash.sdk.base.domain.model.BatteryComfortLevel
 import com.mapbox.dash.sdk.base.units.Gb
+import com.mapbox.dash.sdk.config.api.DashIncidentNotificationType
 import com.mapbox.dash.sdk.config.api.EngineType
 import com.mapbox.dash.sdk.config.api.ScreenDirectionality
 import com.mapbox.dash.sdk.config.dsl.DEFAULT_3D_STYLE
@@ -135,18 +135,18 @@ class MainApplication : Application() {
                     distanceToIncident = 600.0
                     timeToDismiss = 15.seconds
                     enabledIncidentTypes = setOf(
-                        DashIncidentType.ACCIDENT,
-                        DashIncidentType.CONSTRUCTION,
-                        DashIncidentType.DISABLED_VEHICLE,
-                        DashIncidentType.LANE_RESTRICTION,
-                        DashIncidentType.MASS_TRANSIT,
-                        DashIncidentType.MISCELLANEOUS,
-                        DashIncidentType.OTHER_NEWS,
-                        DashIncidentType.PLANNED_EVENT,
-                        DashIncidentType.ROAD_CLOSURE,
-                        DashIncidentType.ROAD_HAZARD,
-                        DashIncidentType.WEATHER,
-                        DashIncidentType.UNKNOWN,
+                        DashIncidentNotificationType.Accident,
+                        DashIncidentNotificationType.Construction,
+                        DashIncidentNotificationType.DisabledVehicle,
+                        DashIncidentNotificationType.LaneRestriction,
+                        DashIncidentNotificationType.MassTransit,
+                        DashIncidentNotificationType.Miscellaneous,
+                        DashIncidentNotificationType.OtherNews,
+                        DashIncidentNotificationType.PlannedEvent,
+                        DashIncidentNotificationType.RoadClosure,
+                        DashIncidentNotificationType.RoadHazard,
+                        DashIncidentNotificationType.Weather,
+                        DashIncidentNotificationType.Unknown,
                     )
                     withSound = true
                 }
