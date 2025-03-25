@@ -7,10 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
@@ -24,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mapbox.dash.destination.preview.R
 import com.mapbox.dash.destination.preview.domain.model.TripOverviewItem
-import com.mapbox.dash.example.DestinationWeatherForecast
 import com.mapbox.dash.example.theme.SampleColors
 import com.mapbox.dash.models.ChargeData
 import com.mapbox.dash.sdk.search.api.DashSearchResult
@@ -37,7 +34,6 @@ import kotlin.time.DurationUnit
 internal fun SampleTripOverviewItems(
     modifier: Modifier = Modifier,
     items: List<TripOverviewItem>,
-    weatherForecast: DestinationWeatherForecast? = null,
     onYourLocationClick: (() -> Unit)? = null,
     onWaypointClick: ((DashSearchResult) -> Unit)? = null,
     onEndOfChargeClick: ((List<Point>) -> Unit)? = null,
@@ -83,7 +79,6 @@ internal fun SampleTripOverviewItems(
                     etaMinutes = item.etaMinutes,
                     stateOfCharge = item.arrivalStateOfCharge,
                     onClick = onWaypointClick?.forward(item.searchResult),
-                    weatherForecast = weatherForecast,
                     showArrow = true,
                 )
             }
@@ -116,7 +111,6 @@ private fun TripOverviewItem(
     stateOfCharge: Float? = null,
     chargeData: ChargeData? = null,
     onClick: (() -> Unit)? = null,
-    weatherForecast: DestinationWeatherForecast? = null,
     showArrow: Boolean = false,
 ) {
     val modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
@@ -146,7 +140,6 @@ private fun TripOverviewItem(
                 etaMinutes = etaMinutes,
                 chargeFromPercent = chargeData?.chargeFromPercent ?: stateOfCharge,
                 chargeToPercent = chargeData?.chargeToPercent,
-                weatherForecast = weatherForecast,
             )
             if (chargeData != null && chargeData.chargeForMin > 1) {
                 Row(
@@ -185,7 +178,6 @@ private fun SampleTripOverviewArrivalInformation(
     etaMinutes: Double?,
     chargeFromPercent: Float?,
     chargeToPercent: Float?,
-    weatherForecast: DestinationWeatherForecast? = null,
 ) {
     if (etaMinutes != null || chargeFromPercent != null) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -223,19 +215,6 @@ private fun SampleTripOverviewArrivalInformation(
                         color = SampleColors.primary.copy(alpha = 0.7f),
                     )
                 }
-            }
-
-            if (weatherForecast != null) {
-                Text(
-                    text = " · ",
-                    color = SampleColors.textPrimary.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                )
-                Text(
-                    text = weatherForecast.text,
-                    color = SampleColors.primary.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                )
             }
         }
     }

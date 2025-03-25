@@ -55,7 +55,6 @@ fun SampleTripSummaryView(
             items = tripSummaryUiState.tripOverviewItems,
             onWaypointClick = tripSummaryUiState.onWaypointClick,
             onEndOfChargeClick = tripSummaryUiState.onOpenSearchForChargeClick,
-            weatherForecast = weatherForecast,
         )
 
         SampleEtaView(
@@ -68,6 +67,7 @@ fun SampleTripSummaryView(
             fractionTraveled = model.fractionTraveled,
             trafficGradientStops = model.trafficGradientStops,
             waypointsData = model.waypointsData,
+            weatherForecast = weatherForecast,
         )
 
         Row(

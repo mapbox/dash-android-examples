@@ -29,8 +29,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mapbox.dash.driver.R
+import com.mapbox.dash.example.DestinationWeatherForecast
+import com.mapbox.dash.example.toIcon
 import com.mapbox.dash.models.WaypointData
+import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 
+@OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
 @Composable
 internal fun SampleEtaView(
     modifier: Modifier,
@@ -46,6 +50,7 @@ internal fun SampleEtaView(
         (0.650f to Color.Blue),
     ),
     waypointsData: List<WaypointData>,
+    weatherForecast: DestinationWeatherForecast? = null,
 ) {
     Column(
         modifier = modifier,
@@ -65,14 +70,30 @@ internal fun SampleEtaView(
                 verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
                 horizontalAlignment = Alignment.Start,
             ) {
-                Text(
-                    text = if (isOffline) "≈ $arrivalTime" else arrivalTime,
-                    textAlign = TextAlign.Center,
-                    fontSize = 32.sp,
-                    lineHeight = 40.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(red = 52, green = 199, blue = 89),
-                )
+                Row {
+                    Text(
+                        text = if (isOffline) "≈ $arrivalTime" else arrivalTime,
+                        textAlign = TextAlign.Center,
+                        fontSize = 32.sp,
+                        lineHeight = 40.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(red = 52, green = 199, blue = 89),
+                    )
+
+                    if (weatherForecast != null) {
+                        SecondaryText(text = " ∙ ")
+                        Image(
+                            modifier = Modifier
+                                .padding(1.dp)
+                                .width(28.dp)
+                                .height(28.dp),
+                            painter = painterResource(id = weatherForecast.weatherIconCode.toIcon()),
+                            contentDescription = null,
+                        )
+                        SecondaryText(text = "${weatherForecast.temperature.toInt()}° ")
+                        SecondaryText(text = weatherForecast.text)
+                    }
+                }
 
                 Row(
                     modifier = Modifier.height(34.dp),
