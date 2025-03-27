@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
+
 package com.mapbox.dash.example
 
 import android.content.Context
@@ -5,6 +7,7 @@ import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
+import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 import com.mapbox.navigation.mapgpt.core.CoroutineMiddleware
 import com.mapbox.navigation.mapgpt.core.audiofocus.AudioFocusOwner
 import com.mapbox.navigation.mapgpt.core.language.Language
@@ -38,7 +41,7 @@ class LocalVoicePlayerMiddleware :
         super.onAttached(middlewareContext)
         Log.i(TAG, "onAttached" )
         voicePlayer = LocalVoicePlayer(
-            middlewareContext.platformContext.applicationContext,
+            middlewareContext.context.applicationContext,
         ).also { voicePlayer ->
             attachVoiceCapabilities(voicePlayer)
         }

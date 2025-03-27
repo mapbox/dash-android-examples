@@ -87,7 +87,6 @@ import com.mapbox.dash.sdk.config.dsl.DashSidebarUpdate
 import com.mapbox.dash.sdk.config.dsl.DashUiUpdate
 import com.mapbox.dash.sdk.config.dsl.camera
 import com.mapbox.dash.sdk.config.dsl.destinationPreview
-import com.mapbox.dash.sdk.config.dsl.etaPanel
 import com.mapbox.dash.sdk.config.dsl.leftSidebar
 import com.mapbox.dash.sdk.config.dsl.maneuverView
 import com.mapbox.dash.sdk.config.dsl.mapStyle
@@ -247,7 +246,6 @@ class MainActivity : DrawerActivity() {
     private val setCustomSearchScreen = MutableStateFlow(value = false)
     private val setCustomOfflineRouteAlert = MutableStateFlow(value = false)
     private val setCustomResumeGuidanceView = MutableStateFlow(value = false)
-    private val showTripProgress = MutableStateFlow(value = true)
     private val simpleCardHeader = MutableStateFlow(value = false)
     private val upcomingLaneGuidance = MutableStateFlow(value = false)
     private val setCustomVoicePlayer = MutableStateFlow(value = false)
@@ -262,7 +260,6 @@ class MainActivity : DrawerActivity() {
         settingCustomization()
         offlineTtsCustomization()
         dashCoordination()
-        etaPanelCustomization()
     }
 
     private fun headlessModeCustomization() {
@@ -445,19 +442,6 @@ class MainActivity : DrawerActivity() {
             Dash.applyUpdate {
                 uiSettings {
                     this.showSpeedLimitsOptions = showSpeedLimitsOptions
-                }
-            }
-        }
-    }
-
-    private fun etaPanelCustomization() {
-        bindSwitch(
-            switch = menuBinding.toggleTripProgress,
-            state = showTripProgress,
-        ) { isChecked ->
-            Dash.applyUpdate {
-                etaPanel {
-                    showTripProgress = isChecked
                 }
             }
         }

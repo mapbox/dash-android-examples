@@ -9,6 +9,7 @@ import com.mapbox.dash.cluster.nightStyleUri
 import com.mapbox.dash.ev.api.EvDataProvider
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.base.device.DashDeviceType
+import com.mapbox.dash.sdk.base.domain.model.AutoAddChargingStrategy
 import com.mapbox.dash.sdk.base.domain.model.BatteryComfortLevel
 import com.mapbox.dash.sdk.base.units.Gb
 import com.mapbox.dash.sdk.config.api.DashIncidentNotificationType
@@ -63,7 +64,7 @@ class MainApplication : Application() {
                 nightStyleRes = R.style.MyDashTheme_Night
             }
             ev {
-                autoAddChargingStationOnRoutePlanning = true
+                autoAddChargingStations = AutoAddChargingStrategy.Always
                 batteryComfortLevel = BatteryComfortLevel.Range(kilometers = 80.0)
             }
             mapGpt {
