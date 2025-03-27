@@ -9,6 +9,7 @@ import com.mapbox.geojson.Point
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 import com.mapbox.navigation.base.route.NavigationRoute
 import com.mapbox.navigation.weather.MapboxWeatherApi
+import com.mapbox.navigation.weather.model.WeatherCondition
 import com.mapbox.navigation.weather.model.WeatherIconCode
 import com.mapbox.navigation.weather.model.WeatherQuery
 import com.mapbox.navigation.weather.model.WeatherSystemOfMeasurement
@@ -52,14 +53,7 @@ class WeatherViewModel : ViewModel() {
 
     val weatherConditionAtMapCenter = observeCameraCenter
         .mapNotNull { center ->
-            val query = WeatherQuery.Current.Builder(center).build()
-            weatherApi.getConditions(query).fold(
-                onSuccess = { it.firstOrNull()?.conditions?.firstOrNull() },
-                onFailure = {
-                    Log.e(TAG, it.message.orEmpty(), it)
-                    null
-                },
-            )
+            requestCurrentCondition(center)
         }
 
     val weatherAlertsAtMapCenter = observeCameraCenter
@@ -80,26 +74,55 @@ class WeatherViewModel : ViewModel() {
             getWeatherConditionAtTimeOfArrival(primaryRoute)
         }
 
+    suspend fun getCurrentWeather(location: Point): DestinationWeatherForecast? {
+        val current = Calendar.getInstance().time
+        val dailyResult = requestDailyConditionAtTime(location, current)
+        val currentCondition = requestCurrentCondition(location)
+        val temperature = currentCondition?.fields?.temperature
+        val iconCode = currentCondition?.fields?.iconCode
+
+        return if (dailyResult != null && temperature != null && iconCode != null) {
+            DestinationWeatherForecast(text = dailyResult, weatherIconCode = iconCode, temperature = temperature)
+        } else null
+    }
+
+    private suspend fun requestCurrentCondition(center: Point): WeatherCondition? {
+        val query = WeatherQuery.Current.Builder(center)
+            .fields(
+                listOf(
+                    WeatherQuery.Current.Fields.Temperature,
+                    WeatherQuery.Current.Fields.IconCode,
+                )
+            )
+            .build()
+        return weatherApi.getConditions(query).fold(
+            onSuccess = { it.firstOrNull()?.conditions?.firstOrNull() },
+            onFailure = {
+                Log.e(TAG, it.message.orEmpty(), it)
+                null
+            },
+        )
+    }
+
     private suspend fun getWeatherConditionAtTimeOfArrival(route: NavigationRoute): DestinationWeatherForecast? {
         val destination = route.waypoints?.last()?.location() ?: return null
         val routeDuration = route.directionsRoute.duration()
         val current = Calendar.getInstance().time
         val arrivalTime = Date(current.time + routeDuration.seconds.inWholeMilliseconds)
 
-        val dailyResult = requestDailyConditionAtTimeOfArrival(destination, arrivalTime)
-        val (temperature, iconCode) = requestHourlyConditionAtTimeOfArrival(destination, arrivalTime)
+        val dailyResult = requestDailyConditionAtTime(destination, arrivalTime)
+        val (temperature, iconCode) = requestHourlyConditionAtTime(destination, arrivalTime)
 
         return  if (dailyResult != null && temperature != null && iconCode != null) {
             DestinationWeatherForecast(text = dailyResult, weatherIconCode = iconCode, temperature = temperature)
         } else null
-
     }
 
-    private suspend fun requestHourlyConditionAtTimeOfArrival(destination: Point, arrivalTime: Date): Pair<Float?, WeatherIconCode?> {
-        val arrivalTimeDelta = Date(arrivalTime.time + 1.hours.inWholeMilliseconds)
+    private suspend fun requestHourlyConditionAtTime(destination: Point, time: Date): Pair<Float?, WeatherIconCode?> {
+        val arrivalTimeDelta = Date(time.time + 1.hours.inWholeMilliseconds)
 
         val hourlyQuery = WeatherQuery.Hourly.Builder(destination)
-            .startTime(arrivalTime)
+            .startTime(time)
             .endTime(arrivalTimeDelta)
             .fields(
                 listOf(
@@ -122,10 +145,10 @@ class WeatherViewModel : ViewModel() {
         )
     }
 
-    private suspend fun requestDailyConditionAtTimeOfArrival(destination: Point, arrivalTime: Date): String? {
-        val arrivalTimeDelta = Date(arrivalTime.time + 1.days.inWholeMilliseconds)
+    private suspend fun requestDailyConditionAtTime(destination: Point, time: Date): String? {
+        val arrivalTimeDelta = Date(time.time + 1.days.inWholeMilliseconds)
         val query = WeatherQuery.Daily.Builder(destination)
-            .startTime(arrivalTime)
+            .startTime(time)
             .endTime(arrivalTimeDelta)
             .fields(
                 listOf(

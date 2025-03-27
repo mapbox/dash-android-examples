@@ -762,7 +762,7 @@ class MainActivity : DrawerActivity() {
             getDashNavigationFragment()?.let { fragment ->
                 if (enabled) {
                     fragment.setDestinationPreview { modifier, state ->
-                        SampleDestinationPreview(modifier, state)
+                        SampleDestinationPreview(modifier, state, weatherVM)
                     }
                 } else {
                     fragment.setDestinationPreview { modifier, _ ->

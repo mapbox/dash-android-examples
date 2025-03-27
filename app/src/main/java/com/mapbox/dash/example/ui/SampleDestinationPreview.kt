@@ -14,11 +14,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -29,23 +32,36 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mapbox.dash.example.DestinationWeatherForecast
+import com.mapbox.dash.example.WeatherViewModel
 import com.mapbox.dash.example.theme.SampleColors
 import com.mapbox.dash.example.theme.SampleIcons
+import com.mapbox.dash.example.toIcon
 import com.mapbox.dash.models.ArrivalInformationFormatter
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.config.api.UiStates
 import com.mapbox.dash.sdk.map.presentation.ui.DestinationPreviewUiState
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
+import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 
+@OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
 object SampleDestinationPreview {
 
     @Suppress("CyclomaticComplexMethod")
     @Composable
-    operator fun invoke(modifier: Modifier, state: DestinationPreviewUiState) {
+    operator fun invoke(modifier: Modifier, state: DestinationPreviewUiState, weatherViewModel: WeatherViewModel) {
+
+        val weatherAtDestination = remember { mutableStateOf<DestinationWeatherForecast?>(null) }
+        LaunchedEffect(state.place.content?.origin?.id) {
+            weatherAtDestination.value = state.place.content?.origin?.coordinate?.let {
+                weatherViewModel.getCurrentWeather(it)
+            }
+        }
+
         val favorites = remember {
             Dash.controller.observeFavorites()
         }.collectAsState(initial = emptyList())
@@ -131,6 +147,29 @@ object SampleDestinationPreview {
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Normal,
                     )
+                }
+
+                weatherAtDestination.value?.let { weather ->
+                    Row {
+                        Image(
+                            modifier = Modifier
+                                .padding(1.dp)
+                                .width(32.dp)
+                                .height(32.dp),
+                            painter = painterResource(id = weather.weatherIconCode.toIcon()),
+                            contentDescription = null,
+                        )
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            textAlign = TextAlign.Start,
+                            text = "${weather.temperature.toInt()}° · ${weather.text}",
+                            color = SampleColors.textPrimary,
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Normal,
+                        )
+                    }
                 }
 
                 place.chargeData?.takeIf { it.chargeForMin > 1 }?.apply {
