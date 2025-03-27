@@ -1184,7 +1184,7 @@ private fun CurrentWeatherWidget(modifier: Modifier, weatherConditionAtMapCenter
                 .align(BiasAlignment(horizontalBias = 0.4f, verticalBias = 0.4f))
                 .size(40.dp),
             colorFilter = ColorFilter.tint(androidx.compose.ui.graphics.Color.Black),
-            painter = painterResource(conditions.fields.toIcon()),
+            painter = painterResource(conditions.fields.iconCode.toIcon()),
             contentDescription = null,
         )
         Text(
