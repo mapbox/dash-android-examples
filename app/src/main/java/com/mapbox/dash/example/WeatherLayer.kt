@@ -6,11 +6,13 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.res.imageResource
 import com.google.gson.JsonObject
 import com.mapbox.dash.example.theme.SampleColors
+import com.mapbox.dash.sdk.ev.domain.model.ChargeStatePoint
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
@@ -189,6 +191,47 @@ fun WeatherAlongRouteBlock(weatherWarningsAlongRoute: Flow<List<WeatherResult>>,
         ) {
             data = GeoJSONData(features)
         },
+    ) {
+        iconAllowOverlap = BooleanValue(true)
+        iconImage = ImageValue(icon)
+        interactionsState.onClicked { interactiveFeature, _ ->
+            val warningText = interactiveFeature.properties.getString("text")
+            clickCallback(warningText)
+            true
+        }
+    }
+}
+
+@OptIn(MapboxExperimental::class)
+@Composable
+@MapboxMapComposable
+fun EvChargePointBlock(chargePoints: Flow<List<ChargeStatePoint>>, clickCallback: (String) -> Unit) {
+    val icon = rememberStyleImage(imageId = "charge-level-icon", resourceId = R.drawable.ic_sample_charge_point)
+
+    MapEffect(Unit) {
+        it.mapboxMap.getStyle { style ->
+            style.addImage(icon.imageId, icon.image)
+        }
+    }
+
+    val features = produceState<List<Feature>>(initialValue = emptyList()) {
+        chargePoints.collect { points ->
+            value = points.map {
+                val properties = JsonObject()
+                val text = "Charge level = ${it.chargeLevel}"
+                properties.addProperty("text", text)
+                Feature.fromGeometry(it.point, properties, text)
+            }
+        }
+    }.value
+
+    val geoJsonSource = rememberGeoJsonSourceState {
+        generateId = BooleanValue(true)
+    }
+    geoJsonSource.data = GeoJSONData(features)
+
+    SymbolLayer(
+        sourceState = geoJsonSource,
     ) {
         iconAllowOverlap = BooleanValue(true)
         iconImage = ImageValue(icon)
