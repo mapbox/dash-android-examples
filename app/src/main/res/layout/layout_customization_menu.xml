@@ -535,6 +535,14 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomTripOverview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom trip overview"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/toggleCustomSearchScreen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

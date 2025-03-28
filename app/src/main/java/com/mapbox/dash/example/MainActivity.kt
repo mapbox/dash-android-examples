@@ -45,6 +45,7 @@ import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultDestinationPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultRoutesOverview
 import com.mapbox.dash.destination.preview.presentation.compose.DefaultOfflineRouteAlert
+import com.mapbox.dash.destination.preview.presentation.tripoverview.DefaultTripOverview
 import com.mapbox.dash.driver.notification.presentation.DefaultDriverNotificationView
 import com.mapbox.dash.driver.presentation.DefaultArrivalFeedbackView
 import com.mapbox.dash.driver.presentation.edittrip.DefaultEditTripCard
@@ -70,6 +71,7 @@ import com.mapbox.dash.example.ui.SampleRangeMapInfoView
 import com.mapbox.dash.example.ui.SampleResumeGuidanceView
 import com.mapbox.dash.example.ui.SampleRoutesOverview
 import com.mapbox.dash.example.ui.SampleSearchPanel
+import com.mapbox.dash.example.ui.SampleTripOverview
 import com.mapbox.dash.example.ui.SampleTripSummaryView
 import com.mapbox.dash.example.ui.SampleUpcomingManeuversBanner
 import com.mapbox.dash.fullscreen.search.DefaultFullScreenSearch
@@ -139,7 +141,7 @@ class MainActivity : DrawerActivity() {
             override val etaMinutes = null
             override val id = "customHistoryItemId1122334455"
             override val mapboxId: String? = null
-            override val metadata: Map<String, String>? = emptyMap()
+            override val metadata: Map<String, String> = emptyMap()
             override val name = "1123 15th Street Northwest"
             override val pinCoordinate: Point = coordinate
             override val type = DashSearchResultType.ADDRESS
@@ -243,6 +245,7 @@ class MainActivity : DrawerActivity() {
     private val setCustomRoutesOverviewComposer = MutableStateFlow(value = false)
     private val setCustomTripSummaryComposer = MutableStateFlow(value = false)
     private val setCustomEditTripComposer = MutableStateFlow(value = false)
+    private val setCustomTripOverviewComposer = MutableStateFlow(value = false)
     private val setCustomSearchScreen = MutableStateFlow(value = false)
     private val setCustomOfflineRouteAlert = MutableStateFlow(value = false)
     private val setCustomResumeGuidanceView = MutableStateFlow(value = false)
@@ -803,6 +806,19 @@ class MainActivity : DrawerActivity() {
                     SampleEditTrip(state)
                 } else {
                     DefaultEditTripCard(state = state, modifier = modifier)
+                }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.toggleCustomTripOverview,
+            state = setCustomTripOverviewComposer,
+        ) { enabled ->
+            getDashNavigationFragment()?.setTripOverview { modifier, state ->
+                if (enabled) {
+                    SampleTripOverview(state)
+                } else {
+                    DefaultTripOverview(state = state, modifier = modifier)
                 }
             }
         }

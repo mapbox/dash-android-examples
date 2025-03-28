@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -53,7 +54,6 @@ import com.mapbox.dash.driver.presentation.edittrip.EditTripUiState
 import com.mapbox.dash.sdk.map.presentation.ui.BackCloseButtonState
 import com.mapbox.dash.example.theme.SampleColors
 import com.mapbox.dash.example.theme.SampleIcons
-import com.mapbox.dash.theming.compose.PreviewDashTheme
 
 @Composable
 @Suppress("LongMethod")
@@ -301,12 +301,12 @@ private fun Header(
 }
 
 @Composable
-@Preview(name = "Light", device = Devices.TABLET)
+@Preview(name = "Light", device = Devices.PIXEL_TABLET)
 @SuppressWarnings("MagicNumber")
 @SuppressLint("RestrictedApi")
 @Preview
-internal fun Preview_SampleEditTrip() {
-    PreviewDashTheme {
+internal fun Preview_SampleEditTripExample() {
+    MaterialTheme {
         SampleEditTrip(
             items = listOf(
                 EditTripItem.AddNewItem,
@@ -325,12 +325,12 @@ internal fun Preview_SampleEditTrip() {
 }
 
 @Composable
-@Preview(name = "Light", device = Devices.TABLET)
+@Preview(name = "Light", device = Devices.PIXEL_TABLET)
 @SuppressWarnings("MagicNumber")
 @SuppressLint("RestrictedApi")
 @Preview
 internal fun Preview_SampleEditTrip_WaypointItem() {
-    PreviewDashTheme {
+    MaterialTheme {
         WaypointItem(removeModifier = Modifier, index = 4, text = "Whole Foods Market", elevation = 4.dp)
     }
 }
