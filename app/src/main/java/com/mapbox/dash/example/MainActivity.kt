@@ -126,6 +126,7 @@ class MainActivity : DrawerActivity() {
     private val themeVM: ThemeViewModel by viewModels()
     private val mapStyleVM: MapStyleViewModel by viewModels()
     private val weatherVM: WeatherViewModel by viewModels()
+    private val evViewModel: EvViewModel by viewModels()
     private val headlessMode = MutableStateFlow(false)
 
     private val searchItem = buildSearchItem()
@@ -226,6 +227,7 @@ class MainActivity : DrawerActivity() {
     private val setMap3dStyle = MutableStateFlow(value = true)
     private val addMapLayer = MutableStateFlow(value = false)
     private val showWeatherWarningAlongRoute = MutableStateFlow(value = false)
+    private val showEvChargeStatePoints = MutableStateFlow(value = false)
     private val setOfflineTts = MutableStateFlow(value = false)
     private val setCustomCompassDataInputs = MutableStateFlow(value = false)
     private val showRouteOptionsInSettings = MutableStateFlow(value = false)
@@ -388,9 +390,30 @@ class MainActivity : DrawerActivity() {
             getDashNavigationFragment()?.let { fragment ->
                 if (enableWeatherAlongRoute) {
                     addMapLayer.value = false
+                    showEvChargeStatePoints.value = false
                     fragment.setMapLayer {
                         topSlot {
                             WeatherAlongRouteBlock(weatherVM.weatherWarningsAlongRoute) { message ->
+                                Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                } else {
+                    fragment.setMapLayer(DefaultMapLayerComposer)
+                }
+            }
+        }
+        bindSwitch(
+            switch = menuBinding.showEvChargeStatePoints,
+            state = showEvChargeStatePoints,
+        ) { enableEvChargePoint ->
+            getDashNavigationFragment()?.let { fragment ->
+                if (enableEvChargePoint) {
+                    addMapLayer.value = false
+                    showWeatherWarningAlongRoute.value = false
+                    fragment.setMapLayer {
+                        topSlot {
+                            EvChargePointBlock(evViewModel.chargePoints) { message ->
                                 Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -407,6 +430,7 @@ class MainActivity : DrawerActivity() {
             getDashNavigationFragment()?.let { fragment ->
                 if (enabled) {
                     showWeatherWarningAlongRoute.value = false
+                    showEvChargeStatePoints.value = false
                     fragment.setMapLayer {
 
                         middleSlot {

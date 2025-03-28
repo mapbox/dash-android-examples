@@ -98,6 +98,14 @@
             android:textAllCaps="true"
             />
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/showEvChargeStatePoints"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SHOW EV STATE POINTS"
+            android:textAllCaps="true"
+            />
+
         <com.mapbox.dash.example.view.LayersManagerCard
             android:id="@+id/layersManagerCard"
             android:layout_width="match_parent"
