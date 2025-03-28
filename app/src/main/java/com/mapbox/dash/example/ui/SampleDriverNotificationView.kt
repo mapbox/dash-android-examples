@@ -59,6 +59,7 @@ import com.mapbox.dash.driver.notification.presentation.icon
 import com.mapbox.dash.driver.notification.presentation.textResource
 import com.mapbox.dash.example.theme.SampleColors
 import com.mapbox.dash.example.theme.SampleIcons
+import com.mapbox.dash.sdk.base.domain.model.DashIncidentType
 import com.mapbox.dash.sdk.config.api.DashIncidentNotificationType
 import com.mapbox.dash.sdk.config.api.RoadCameraType.DANGER_ZONE_ENTER
 import com.mapbox.dash.sdk.config.api.RoadCameraType.DANGER_ZONE_EXIT
@@ -211,6 +212,7 @@ fun SampleDriverNotificationView(
                     context.getString(R.string.dash_driver_notification_better_ev_route_skip_charging),
                     context.getString(R.string.dash_driver_notification_better_ev_route_skip_charging),
                 )
+
                 BetterEvRouteType.INCLUDE_ADDITIONAL_CHARGING -> Triple(
                     SampleIcons.chargingNeeded,
                     context.getString(R.string.dash_driver_notification_better_ev_route_need_charging),
@@ -219,6 +221,7 @@ fun SampleDriverNotificationView(
                         notification.minDestinationSoc.toInt(),
                     ),
                 )
+
                 else -> Triple(
                     SampleIcons.fastAlternative,
                     context.getString(R.string.dash_driver_notification_better_ev_route_general),
@@ -447,7 +450,15 @@ internal fun Preview_All_2() {
     Preview_DriverNotifications(
         listOf(
             DriverNotificationUiState(SlowTraffic(12.minutes)),
-            DriverNotificationUiState(Incident(DashIncidentNotificationType.Accident, 1500.milliseconds, 1.seconds)),
+            DriverNotificationUiState(
+                Incident(
+                    DashIncidentNotificationType.Accident,
+                    DashIncidentType.Accident,
+                    1500.milliseconds,
+                    1.seconds,
+                    100.0,
+                ),
+            ),
             DriverNotificationUiState(BetterEvRoute(15f, BetterEvRouteType.NO_ADDITIONAL_CHARGING)),
             DriverNotificationUiState(BetterEvRoute(20f, BetterEvRouteType.EXCLUDE_PLANNED_CHARGING)),
             DriverNotificationUiState(BetterEvRoute(25f, BetterEvRouteType.INCLUDE_ADDITIONAL_CHARGING)),

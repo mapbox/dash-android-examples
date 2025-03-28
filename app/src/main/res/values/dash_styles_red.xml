@@ -12,7 +12,6 @@
         <item name="dash_style_map_action_button">@style/MyMapActionButton</item>
         <item name="dash_style_map_search_panel">@style/MyMapSearchPanel</item>
         <item name="dash_style_map_eta_panel">@style/MyEtaPanel</item>
-        <item name="dash_style_map_remove_stop_button">@style/MyRemoveStopButton</item>
         <item name="dash_style_map_end_nav_button">@style/MyEndNavButton</item>
         <item name="dash_style_map_resume_guidance">@style/MyResumeGuidance</item>
         <item name="dash_style_map_poi_card">@style/MyPoiCard</item>
@@ -35,7 +34,6 @@
         <item name="dash_style_map_action_button">@style/MyMapActionButton</item>
         <item name="dash_style_map_search_panel">@style/MyMapSearchPanel</item>
         <item name="dash_style_map_eta_panel">@style/MyEtaPanel</item>
-        <item name="dash_style_map_remove_stop_button">@style/MyRemoveStopButton</item>
         <item name="dash_style_map_end_nav_button">@style/MyEndNavButton</item>
         <item name="dash_style_map_resume_guidance">@style/MyResumeGuidance</item>
         <item name="dash_style_map_poi_card">@style/MyPoiCard</item>
@@ -59,9 +57,6 @@
         <item name="dashShape">full</item>
     </style>
 
-    <style name="MyRemoveStopButton" parent="Widget.Dash.Map.RemoveStopButton">
-        <item name="dashShape">full</item>
-    </style>
     <style name="MyEndNavButton" parent="Widget.Dash.Map.EndNavButton">
         <item name="dashShape">full</item>
     </style>
