@@ -489,6 +489,13 @@ class MainActivity : DrawerActivity() {
 
     @OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
     private fun dashCoordination() {
+        bindButton(button = menuBinding.btnResetNavigationState) {
+            Dash.controller.resetNavigationState(
+                // Reset the navigation state to the Free Drive mode
+                // and show the route recovery prompt
+                shouldShowRouteRecoveryPrompt = true,
+            )
+        }
         // force a new destination and show a route preview
         bindButton(button = menuBinding.btnSetDestination) {
             val controller = Dash.controller
