@@ -28,6 +28,16 @@
         android:padding="10dp"
         >
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnResetNavigationState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_red_dark"
+            android:text="Reset navigation state"
+            android:textAllCaps="true"
+            />
+
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/toggleHeadlessMode"
             android:layout_width="match_parent"
