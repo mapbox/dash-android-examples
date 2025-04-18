@@ -50,6 +50,7 @@ import com.mapbox.dash.driver.notification.R
 import com.mapbox.dash.driver.notification.presentation.BetterEvRouteType
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.BetterEvRoute
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.BorderCrossing
+import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.EvChargingStationBusy
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.FasterAlternativeAvailable
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.Incident
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.RoadCamera
@@ -236,6 +237,18 @@ fun SampleDriverNotificationView(
                 resources.second,
                 resources.third,
                 resources.first,
+                R.string.dash_driver_notification_show,
+                { uiState.onAcceptClick(notification) },
+                R.string.dash_driver_notification_dismiss,
+                { uiState.onDismissClick(notification) },
+            )
+        }
+        is EvChargingStationBusy -> {
+            DriverNotificationView(
+                modifier,
+                context.getString(R.string.dash_driver_notification_busy_station_description),
+                context.getString(R.string.dash_driver_notification_busy_station_title),
+                R.drawable.ic_navux_driver_notification_ev_charging_station_busy,
                 R.string.dash_driver_notification_show,
                 { uiState.onAcceptClick(notification) },
                 R.string.dash_driver_notification_dismiss,
