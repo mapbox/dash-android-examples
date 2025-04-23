@@ -50,11 +50,11 @@ fun SampleTripOverview(
         state.onNavigateClick,
         state.onWaypointClick,
         state.onEditTripClick,
+        state.onAddChargerClick,
     )
 }
 
 @Composable
-@Suppress("LongParameterList")
 private fun SampleTripOverview(
     buttonState: BackCloseButtonState?,
     items: List<TripOverviewItem>,
@@ -62,6 +62,7 @@ private fun SampleTripOverview(
     onNavigateClick: () -> Unit,
     onWaypointClick: (DashSearchResult) -> Unit,
     onEditTripClick: () -> Unit,
+    onAddChargerClick: () -> Unit,
 ) {
     val widthModifier = if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
         Modifier.width(640.dp)
@@ -75,7 +76,7 @@ private fun SampleTripOverview(
             .background(Color(red = 16, green = 18, blue = 23)),
     ) {
         Header(buttonState, onEditTripClick)
-        Content(items, etaMinutes, onWaypointClick, onNavigateClick)
+        Content(items, etaMinutes, onWaypointClick, onNavigateClick, onAddChargerClick)
     }
 }
 
@@ -85,10 +86,12 @@ private fun Content(
     etaMinutes: Double?,
     onWaypointClick: (DashSearchResult) -> Unit,
     onNavigateClick: () -> Unit,
+    onAddChargerClick: () -> Unit,
 ) {
     SampleTripOverviewItems(
         items = items,
         onWaypointClick = onWaypointClick,
+        onEndOfChargeClick = { onAddChargerClick() },
     )
     etaMinutes?.let {
         ArrivalInformationView(it)
@@ -194,6 +197,7 @@ internal fun Preview_SampleEditTrip() {
             onWaypointClick = {},
             onNavigateClick = {},
             onEditTripClick = {},
+            onAddChargerClick = {},
         )
     }
 }

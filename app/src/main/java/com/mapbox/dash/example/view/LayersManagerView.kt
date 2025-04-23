@@ -11,7 +11,7 @@ import com.mapbox.dash.example.observeWhenStarted
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.base.layer.DashMapStyleLayer
 import com.mapbox.dash.sdk.base.layer.DashMapStyleLayersConfig
-import com.mapbox.dash.sdk.config.dsl.mapStyle
+import com.mapbox.dash.sdk.config.api.mapStyle
 import kotlinx.coroutines.flow.MutableStateFlow
 
 private const val TRANSIT_LAYER_ID = "transit-label"

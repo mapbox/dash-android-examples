@@ -3,43 +3,41 @@ package com.mapbox.dash.example
 import android.app.Application
 import android.location.LocationManager
 import com.mapbox.common.location.Location
-import com.mapbox.dash.cluster.dayStyleUri
-import com.mapbox.dash.cluster.map3DStyleUri
-import com.mapbox.dash.cluster.nightStyleUri
+import com.mapbox.dash.cluster.cluster
+import com.mapbox.dash.cluster.mapStyle
 import com.mapbox.dash.ev.api.EvDataProvider
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.base.device.DashDeviceType
 import com.mapbox.dash.sdk.base.domain.model.AutoAddChargingStrategy
 import com.mapbox.dash.sdk.base.domain.model.BatteryComfortLevel
 import com.mapbox.dash.sdk.base.units.Gb
+import com.mapbox.dash.sdk.config.api.DEFAULT_3D_STYLE
+import com.mapbox.dash.sdk.config.api.DEFAULT_DAY_STYLE
+import com.mapbox.dash.sdk.config.api.DEFAULT_NIGHT_STYLE
 import com.mapbox.dash.sdk.config.api.DashIncidentNotificationType
 import com.mapbox.dash.sdk.config.api.EngineType
 import com.mapbox.dash.sdk.config.api.ScreenDirectionality
-import com.mapbox.dash.sdk.config.dsl.DEFAULT_3D_STYLE
-import com.mapbox.dash.sdk.config.dsl.DEFAULT_DAY_STYLE
-import com.mapbox.dash.sdk.config.dsl.DEFAULT_NIGHT_STYLE
-import com.mapbox.dash.sdk.config.dsl.borderCrossingNotification
-import com.mapbox.dash.sdk.config.dsl.camera
-import com.mapbox.dash.sdk.config.dsl.cluster
-import com.mapbox.dash.sdk.config.dsl.debugSettings
-import com.mapbox.dash.sdk.config.dsl.destinationPreview
-import com.mapbox.dash.sdk.config.dsl.driverNotification
-import com.mapbox.dash.sdk.config.dsl.ev
-import com.mapbox.dash.sdk.config.dsl.evTripNotification
-import com.mapbox.dash.sdk.config.dsl.fasterRouteNotification
-import com.mapbox.dash.sdk.config.dsl.incidentNotification
-import com.mapbox.dash.sdk.config.dsl.locationSimulation
-import com.mapbox.dash.sdk.config.dsl.mapGpt
-import com.mapbox.dash.sdk.config.dsl.mapStyle
-import com.mapbox.dash.sdk.config.dsl.offline
-import com.mapbox.dash.sdk.config.dsl.roadCameraNotification
-import com.mapbox.dash.sdk.config.dsl.routeOptions
-import com.mapbox.dash.sdk.config.dsl.search
-import com.mapbox.dash.sdk.config.dsl.slowTrafficNotification
-import com.mapbox.dash.sdk.config.dsl.speedLimitsOptions
-import com.mapbox.dash.sdk.config.dsl.theme
-import com.mapbox.dash.sdk.config.dsl.ui
-import com.mapbox.dash.sdk.config.dsl.uiSettings
+import com.mapbox.dash.sdk.config.api.borderCrossingNotification
+import com.mapbox.dash.sdk.config.api.camera
+import com.mapbox.dash.sdk.config.api.debugSettings
+import com.mapbox.dash.sdk.config.api.destinationPreview
+import com.mapbox.dash.sdk.config.api.driverNotification
+import com.mapbox.dash.sdk.config.api.ev
+import com.mapbox.dash.sdk.config.api.evTripNotification
+import com.mapbox.dash.sdk.config.api.fasterRouteNotification
+import com.mapbox.dash.sdk.config.api.incidentNotification
+import com.mapbox.dash.sdk.config.api.locationSimulation
+import com.mapbox.dash.sdk.config.api.mapGpt
+import com.mapbox.dash.sdk.config.api.mapStyle
+import com.mapbox.dash.sdk.config.api.offline
+import com.mapbox.dash.sdk.config.api.roadCameraNotification
+import com.mapbox.dash.sdk.config.api.routeOptions
+import com.mapbox.dash.sdk.config.api.search
+import com.mapbox.dash.sdk.config.api.slowTrafficNotification
+import com.mapbox.dash.sdk.config.api.speedLimitsOptions
+import com.mapbox.dash.sdk.config.api.theme
+import com.mapbox.dash.sdk.config.api.ui
+import com.mapbox.dash.sdk.config.api.uiSettings
 import com.mapbox.dash.state.defaults.camera.SimpleDefaults
 import com.mapbox.maps.MapboxExperimental
 import kotlinx.coroutines.flow.flowOf
@@ -156,10 +154,11 @@ class MainApplication : Application() {
                 }
             }
             cluster {
-                enabled = true
-                dayStyleUri = DEFAULT_DAY_STYLE
-                nightStyleUri = DEFAULT_NIGHT_STYLE
-                map3DStyleUri = DEFAULT_3D_STYLE
+                mapStyle {
+                    dayStyleUri = DEFAULT_DAY_STYLE
+                    nightStyleUri = DEFAULT_NIGHT_STYLE
+                    map3dStyleUri = DEFAULT_3D_STYLE
+                }
             }
 
             engineType = EngineType.ELECTRIC

@@ -29,14 +29,12 @@ import com.mapbox.geojson.Point
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 
-@Suppress("LongParameterList")
 @Composable
 internal fun SampleTripOverviewItems(
     modifier: Modifier = Modifier,
     items: List<TripOverviewItem>,
-    onYourLocationClick: (() -> Unit)? = null,
-    onWaypointClick: ((DashSearchResult) -> Unit)? = null,
-    onEndOfChargeClick: ((List<Point>) -> Unit)? = null,
+    onWaypointClick: (DashSearchResult) -> Unit,
+    onEndOfChargeClick: (List<Point>) -> Unit,
 ) {
     Column(modifier = modifier) {
         for (item in items) {
@@ -44,7 +42,6 @@ internal fun SampleTripOverviewItems(
                 TripOverviewItem.YourLocation -> TripOverviewItem(
                     iconId = R.drawable.ic_trip_overview_your_location,
                     title = "Your location",
-                    onClick = onYourLocationClick,
                 )
 
                 is TripOverviewItem.Waypoint -> TripOverviewItem(
@@ -52,7 +49,7 @@ internal fun SampleTripOverviewItems(
                     title = item.searchResult.name,
                     etaMinutes = item.etaMinutes,
                     stateOfCharge = item.stateOfCharge,
-                    onClick = onWaypointClick?.forward(item.searchResult),
+                    onClick = { onWaypointClick(item.searchResult) },
                     showArrow = true,
                 )
 
@@ -60,25 +57,16 @@ internal fun SampleTripOverviewItems(
                     iconId = R.drawable.ic_trip_overview_end_of_charge,
                     title = "Charging stop needed",
                     color = SampleColors.error,
-                    onClick = onEndOfChargeClick?.forward(item.routePoints),
+                    onClick = { onEndOfChargeClick(item.routePoints) },
                 )
 
                 is TripOverviewItem.ChargingStation -> TripOverviewItem(
-                    iconId = R.drawable.ic_trip_overview_charging_station,
+                    iconId = R.drawable.ic_trip_overview_waypoint,
                     title = item.searchResult.name,
                     etaMinutes = item.etaMinutes,
                     stateOfCharge = item.stateOfCharge,
                     chargeData = item.chargeData,
-                    onClick = onWaypointClick?.forward(item.searchResult),
-                    showArrow = true,
-                )
-
-                is TripOverviewItem.Destination -> TripOverviewItem(
-                    iconId = R.drawable.ic_trip_overview_destination,
-                    title = item.searchResult.name,
-                    etaMinutes = item.etaMinutes,
-                    stateOfCharge = item.arrivalStateOfCharge,
-                    onClick = onWaypointClick?.forward(item.searchResult),
+                    onClick = { onWaypointClick(item.searchResult) },
                     showArrow = true,
                 )
             }
@@ -218,8 +206,4 @@ private fun SampleTripOverviewArrivalInformation(
             }
         }
     }
-}
-
-private fun <T> ((T) -> Unit).forward(arg: T): () -> Unit {
-    return { this(arg) }
 }
