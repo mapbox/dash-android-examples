@@ -13,6 +13,7 @@ import com.mapbox.navigation.weather.model.WeatherCondition
 import com.mapbox.navigation.weather.model.WeatherIconCode
 import com.mapbox.navigation.weather.model.WeatherQuery
 import com.mapbox.navigation.weather.model.WeatherSystemOfMeasurement
+import com.mapbox.navigation.weather.model.toIconResId
 import com.mapbox.turf.TurfMeasurement
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -185,18 +186,5 @@ class WeatherViewModel : ViewModel() {
 }
 
 internal fun WeatherIconCode?.toIcon(): Int {
-    return when (this) {
-        WeatherIconCode.ScatteredShowersDay,
-        WeatherIconCode.HeavyRain -> R.drawable.rainy
-
-        WeatherIconCode.PartlyCloudyNight,
-        WeatherIconCode.PartlyCloudyDay -> R.drawable.partly_cloudy_day
-
-        WeatherIconCode.ClearNight,
-        WeatherIconCode.Sunny,
-        WeatherIconCode.MostlyClearNight,
-        WeatherIconCode.MostlySunny -> R.drawable.sunny
-
-        else -> R.drawable.cloudy
-    }
+    return this?.toIconResId() ?: com.mapbox.navigation.weather.R.drawable.mapbox_ic_weather_default
 }
