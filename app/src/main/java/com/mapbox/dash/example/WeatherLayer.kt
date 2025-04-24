@@ -175,7 +175,10 @@ fun WeatherAlongRouteBlock(weatherWarningsAlongRoute: Flow<List<WeatherResult>>,
         Feature.fromGeometry(weatherWarning.location, properties, index.toString())
     }
 
-    val icon = rememberStyleImage(imageId = "severe-weather-icon", resourceId = R.drawable.cloudy)
+    val icon = rememberStyleImage(
+        imageId = "severe-weather-icon",
+        resourceId = com.mapbox.navigation.weather.R.drawable.mapbox_ic_weather_default,
+    )
 
     MapEffect(key1 = features.size) {
         it.mapboxMap.getStyle { style ->
