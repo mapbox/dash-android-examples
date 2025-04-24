@@ -518,6 +518,12 @@ class MainActivity : DrawerActivity() {
             Dash.controller.hideEvRangeMap()
         }
 
+        Dash.controller.observeEvRangeMapState().observeWhenStarted(lifecycleOwner = this) { state ->
+            Dash.applyUpdate {
+                camera { additionalPointsToFrame = state.rangeMapFramePoints }
+            }
+        }
+
         menuBinding.customCompassDataInputs.setOnCheckedChangeListener { _, isChecked ->
             setCustomCompassDataInputs.value = isChecked
         }
