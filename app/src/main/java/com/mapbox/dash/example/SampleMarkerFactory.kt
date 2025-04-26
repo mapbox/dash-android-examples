@@ -9,6 +9,7 @@ import com.mapbox.dash.sdk.config.api.MarkerOptions
 import com.mapbox.dash.sdk.config.api.SearchCategory
 import com.mapbox.dash.sdk.config.api.SymbolDescriptorRoutePoint
 import com.mapbox.dash.sdk.config.api.SymbolDescriptorSearchSuggestions
+import com.mapbox.dash.sdk.ev.domain.model.DashReachabilityType.NOT_REACHABLE
 
 private const val SCALE_FACTOR = 1.5
 private const val TEXT_OFFSET_EMS = 0.5
@@ -60,9 +61,24 @@ class SampleMarkerFactory(
     private val SymbolDescriptorSearchSuggestions.image: MarkerOptions.Image.Bitmap
         get() {
             val resId = when {
-                categories.contains(SearchCategory.Grocery) -> R.drawable.ic_grocery
-                categories.contains(SearchCategory.Coffee) -> R.drawable.ic_coffee
-                categories.contains(SearchCategory.Food) -> R.drawable.ic_food
+                categories.contains(SearchCategory.Grocery) -> if (evReachability == NOT_REACHABLE) {
+                    R.drawable.ic_grocery_not_reachable
+                } else {
+                    R.drawable.ic_grocery
+                }
+
+                categories.contains(SearchCategory.Coffee) -> if (evReachability == NOT_REACHABLE) {
+                    R.drawable.ic_coffee_not_reachable
+                } else {
+                    R.drawable.ic_coffee
+                }
+
+                categories.contains(SearchCategory.Food) -> if (evReachability == NOT_REACHABLE) {
+                    R.drawable.ic_food_not_reachable
+                } else {
+                    R.drawable.ic_food
+                }
+
                 else -> R.drawable.ic_fallback
             }
             return checkNotNull(ContextCompat.getDrawable(context, resId))
@@ -71,15 +87,25 @@ class SampleMarkerFactory(
 
     private val SymbolDescriptorRoutePoint.image: MarkerOptions.Image.Bitmap
         get() {
-            return when (type) {
-                is SymbolDescriptorRoutePoint.Type.Destination -> checkNotNull(
-                    ContextCompat.getDrawable(context, R.drawable.ic_destination)
-                )
+            val resId = when (type) {
+                is SymbolDescriptorRoutePoint.Type.Destination -> {
+                    if (evReachability == NOT_REACHABLE) {
+                        R.drawable.ic_destination_not_reachable
+                    } else {
+                        R.drawable.ic_destination
+                    }
+                }
 
-                else -> checkNotNull(
-                    ContextCompat.getDrawable(context, R.drawable.ic_waypoint)
-                )
-            }.let { MarkerOptions.Image.Bitmap(it.toBitmap()) }
+                else -> {
+                    if (evReachability == NOT_REACHABLE) {
+                        R.drawable.ic_waypoint_not_reachable
+                    } else {
+                        R.drawable.ic_waypoint
+                    }
+                }
+            }
 
+            return checkNotNull(ContextCompat.getDrawable(context, resId))
+                .let { MarkerOptions.Image.Bitmap(it.toBitmap()) }
         }
 }
