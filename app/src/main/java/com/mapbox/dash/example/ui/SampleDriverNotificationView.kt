@@ -50,6 +50,7 @@ import com.mapbox.dash.driver.notification.R
 import com.mapbox.dash.driver.notification.presentation.BetterEvRouteType
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.BetterEvRoute
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.BorderCrossing
+import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.EvChargingStationBusy
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.FasterAlternativeAvailable
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.Incident
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.RoadCamera
@@ -242,6 +243,18 @@ fun SampleDriverNotificationView(
                 { uiState.onDismissClick(notification) },
             )
         }
+        is EvChargingStationBusy -> {
+            DriverNotificationView(
+                modifier,
+                context.getString(R.string.dash_driver_notification_busy_station_description),
+                context.getString(R.string.dash_driver_notification_busy_station_title),
+                R.drawable.ic_navux_driver_notification_ev_charging_station_busy,
+                R.string.dash_driver_notification_show,
+                { uiState.onAcceptClick(notification) },
+                R.string.dash_driver_notification_dismiss,
+                { uiState.onDismissClick(notification) },
+            )
+        }
 
         else -> {}
     }
@@ -417,60 +430,11 @@ fun DriverNotificationButton(
     )
 }
 
-@Preview(device = Devices.PIXEL_TABLET, heightDp = 2000, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(device = Devices.PIXEL_TABLET, heightDp = 2000)
-@Preview(device = Devices.PIXEL_7, heightDp = 1600)
-@Preview(device = Devices.PIXEL_7, heightDp = 1600, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 @SuppressWarnings("MagicNumber")
 @SuppressLint("RestrictedApi")
-internal fun Preview_All_1() {
-    Preview_DriverNotifications(
-        listOf(
-            DriverNotificationUiState(FasterAlternativeAvailable(1200000.0.milliseconds)),
-            DriverNotificationUiState(BorderCrossing("NL", "NLD", 50.0)),
-            DriverNotificationUiState(RoadCamera(SPEED_CAMERA, 50.0, 0.0)),
-            DriverNotificationUiState(RoadCamera(SPEED_CAMERA_RED_LIGHT, 50.0, 0.0)),
-            DriverNotificationUiState(RoadCamera(RED_LIGHT, 50.0, 0.0)),
-            DriverNotificationUiState(RoadCamera(SPEED_CONTROL_ZONE_ENTER, 50.0, 0.0)),
-            DriverNotificationUiState(RoadCamera(DANGER_ZONE_ENTER, 50.0, 0.0)),
-            DriverNotificationUiState(RoadCamera(DANGER_ZONE_EXIT, 50.0, 0.0)),
-        ),
-    )
-}
-
-@Preview(device = Devices.PIXEL_TABLET, heightDp = 2000, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(device = Devices.PIXEL_TABLET, heightDp = 2000)
-@Preview(device = Devices.PIXEL_7, heightDp = 1600)
-@Preview(device = Devices.PIXEL_7, heightDp = 1600, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-@SuppressWarnings("MagicNumber")
-@SuppressLint("RestrictedApi")
-internal fun Preview_All_2() {
-    Preview_DriverNotifications(
-        listOf(
-            DriverNotificationUiState(SlowTraffic(12.minutes)),
-            DriverNotificationUiState(
-                Incident(
-                    DashIncidentNotificationType.Accident,
-                    DashIncidentType.Accident,
-                    1500.milliseconds,
-                    1.seconds,
-                    100.0,
-                ),
-            ),
-            DriverNotificationUiState(BetterEvRoute(15f, BetterEvRouteType.NO_ADDITIONAL_CHARGING)),
-            DriverNotificationUiState(BetterEvRoute(20f, BetterEvRouteType.EXCLUDE_PLANNED_CHARGING)),
-            DriverNotificationUiState(BetterEvRoute(25f, BetterEvRouteType.INCLUDE_ADDITIONAL_CHARGING)),
-            DriverNotificationUiState(BetterEvRoute(30f, BetterEvRouteType.WITH_THE_SAME_CHARGING)),
-        ),
-    )
-}
-
-@Composable
-@SuppressWarnings("MagicNumber")
-@SuppressLint("RestrictedApi")
-internal fun Preview_DriverNotifications(uiStates: List<DriverNotificationUiState>) {
+internal fun Preview_DriverNotifications() {
     PreviewDashTheme {
         LazyColumn(
             modifier = Modifier
@@ -479,7 +443,33 @@ internal fun Preview_DriverNotifications(uiStates: List<DriverNotificationUiStat
             verticalArrangement = Arrangement.spacedBy(16.dp),
             userScrollEnabled = true,
         ) {
-            items(uiStates) {
+            items(
+                listOf(
+                    DriverNotificationUiState(FasterAlternativeAvailable(1200000.0.milliseconds)),
+                    DriverNotificationUiState(BorderCrossing("NL", "NLD", 50.0)),
+                    DriverNotificationUiState(RoadCamera(SPEED_CAMERA, 50.0, 0.0)),
+                    DriverNotificationUiState(RoadCamera(SPEED_CAMERA_RED_LIGHT, 50.0, 0.0)),
+                    DriverNotificationUiState(RoadCamera(RED_LIGHT, 50.0, 0.0)),
+                    DriverNotificationUiState(RoadCamera(SPEED_CONTROL_ZONE_ENTER, 50.0, 0.0)),
+                    DriverNotificationUiState(RoadCamera(DANGER_ZONE_ENTER, 50.0, 0.0)),
+                    DriverNotificationUiState(RoadCamera(DANGER_ZONE_EXIT, 50.0, 0.0)),
+                    DriverNotificationUiState(SlowTraffic(12.minutes)),
+                    DriverNotificationUiState(
+                        Incident(
+                            DashIncidentNotificationType.Accident,
+                            DashIncidentType.Accident,
+                            1500.milliseconds,
+                            1.seconds,
+                            100.0,
+                        ),
+                    ),
+                    DriverNotificationUiState(BetterEvRoute(15f, BetterEvRouteType.NO_ADDITIONAL_CHARGING)),
+                    DriverNotificationUiState(BetterEvRoute(20f, BetterEvRouteType.EXCLUDE_PLANNED_CHARGING)),
+                    DriverNotificationUiState(BetterEvRoute(25f, BetterEvRouteType.INCLUDE_ADDITIONAL_CHARGING)),
+                    DriverNotificationUiState(BetterEvRoute(30f, BetterEvRouteType.WITH_THE_SAME_CHARGING)),
+                    DriverNotificationUiState(EvChargingStationBusy())
+                ),
+            ) {
                 SampleDriverNotificationView(
                     modifier = Modifier.width(dimensionResource(R.dimen.active_guidance_card_width)),
                     uiState = it,
