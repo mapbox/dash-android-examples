@@ -2,6 +2,7 @@ package com.mapbox.dash.example.ui
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -41,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -51,20 +54,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mapbox.dash.driver.presentation.edittrip.EditTripItem
 import com.mapbox.dash.driver.presentation.edittrip.EditTripUiState
-import com.mapbox.dash.sdk.map.presentation.ui.BackCloseButtonState
+import com.mapbox.dash.example.R
 import com.mapbox.dash.example.theme.SampleColors
 import com.mapbox.dash.example.theme.SampleIcons
+import com.mapbox.dash.sdk.map.presentation.ui.BackCloseButtonState
 
 @Composable
 @Suppress("LongMethod")
 fun SampleEditTrip(state: EditTripUiState) {
     SampleEditTrip(
-        state.items,
-        state.onOpenFullScreenSearchClick,
-        state.onRemoveClick,
-        state.onDoneClick,
-        state.onItemSwap,
-        state.backCloseButtonState,
+        items = state.items,
+        onOpenFullScreenSearchClick = state.onOpenFullScreenSearchClick,
+        onRemoveClick = state.onRemoveClick,
+        onDoneClick = state.onDoneClick,
+        onItemSwap = state.onItemSwap,
+        onAddChargers = state.onAddChargersClick,
+        onRemoveChargers = state.onRemoveChargersClick,
+        backCloseButtonState = state.backCloseButtonState,
     )
 }
 
@@ -76,6 +82,8 @@ private fun SampleEditTrip(
     onRemoveClick: (EditTripItem.Waypoint) -> Unit,
     onDoneClick: () -> Unit,
     onItemSwap: (Int, Int) -> Unit,
+    onAddChargers: () -> Unit,
+    onRemoveChargers: () -> Unit,
     backCloseButtonState: BackCloseButtonState,
 ) {
     val widthModifier = if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -95,6 +103,8 @@ private fun SampleEditTrip(
             onOpenFullScreenSearchClick = onOpenFullScreenSearchClick,
             onRemoveClick = onRemoveClick,
             onItemSwap = onItemSwap,
+            onAddChargers = onAddChargers,
+            onRemoveChargers = onRemoveChargers,
         )
     }
 }
@@ -106,6 +116,8 @@ private fun Content(
     onOpenFullScreenSearchClick: () -> Unit,
     onRemoveClick: (EditTripItem.Waypoint) -> Unit,
     onItemSwap: (Int, Int) -> Unit,
+    onAddChargers: () -> Unit,
+    onRemoveChargers: () -> Unit,
 ) {
     val keys = items.map { it.key }
     var waypoints by remember(keys) { mutableStateOf(items) }
@@ -114,6 +126,10 @@ private fun Content(
         rememberDragDropState(
             key = keys,
             lazyListState = listState,
+            onStart = { index ->
+                val item = items.getOrNull(index)
+                item is EditTripItem.Waypoint || item is EditTripItem.AddNewItem
+            },
             onMove = { fromIndex, toIndex ->
                 waypoints = waypoints.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
             },
@@ -126,18 +142,30 @@ private fun Content(
             .dragContainer(dragDropState)
             .background(Color.Black),
         contentPadding = PaddingValues(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         itemsIndexed(
             waypoints,
             key = { _, item -> item.key },
         ) { index, item ->
-            DraggableItem(dragDropState, index) { isDragging ->
+            DraggableItem(
+                modifier = Modifier.padding(bottom = 2.dp),
+                dragDropState = dragDropState,
+                index = index,
+            ) { isDragging ->
                 val elevation by animateDpAsState(if (isDragging) 4.dp else 0.dp, label = "")
 
                 when (item) {
-                    EditTripItem.AddNewItem -> AddNewWaypoint(elevation, onOpenFullScreenSearchClick)
+                    is EditTripItem.AddNewItem -> AddNewWaypoint(
+                        elevation,
+                        onOpenFullScreenSearchClick,
+                    )
+
                     is EditTripItem.MaxWaypointLimitHint -> Text(
+                        modifier = Modifier
+                            .background(
+                                color = SampleColors.background,
+                                shape = RoundedCornerShape(size = 16.dp),
+                            ),
                         text = "Exceed ${item.maxCount}",
                         fontSize = 28.sp,
                         lineHeight = 34.sp,
@@ -149,6 +177,21 @@ private fun Content(
                         index + 1,
                         item.searchResult.name,
                     )
+
+                    is EditTripItem.TransientWaypoint -> TransientWaypointItem(
+                        index + 1,
+                        item.searchResult.name,
+                    )
+
+                    is EditTripItem.AddChargingStations -> ToggleChargingStationsItem(
+                        textResId = R.string.edit_trip_add_charging_stations,
+                        onClick = onAddChargers,
+                    )
+
+                    is EditTripItem.RemoveChargingStations -> ToggleChargingStationsItem(
+                        textResId = R.string.edit_trip_remove_charging_stations,
+                        onClick = onRemoveChargers,
+                    )
                 }
             }
         }
@@ -159,6 +202,10 @@ private fun Content(
 private fun AddNewWaypoint(elevation: Dp, onOpenFullScreenSearchClick: () -> Unit) {
     Row(
         modifier = Modifier
+            .background(
+                color = SampleColors.background,
+                shape = RoundedCornerShape(size = 16.dp),
+            )
             .clickable(onClick = onOpenFullScreenSearchClick)
             .padding(16.dp)
             .shadow(elevation)
@@ -198,6 +245,10 @@ private fun AddNewWaypoint(elevation: Dp, onOpenFullScreenSearchClick: () -> Uni
 private fun WaypointItem(elevation: Dp, removeModifier: Modifier, index: Int, text: String) {
     Row(
         modifier = Modifier
+            .background(
+                color = SampleColors.background,
+                shape = RoundedCornerShape(size = 16.dp),
+            )
             .shadow(elevation)
             .padding(16.dp)
             .fillMaxWidth()
@@ -250,6 +301,74 @@ private fun WaypointItem(elevation: Dp, removeModifier: Modifier, index: Int, te
             contentDescription = null,
         )
     }
+}
+
+@Composable
+private fun TransientWaypointItem(index: Int, text: String) {
+    Row(
+        modifier = Modifier
+            .background(
+                color = SampleColors.backgroundLight,
+                shape = RoundedCornerShape(size = 16.dp),
+            )
+            .padding(16.dp)
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 40.dp),
+        horizontalArrangement = Arrangement.spacedBy(20.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(24.dp))
+                .background(Color.White),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = index.toString(),
+                textAlign = TextAlign.Center,
+                color = Color.Black,
+                fontSize = 28.sp,
+                lineHeight = 34.sp,
+                modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
+            )
+        }
+        Text(
+            text = text,
+            color = SampleColors.textPrimary,
+            modifier = Modifier.weight(1f),
+            fontSize = 28.sp,
+            lineHeight = 34.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+@Composable
+private fun ToggleChargingStationsItem(
+    modifier: Modifier = Modifier,
+    @StringRes textResId: Int,
+    onClick: () -> Unit,
+) {
+    Text(
+        modifier = modifier
+            .background(
+                color = SampleColors.background,
+                shape = RoundedCornerShape(size = 16.dp),
+            )
+            .clickable(onClick = onClick)
+            .padding(16.dp)
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 40.dp)
+            .wrapContentHeight(),
+        text = stringResource(id = textResId),
+        color = SampleColors.textPrimary.copy(alpha = 0.7f),
+        fontSize = 28.sp,
+        lineHeight = 34.sp,
+        fontWeight = FontWeight.Normal,
+    )
 }
 
 @Composable
@@ -308,13 +427,16 @@ private fun Header(
 internal fun Preview_SampleEditTripExample() {
     MaterialTheme {
         SampleEditTrip(
-            items = listOf(
+            items = listOf<EditTripItem>(
                 EditTripItem.AddNewItem,
+                EditTripItem.RemoveChargingStations,
             ),
             onOpenFullScreenSearchClick = {},
             onRemoveClick = {},
             onDoneClick = {},
             onItemSwap = { _, _ -> },
+            onAddChargers = {},
+            onRemoveChargers = {},
             backCloseButtonState = BackCloseButtonState(
                 isFinalAction = true,
                 onBackClicked = {},
