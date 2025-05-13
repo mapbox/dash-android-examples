@@ -21,6 +21,7 @@ internal class DragDropState(
     private val scope: CoroutineScope,
     private val onMove: (Int, Int) -> Unit,
     private val onEnd: (Int, Int) -> Unit,
+    private val onStart: (Int) -> Boolean = { true },
 ) {
     var draggingItemIndex by mutableStateOf<Int?>(null)
         private set
@@ -48,6 +49,7 @@ internal class DragDropState(
     internal fun onDragStart(offset: Offset) {
         state.layoutInfo.visibleItemsInfo
             .firstOrNull { item -> offset.y.toInt() in item.offset..(item.offset + item.size) }
+            ?.takeIf { onStart(it.index) }
             ?.also {
                 initialDraggingIndex = it.index
                 draggingItemIndex = it.index

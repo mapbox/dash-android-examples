@@ -3,4 +3,6 @@
     <string name="current_density">Dpi: %d</string>
     <string name="shortcut_service_label">Foreground service</string>
     <string name="current_profile">Profile: %s</string>
+    <string name="edit_trip_add_charging_stations">Add charging stations</string>
+    <string name="edit_trip_remove_charging_stations">Remove charging stations</string>
 </resources>

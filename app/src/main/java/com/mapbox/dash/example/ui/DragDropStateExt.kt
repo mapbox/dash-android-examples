@@ -19,6 +19,7 @@ import androidx.compose.ui.zIndex
 @Composable
 internal fun rememberDragDropState(
     lazyListState: LazyListState,
+    onStart: (Int) -> Boolean,
     onMove: (Int, Int) -> Unit,
     onEnd: (Int, Int) -> Unit,
     key: Any? = null,
@@ -26,7 +27,13 @@ internal fun rememberDragDropState(
     val scope = rememberCoroutineScope()
     val state =
         remember(key, lazyListState) {
-            DragDropState(state = lazyListState, onMove = onMove, onEnd = onEnd, scope = scope)
+            DragDropState(
+                state = lazyListState,
+                onStart = onStart,
+                onMove = onMove,
+                onEnd = onEnd,
+                scope = scope,
+            )
         }
     LaunchedEffect(state) {
         while (true) {
