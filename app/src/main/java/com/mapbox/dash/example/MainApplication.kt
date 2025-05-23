@@ -71,6 +71,9 @@ class MainApplication : Application() {
             }
             mapStyle {
                 pixelRatioMultiplier = 1F
+                dayStyleUri = "mapbox://styles/mapbox/standard"
+                nightStyleUri = "mapbox://styles/mapbox/standard"
+                map3dStyleUri = "mapbox://styles/mapbox/standard"
             }
             locationSimulation {
                 // Example of a debug option that teleports the user to a specific location at each app launch.
@@ -80,6 +83,7 @@ class MainApplication : Application() {
                 avoidHighways = false
                 avoidFerries = false
                 avoidTolls = false
+                user = "zeekr-navi-team.here"
             }
             speedLimitsOptions {
                 showSpeedLimits = true
@@ -94,7 +98,8 @@ class MainApplication : Application() {
                 searchEngine = ShowcaseSearchEngine()
             }
             offline {
-                tilesPath = applicationContext.filesDir.absolutePath + "/prepared_tilestore"
+                //tilesPath = applicationContext.filesDir.absolutePath + "/prepared_tilestore"
+                tilesPath = applicationContext.filesDir.absolutePath + "/tile_store"
                 tilesDiskQuota = 50.Gb
             }
             debugSettings {
