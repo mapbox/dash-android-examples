@@ -29,6 +29,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,7 +43,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -56,7 +56,6 @@ import com.mapbox.dash.driver.presentation.edittrip.EditTripItem
 import com.mapbox.dash.driver.presentation.edittrip.EditTripUiState
 import com.mapbox.dash.example.R
 import com.mapbox.dash.example.theme.SampleColors
-import com.mapbox.dash.example.theme.SampleIcons
 import com.mapbox.dash.sdk.map.presentation.ui.BackCloseButtonState
 
 @Composable
@@ -288,7 +287,7 @@ private fun WaypointItem(elevation: Dp, removeModifier: Modifier, index: Int, te
                 .clip(CircleShape)
                 .padding(8.dp),
             colorFilter = ColorFilter.tint(SampleColors.textPrimary),
-            painter = painterResource(id = SampleIcons.cross),
+            imageVector = Icons.Default.Close,
             contentDescription = null,
         )
         Image(

@@ -1,6 +1,5 @@
 package com.mapbox.dash.example.ui
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +14,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
@@ -22,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -114,7 +117,7 @@ internal fun SampleEtaView(
                                 .padding(1.dp)
                                 .width(28.dp)
                                 .height(28.dp),
-                            painter = painterResource(id = stateOfCharge.getStateOfChargeIcon()),
+                            painter = painterResource(id = com.mapbox.dash.example.R.drawable.ic_battery),
                             contentDescription = null,
                         )
 
@@ -176,13 +179,8 @@ private fun SampleTripProgress(
                 modifier = Modifier
                     .size(36.dp)
                     .align(BiasAlignment(horizontalBias = waypointData.iconBias, verticalBias = 0.0f)),
-                painter = painterResource(
-                    if (waypointData.isChargingStation) {
-                        R.drawable.ic_navux_trip_progress_charging
-                    } else {
-                        R.drawable.ic_navux_trip_progress_waypoint
-                    },
-                ),
+                imageVector = Icons.Default.Place,
+                colorFilter = ColorFilter.tint(Color.White),
                 contentDescription = null,
             )
         }
@@ -192,27 +190,10 @@ private fun SampleTripProgress(
                 .size(15.dp)
                 .wrapContentSize(unbounded = true)
                 .align(BiasAlignment(horizontalBias = 2 * fractionTraveled - 1, verticalBias = 0.0f)),
-            painter = painterResource(R.drawable.ic_navux_trip_progress_puck),
+            imageVector = Icons.AutoMirrored.Default.Send,
+            colorFilter = ColorFilter.tint(Color.White),
             contentDescription = null,
         )
-    }
-}
-
-@DrawableRes
-fun Int.getStateOfChargeIcon(): Int {
-    return when {
-        this < 0 -> R.drawable.ic_soc_out_of_reach
-        this == 0 -> R.drawable.ic_soc_0
-        this in 1..10 -> R.drawable.ic_soc_0_10
-        this in 11..20 -> R.drawable.ic_soc_10_20
-        this in 21..30 -> R.drawable.ic_soc_20_30
-        this in 31..40 -> R.drawable.ic_soc_30_40
-        this in 41..50 -> R.drawable.ic_soc_40_50
-        this in 51..60 -> R.drawable.ic_soc_50_60
-        this in 61..70 -> R.drawable.ic_soc_60_70
-        this in 71..80 -> R.drawable.ic_soc_70_80
-        this in 81..90 -> R.drawable.ic_soc_80_90
-        else -> R.drawable.ic_soc_90_100
     }
 }
 

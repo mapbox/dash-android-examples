@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.mapbox.dash.driver.presentation.ArrivalFeedbackUiState
@@ -53,7 +56,8 @@ fun SampleArrivalFeedback(
                 .background(Color(0xFF3072F5))
                 .clickable(onClick = state.onClickGoodTripButton)
                 .padding(all = 8.dp),
-            painter = painterResource(id = R.drawable.ic_like_feedback),
+            imageVector = Icons.Default.ThumbUp,
+            colorFilter = ColorFilter.tint(Color.White),
             contentDescription = null,
         )
         Image(
@@ -64,8 +68,10 @@ fun SampleArrivalFeedback(
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color(0xFFEB252A))
                 .clickable(onClick = state.onClickBadTripButton)
-                .padding(all = 8.dp),
-            painter = painterResource(id = R.drawable.ic_dislike_feedback),
+                .padding(all = 8.dp)
+                .rotate(degrees = 180f),
+            imageVector = Icons.Default.ThumbUp,
+            colorFilter = ColorFilter.tint(Color.White),
             contentDescription = null,
         )
     }

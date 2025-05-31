@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -137,7 +140,7 @@ private fun TripOverviewItem(
                 ) {
                     Image(
                         modifier = Modifier.size(24.dp),
-                        painter = painterResource(id = R.drawable.ic_trip_overview_charge_time),
+                        painter = painterResource(id = com.mapbox.dash.example.R.drawable.ic_battery),
                         contentDescription = null,
                     )
                     Text(
@@ -153,7 +156,8 @@ private fun TripOverviewItem(
                     .size(40.dp)
                     .background(color = SampleColors.backgroundLight, shape = CircleShape)
                     .padding(all = 5.dp),
-                painter = painterResource(id = R.drawable.ic_arrow_right),
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                colorFilter = ColorFilter.tint(Color.White),
                 contentDescription = null,
             )
         }
@@ -185,9 +189,7 @@ private fun SampleTripOverviewArrivalInformation(
             if (chargeFromPercent != null) {
                 Image(
                     modifier = Modifier.size(24.dp),
-                    painter = painterResource(
-                        id = chargeFromPercent.toInt().getStateOfChargeIcon()
-                    ),
+                    painter = painterResource(id = com.mapbox.dash.example.R.drawable.ic_battery),
                     contentDescription = null,
                 )
                 if (chargeFromPercent >= 0) {

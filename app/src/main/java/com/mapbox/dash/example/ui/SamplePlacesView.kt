@@ -23,22 +23,23 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mapbox.dash.compose.shimmer
+import com.mapbox.dash.example.theme.SampleColors
 import com.mapbox.dash.sdk.config.api.UiStates
 import com.mapbox.dash.sdk.map.presentation.ui.PlacesListUiState
-import com.mapbox.dash.example.theme.SampleColors
-import com.mapbox.dash.example.theme.SampleIcons
 
 object SamplePlacesView {
 
@@ -139,7 +140,8 @@ object SamplePlacesView {
                             .background(SampleColors.primary)
                             .clickable(onClick = backCloseButtonState.onBackClicked)
                             .padding(12.dp),
-                        painter = painterResource(id = SampleIcons.longArrowLeft),
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        colorFilter = ColorFilter.tint(Color.White),
                         contentDescription = null,
                     )
                 }
@@ -159,7 +161,8 @@ object SamplePlacesView {
                             .background(SampleColors.primary)
                             .clickable(onClick = backCloseButtonState.onCloseClicked)
                             .padding(12.dp),
-                        painter = painterResource(id = SampleIcons.cross),
+                        imageVector = Icons.Default.Close,
+                        colorFilter = ColorFilter.tint(Color.White),
                         contentDescription = null,
                     )
                 }

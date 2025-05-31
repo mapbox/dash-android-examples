@@ -18,6 +18,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,6 +31,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,7 +41,6 @@ import androidx.compose.ui.unit.sp
 import com.mapbox.dash.example.DestinationWeatherForecast
 import com.mapbox.dash.example.WeatherViewModel
 import com.mapbox.dash.example.theme.SampleColors
-import com.mapbox.dash.example.theme.SampleIcons
 import com.mapbox.dash.example.toIcon
 import com.mapbox.dash.models.ArrivalInformationFormatter
 import com.mapbox.dash.sdk.Dash
@@ -84,7 +89,8 @@ object SampleDestinationPreview {
                             .background(SampleColors.primary)
                             .clickable(onClick = backCloseButtonState.onBackClicked)
                             .padding(12.dp),
-                        painter = painterResource(id = SampleIcons.longArrowLeft),
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        colorFilter = ColorFilter.tint(Color.White),
                         contentDescription = null,
                     )
                 }
@@ -104,7 +110,8 @@ object SampleDestinationPreview {
                             .background(SampleColors.primary)
                             .clickable(onClick = backCloseButtonState.onCloseClicked)
                             .padding(12.dp),
-                        painter = painterResource(id = SampleIcons.cross),
+                        imageVector = Icons.Default.Close,
+                        colorFilter = ColorFilter.tint(Color.White),
                         contentDescription = null,
                     )
                 }
@@ -180,7 +187,8 @@ object SampleDestinationPreview {
                     ) {
                         Image(
                             modifier = Modifier.size(24.dp),
-                            painter = painterResource(id = SampleIcons.charging),
+                            imageVector = Icons.Default.Warning,
+                            colorFilter = ColorFilter.tint(Color.White),
                             contentDescription = null,
                         )
                         Text(

@@ -27,7 +27,6 @@ import com.mapbox.dash.sdk.config.api.evTripNotification
 import com.mapbox.dash.sdk.config.api.fasterRouteNotification
 import com.mapbox.dash.sdk.config.api.incidentNotification
 import com.mapbox.dash.sdk.config.api.locationSimulation
-import com.mapbox.dash.sdk.config.api.mapGpt
 import com.mapbox.dash.sdk.config.api.mapStyle
 import com.mapbox.dash.sdk.config.api.offline
 import com.mapbox.dash.sdk.config.api.roadCameraNotification
@@ -40,6 +39,7 @@ import com.mapbox.dash.sdk.config.api.ui
 import com.mapbox.dash.sdk.config.api.uiSettings
 import com.mapbox.dash.state.defaults.camera.SimpleDefaults
 import com.mapbox.maps.MapboxExperimental
+import com.mapbox.navigation.mapgpt.mapGpt
 import kotlinx.coroutines.flow.flowOf
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
