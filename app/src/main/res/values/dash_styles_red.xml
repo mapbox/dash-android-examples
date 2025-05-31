@@ -8,19 +8,6 @@
         <item name="border_color_accent">@color/color_red</item>
         <item name="icon_color_accent">@color/color_red</item>
         <item name="guidance_color_primary">@color/color_red</item>
-
-        <item name="dash_style_map_action_button">@style/MyMapActionButton</item>
-        <item name="dash_style_map_search_panel">@style/MyMapSearchPanel</item>
-        <item name="dash_style_map_eta_panel">@style/MyEtaPanel</item>
-        <item name="dash_style_map_end_nav_button">@style/MyEndNavButton</item>
-        <item name="dash_style_map_resume_guidance">@style/MyResumeGuidance</item>
-        <item name="dash_style_map_poi_card">@style/MyPoiCard</item>
-        <item name="dash_style_map_settings">@style/MySettings</item>
-        <item name="dash_style_map_guidance_banner">@style/MyGuidanceBanner</item>
-        <item name="dash_style_map_maneuvers_list">@style/MyManeuversList</item>
-        <item name="dash_style_map_rate_trip_panel">@style/MyRateTripPanel</item>
-        <item name="dash_style_map_continue_nav_panel">@style/MyContinueNavPanel</item>
-        <item name="dash_style_map_street_title">@style/MyStreetTitle</item>
     </style>
 
     <style name="MyDashThemeRed.Night" parent="DashTheme.Night">
@@ -30,67 +17,6 @@
         <item name="border_color_accent">@color/color_red</item>
         <item name="icon_color_accent">@color/color_red</item>
         <item name="guidance_color_primary">@color/color_red</item>
-
-        <item name="dash_style_map_action_button">@style/MyMapActionButton</item>
-        <item name="dash_style_map_search_panel">@style/MyMapSearchPanel</item>
-        <item name="dash_style_map_eta_panel">@style/MyEtaPanel</item>
-        <item name="dash_style_map_end_nav_button">@style/MyEndNavButton</item>
-        <item name="dash_style_map_resume_guidance">@style/MyResumeGuidance</item>
-        <item name="dash_style_map_poi_card">@style/MyPoiCard</item>
-        <item name="dash_style_map_settings">@style/MySettings</item>
-        <item name="dash_style_map_guidance_banner">@style/MyGuidanceBanner</item>
-        <item name="dash_style_map_maneuvers_list">@style/MyManeuversList</item>
-        <item name="dash_style_map_rate_trip_panel">@style/MyRateTripPanel</item>
-        <item name="dash_style_map_continue_nav_panel">@style/MyContinueNavPanel</item>
-        <item name="dash_style_map_street_title">@style/MyStreetTitle</item>
-    </style>
-
-    <style name="MyMapActionButton" parent="Widget.Dash.Map.ActionButton">
-        <item name="dashShape">full</item>
-    </style>
-
-    <style name="MyMapSearchPanel" parent="Widget.Dash.Map.SearchPanel">
-        <item name="dashShape">full</item>
-    </style>
-
-    <style name="MyEtaPanel" parent="Widget.Dash.Map.EtaPanel">
-        <item name="dashShape">full</item>
-    </style>
-
-    <style name="MyEndNavButton" parent="Widget.Dash.Map.EndNavButton">
-        <item name="dashShape">full</item>
-    </style>
-
-    <style name="MyResumeGuidance" parent="Widget.Dash.Map.ResumeGuidance">
-        <item name="dashShape">extra_large</item>
-    </style>
-
-    <style name="MyPoiCard" parent="Widget.Dash.Map.PoiCard">
-        <item name="dashShape">extra_small</item>
-    </style>
-
-    <style name="MySettings" parent="Widget.Dash.Map.Settings">
-        <item name="dashShape">extra_small</item>
-    </style>
-
-    <style name="MyGuidanceBanner" parent="Widget.Dash.Map.GuidanceBanner">
-        <item name="dashShape">extra_small</item>
-    </style>
-
-    <style name="MyManeuversList" parent="Widget.Dash.Map.ManeuversList">
-        <item name="dashShape">extra_small</item>
-    </style>
-
-    <style name="MyRateTripPanel" parent="Widget.Dash.Map.RateTripPanel">
-        <item name="dashShape">extra_small</item>
-    </style>
-
-    <style name="MyContinueNavPanel" parent="Widget.Dash.Map.ContinueNavPanel">
-        <item name="dashShape">extra_small</item>
-    </style>
-
-    <style name="MyStreetTitle" parent="Widget.Dash.Map.StreetTitle">
-        <item name="dashShape">full</item>
     </style>
 
 </resources>
