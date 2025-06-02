@@ -57,6 +57,7 @@ import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
 import com.mapbox.dash.example.relaxedmode.RelaxedModeActivity
 import com.mapbox.dash.example.ui.SampleArrivalFeedback
+import com.mapbox.dash.example.ui.SampleCameraButton
 import com.mapbox.dash.example.ui.SampleContinueNavigation
 import com.mapbox.dash.example.ui.SampleDestinationPreview
 import com.mapbox.dash.example.ui.SampleDriverNotificationView
@@ -85,6 +86,12 @@ import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.DashNavigationFragment
 import com.mapbox.dash.sdk.config.api.DEFAULT_3D_STYLE
 import com.mapbox.dash.sdk.config.api.DashSidebarControl
+import com.mapbox.dash.sdk.config.api.DashSidebarControl.Feedback
+import com.mapbox.dash.sdk.config.api.DashSidebarControl.RangeMap
+import com.mapbox.dash.sdk.config.api.DashSidebarControl.Search
+import com.mapbox.dash.sdk.config.api.DashSidebarControl.Settings
+import com.mapbox.dash.sdk.config.api.DashSidebarControl.Space
+import com.mapbox.dash.sdk.config.api.DashSidebarControl.Voice
 import com.mapbox.dash.sdk.config.api.DashSidebarUpdate
 import com.mapbox.dash.sdk.config.api.DashUiUpdate
 import com.mapbox.dash.sdk.config.api.camera
@@ -627,6 +634,20 @@ class MainActivity : DrawerActivity() {
                             )
                         } else {
                             DashSidebarControl.defaultRightSidebarControls
+                        }
+                    }
+                    leftSidebar {
+                        controls = if (enabled) {
+                            listOf(
+                                DashSidebarControl.Custom { SampleCameraButton(it) },
+                                Feedback,
+                                RangeMap,
+                                Voice,
+                                Search,
+                                Settings,
+                            )
+                        } else {
+                            DashSidebarControl.defaultLeftSidebarControls
                         }
                     }
                 }
