@@ -101,6 +101,14 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/overrideRouteCallouts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Override route callouts"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/showWeatherWarningAlongRoute"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

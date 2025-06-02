@@ -69,6 +69,7 @@ import com.mapbox.dash.example.ui.SampleOfflineRouteAlert
 import com.mapbox.dash.example.ui.SamplePlacesView
 import com.mapbox.dash.example.ui.SampleRangeMapInfoView
 import com.mapbox.dash.example.ui.SampleResumeGuidanceView
+import com.mapbox.dash.example.ui.SampleRouteCalloutView
 import com.mapbox.dash.example.ui.SampleRoutesOverview
 import com.mapbox.dash.example.ui.SampleSearchPanel
 import com.mapbox.dash.example.ui.SampleTripOverview
@@ -99,6 +100,7 @@ import com.mapbox.dash.sdk.config.api.ui
 import com.mapbox.dash.sdk.config.api.uiSettings
 import com.mapbox.dash.sdk.config.api.voices
 import com.mapbox.dash.sdk.map.domain.style.DefaultMapLayerComposer
+import com.mapbox.dash.sdk.map.presentation.markers.DefaultRouteCalloutView
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
 import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.sdk.search.api.DashSearchResultType
@@ -228,6 +230,7 @@ class MainActivity : DrawerActivity() {
     private val addMapLayer = MutableStateFlow(value = false)
     private val showWeatherWarningAlongRoute = MutableStateFlow(value = false)
     private val showEvChargeStatePoints = MutableStateFlow(value = false)
+    private val overrideRouteCallouts = MutableStateFlow(value = false)
     private val setOfflineTts = MutableStateFlow(value = false)
     private val setCustomCompassDataInputs = MutableStateFlow(value = false)
     private val showRouteOptionsInSettings = MutableStateFlow(value = false)
@@ -420,6 +423,20 @@ class MainActivity : DrawerActivity() {
                     }
                 } else {
                     fragment.setMapLayer(DefaultMapLayerComposer)
+                }
+            }
+        }
+        bindSwitch(
+            switch = menuBinding.overrideRouteCallouts,
+            state = overrideRouteCallouts,
+        ) { overrideRouteCallout ->
+            getDashNavigationFragment()?.let { fragment ->
+                fragment.setRouteCallout { state ->
+                    if (overrideRouteCallout) {
+                        SampleRouteCalloutView(state)
+                    } else {
+                        DefaultRouteCalloutView(state)
+                    }
                 }
             }
         }
