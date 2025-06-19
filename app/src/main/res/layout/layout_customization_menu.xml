@@ -101,6 +101,22 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomStreetNameView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom street name label"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/overrideSearchAreaButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Override search this area"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/overrideRouteCallouts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
