@@ -52,6 +52,8 @@ import com.mapbox.dash.driver.presentation.edittrip.DefaultEditTripCard
 import com.mapbox.dash.driver.presentation.end.DefaultTripSummary
 import com.mapbox.dash.driver.presentation.map.DefaultRangeMapInfoView
 import com.mapbox.dash.driver.presentation.search.DefaultSearchPanelView
+import com.mapbox.dash.driver.presentation.searcharea.DefaultSearchAreaButton
+import com.mapbox.dash.driver.presentation.streetname.DefaultStreetNameView
 import com.mapbox.dash.driver.presentation.waypoint.DefaultContinueNavigationView
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
@@ -72,7 +74,9 @@ import com.mapbox.dash.example.ui.SampleRangeMapInfoView
 import com.mapbox.dash.example.ui.SampleResumeGuidanceView
 import com.mapbox.dash.example.ui.SampleRouteCalloutView
 import com.mapbox.dash.example.ui.SampleRoutesOverview
+import com.mapbox.dash.example.ui.SampleSearchArea
 import com.mapbox.dash.example.ui.SampleSearchPanel
+import com.mapbox.dash.example.ui.SampleStreetName
 import com.mapbox.dash.example.ui.SampleTripOverview
 import com.mapbox.dash.example.ui.SampleTripSummaryView
 import com.mapbox.dash.example.ui.SampleUpcomingManeuversBanner
@@ -236,6 +240,8 @@ class MainActivity : DrawerActivity() {
     private val setMap3dStyle = MutableStateFlow(value = true)
     private val addMapLayer = MutableStateFlow(value = false)
     private val showWeatherWarningAlongRoute = MutableStateFlow(value = false)
+    private val setCustomStreetName = MutableStateFlow(value = false)
+    private val overrideSearchThisArea = MutableStateFlow(value = false)
     private val showEvChargeStatePoints = MutableStateFlow(value = false)
     private val overrideRouteCallouts = MutableStateFlow(value = false)
     private val setOfflineTts = MutableStateFlow(value = false)
@@ -393,6 +399,32 @@ class MainActivity : DrawerActivity() {
                 }
             },
         )
+        bindSwitch(
+            switch = menuBinding.overrideSearchAreaButton,
+            state = overrideSearchThisArea,
+        ) { enabled ->
+            val fragment = getDashNavigationFragment() ?: return@bindSwitch
+            if (enabled) {
+                fragment.setSearchArea { uiState ->
+                    SampleSearchArea(uiState)
+                }
+            } else {
+                fragment.setSearchArea { uiState ->
+                    DefaultSearchAreaButton(uiState)
+                }
+            }
+        }
+        bindSwitch(
+            switch = menuBinding.toggleCustomStreetNameView,
+            state = setCustomStreetName,
+        ) { enabled ->
+            val fragment = getDashNavigationFragment() ?: return@bindSwitch
+            if (enabled) {
+                fragment.setStreetNameLabel { modifier, uiState -> SampleStreetName(modifier, uiState) }
+            } else {
+                fragment.setStreetNameLabel { modifier, uiState -> DefaultStreetNameView(modifier, uiState) }
+            }
+        }
         bindSwitch(
             switch = menuBinding.showWeatherWarningAlongRoute,
             state = showWeatherWarningAlongRoute,
