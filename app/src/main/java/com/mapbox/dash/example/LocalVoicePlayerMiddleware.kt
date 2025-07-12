@@ -8,16 +8,15 @@ import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
-import com.mapbox.navigation.mapgpt.core.CoroutineMiddleware
-import com.mapbox.navigation.mapgpt.core.audiofocus.AudioFocusOwner
-import com.mapbox.navigation.mapgpt.core.language.Language
-import com.mapbox.navigation.mapgpt.core.textplayer.Announcement
-import com.mapbox.navigation.mapgpt.core.textplayer.PlayerCallback
-import com.mapbox.navigation.mapgpt.core.textplayer.Voice
-import com.mapbox.navigation.mapgpt.core.textplayer.VoicePlayer
-import com.mapbox.navigation.mapgpt.core.textplayer.VoiceProgress
-import com.mapbox.navigation.mapgpt.core.textplayer.middleware.VoicePlayerMiddleware
-import com.mapbox.navigation.mapgpt.core.textplayer.middleware.VoicePlayerMiddlewareContext
+import com.mapbox.navigation.audio.focus.AudioFocusOwner
+import com.mapbox.navigation.audio.text.Announcement
+import com.mapbox.navigation.audio.text.PlayerCallback
+import com.mapbox.navigation.audio.text.Voice
+import com.mapbox.navigation.audio.text.VoicePlayer
+import com.mapbox.navigation.audio.text.VoicePlayerMiddlewareContext
+import com.mapbox.navigation.audio.text.VoiceProgress
+import com.mapbox.navigation.audio.text.middleware.VoicePlayerMiddleware
+import com.mapbox.navigation.base.middleware.CoroutineMiddleware
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,8 +28,8 @@ class LocalVoicePlayerMiddleware :
     VoicePlayerMiddleware,
     CoroutineMiddleware<VoicePlayerMiddlewareContext>() {
 
-    private val _availableLanguages = MutableStateFlow(emptySet<Language>())
-    override val availableLanguages: StateFlow<Set<Language>> = _availableLanguages.asStateFlow()
+    private val _availableLanguages = MutableStateFlow(emptySet<Locale>())
+    override val availableLanguages: StateFlow<Set<Locale>> = _availableLanguages.asStateFlow()
 
     private val _availableVoices = MutableStateFlow(emptySet<Voice>())
     override val availableVoices: StateFlow<Set<Voice>> = _availableVoices.asStateFlow()
@@ -117,20 +116,20 @@ class AndroidTextToSpeechVoice(
 
 internal class LocalVoicePlayer(
     androidContext: Context,
-    private val initialLanguage: Language = Language(Locale.ENGLISH),
+    private val initialLanguage: Locale = Locale.ENGLISH,
     private val initialTtsEngine: String = "com.google.android.tts",
 ) : VoicePlayer {
 
     private var textToSpeechInitStatus: Int? = null
     private var volume = 1.0f
 
-    private val _availableLanguages = MutableStateFlow(emptySet<Language>())
-    override val availableLanguages: StateFlow<Set<Language>> = _availableLanguages.asStateFlow()
+    private val _availableLanguages = MutableStateFlow(emptySet<Locale>())
+    override val availableLanguages: StateFlow<Set<Locale>> = _availableLanguages.asStateFlow()
 
     private val _availableVoices = MutableStateFlow(emptySet<Voice>())
     override val availableVoices: StateFlow<Set<Voice>> = _availableVoices.asStateFlow()
 
-    private var language: Language = initialLanguage
+    private var language: Locale = initialLanguage
 
     private val textToSpeech = TextToSpeech(
         androidContext,
@@ -165,16 +164,16 @@ internal class LocalVoicePlayer(
 
         val availableLocales = textToSpeech.availableLanguages
         Log.i(TAG, "Available languages: ${availableLocales.joinToString { it.isO3Language }}")
-        _availableLanguages.value = availableLocales.map { Language(it) }.toSet()
-        Log.d(TAG, "Searching for TTS language: ${initialLanguage.locale.isO3Language}")
+        _availableLanguages.value = availableLocales.toSet()
+        Log.d(TAG, "Searching for TTS language: ${initialLanguage.isO3Language}")
         val targetLocale = availableLocales.firstOrNull {
-            it.isO3Language == initialLanguage.locale.isO3Language
+            it.isO3Language == initialLanguage.isO3Language
         }
         Log.i(TAG, "Found TTS language: ${targetLocale?.isO3Language}")
         val locale: Locale = targetLocale?.let {
-            targetLocale.also { language = Language(it) }
+            targetLocale.also { language = it }
         } ?: run {
-            Log.w(TAG, "${language.locale} is not supported, using $defaultLocale")
+            Log.w(TAG, "$language is not supported, using $defaultLocale")
             defaultLocale
         }
 
@@ -188,7 +187,7 @@ internal class LocalVoicePlayer(
 
     private fun updateAvailableVoices(locale: Locale) {
         val availableVoices = textToSpeech.voices.mapNotNull { voice ->
-            val voiceLanguage = Language(voice.locale)
+            val voiceLanguage = voice.locale
             if (voiceLanguage == language) {
                 AndroidTextToSpeechVoice(voice)
             } else {

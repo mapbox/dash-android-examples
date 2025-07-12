@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.mapbox.dash.maneuver.R
+import com.mapbox.dash.example.R
 import com.mapbox.dash.maneuver.domain.model.DashArrivalManeuver
 import com.mapbox.dash.maneuver.domain.model.DashRouteManeuver
 import com.mapbox.dash.maneuver.presentation.ui.UpcomingManeuversUiState

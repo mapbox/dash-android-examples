@@ -7,4 +7,9 @@
         <item name="indicatorInset">2dp</item>
     </style>
 
+    <style name="ManeuverTurnIconStylePrimary">
+        <item name="maneuverTurnIconColor">#FFFFFFFF</item>
+        <item name="maneuverTurnIconShadowColor">#80FFFFFF</item>
+    </style>
+
 </resources>
