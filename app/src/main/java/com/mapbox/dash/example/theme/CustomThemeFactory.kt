@@ -47,7 +47,7 @@ internal object CustomThemeFactory : ThemeFactory {
                     food = DashIcon(context, R.drawable.ic_pixel_food),
                     fuel = DashIcon(context, R.drawable.ic_pixel_fuel),
                     home = DashIcon(context, R.drawable.ic_pixel_home),
-                    parking = DashIcon(context, R.drawable.ic_pixel_home),
+                    parking = DashIcon(context, R.drawable.ic_pixel_parking),
                     recents = DashIcon(context, R.drawable.ic_pixel_recents),
                     work = DashIcon(context, R.drawable.ic_pixel_work),
                 ),
