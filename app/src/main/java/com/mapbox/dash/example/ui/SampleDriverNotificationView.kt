@@ -197,7 +197,7 @@ fun SampleDriverNotificationView(
                         duration.toString(DurationUnit.MINUTES, 0),
                     )
                 },
-                notification.icon(),
+                R.drawable.ic_navux_driver_notification_universal,
                 0,
                 null,
                 R.string.dash_driver_notification_dismiss,

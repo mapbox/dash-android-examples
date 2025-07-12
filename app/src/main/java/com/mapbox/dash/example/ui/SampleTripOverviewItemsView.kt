@@ -1,6 +1,5 @@
 package com.mapbox.dash.example.ui
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,11 +12,15 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,12 +46,12 @@ internal fun SampleTripOverviewItems(
         for (item in items) {
             when (item) {
                 TripOverviewItem.YourLocation -> TripOverviewItem(
-                    iconId = R.drawable.ic_trip_overview_your_location,
+                    icon = Icons.AutoMirrored.Default.Send,
                     title = "Your location",
                 )
 
                 is TripOverviewItem.Waypoint -> TripOverviewItem(
-                    iconId = R.drawable.ic_trip_overview_waypoint,
+                    icon = Icons.Default.Place,
                     title = item.searchResult.name,
                     etaMinutes = item.etaMinutes,
                     stateOfCharge = item.stateOfCharge,
@@ -57,14 +60,14 @@ internal fun SampleTripOverviewItems(
                 )
 
                 is TripOverviewItem.NoBatteryCharge -> TripOverviewItem(
-                    iconId = R.drawable.ic_trip_overview_end_of_charge,
+                    icon = Icons.Default.Warning,
                     title = "Charging stop needed",
                     color = SampleColors.error,
                     onClick = { onEndOfChargeClick(item.routePoints) },
                 )
 
                 is TripOverviewItem.ChargingStation -> TripOverviewItem(
-                    iconId = R.drawable.ic_trip_overview_waypoint,
+                    icon = Icons.Default.Place,
                     title = item.searchResult.name,
                     etaMinutes = item.etaMinutes,
                     stateOfCharge = item.stateOfCharge,
@@ -95,7 +98,7 @@ private fun Text(
 @Suppress("LongParameterList", "LongMethod")
 @Composable
 private fun TripOverviewItem(
-    @DrawableRes iconId: Int,
+    icon: ImageVector,
     title: String,
     color: Color = SampleColors.textPrimary,
     etaMinutes: Double? = null,
@@ -112,7 +115,7 @@ private fun TripOverviewItem(
     ) {
         Image(
             modifier = Modifier.background(SampleColors.background),
-            painter = painterResource(id = iconId),
+            imageVector = icon,
             contentDescription = null,
         )
         Column(

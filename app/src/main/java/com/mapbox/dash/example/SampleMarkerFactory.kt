@@ -23,7 +23,11 @@ class SampleMarkerFactory(
     /**
      * Creates a marker for search suggestions symbol descriptors.
      */
-    override fun create(symbolDescriptor: SymbolDescriptorSearchSuggestions, selected: Boolean): MarkerOptions {
+    override fun create(
+        context: Context,
+        symbolDescriptor: SymbolDescriptorSearchSuggestions,
+        selected: Boolean
+    ): MarkerOptions {
         return MarkerOptions()
             .withImage(symbolDescriptor.image)
             .withImageAnchor(MarkerOptions.ImageAnchor.BOTTOM)
@@ -39,7 +43,11 @@ class SampleMarkerFactory(
     /**
      * Creates a marker for route point symbol descriptors.
      */
-    override fun create(symbolDescriptor: SymbolDescriptorRoutePoint, selected: Boolean): MarkerOptions {
+    override fun create(
+        context: Context,
+        symbolDescriptor: SymbolDescriptorRoutePoint,
+        selected: Boolean
+    ): MarkerOptions {
         return MarkerOptions()
             .withImage(symbolDescriptor.image)
             .withImageAnchor(MarkerOptions.ImageAnchor.BOTTOM)

@@ -34,6 +34,7 @@ import com.mapbox.dash.sdk.config.api.routeOptions
 import com.mapbox.dash.sdk.config.api.search
 import com.mapbox.dash.sdk.config.api.slowTrafficNotification
 import com.mapbox.dash.sdk.config.api.speedLimitsOptions
+import com.mapbox.dash.example.theme.CustomThemeFactory
 import com.mapbox.dash.sdk.config.api.theme
 import com.mapbox.dash.sdk.config.api.ui
 import com.mapbox.dash.sdk.config.api.uiSettings
@@ -58,8 +59,7 @@ class MainApplication : Application() {
         ) {
             theme {
                 // Example of providing a custom theme to change the look-and-feel of Dash's UI components.
-                dayStyleRes = R.style.MyDashTheme_Day
-                nightStyleRes = R.style.MyDashTheme_Night
+                themeFactory = CustomThemeFactory
             }
             ev {
                 autoAddChargingStations = AutoAddChargingStrategy.Always

@@ -33,7 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mapbox.dash.maneuver.R
+import com.mapbox.dash.example.R
 import com.mapbox.dash.maneuver.presentation.ui.FormattedStepDistance
 import com.mapbox.dash.maneuver.presentation.ui.ManeuverUiState
 import com.mapbox.dash.sdk.Dash
@@ -61,7 +61,9 @@ fun SampleGuidanceBanner(modifier: Modifier, state: ManeuverUiState) {
     ) {
         if (!isWaypointArrival) {
             ManeuverTurnIcon(
-                modifier = Modifier.size(dimensionResource(id = R.dimen.maneuver_view_primary_turn_icon_size)),
+                modifier = Modifier.size(dimensionResource(
+                    id = com.mapbox.dash.maneuver.R.dimen.maneuver_view_primary_turn_icon_size)
+                ),
                 iconStyle = R.style.ManeuverTurnIconStylePrimary,
                 type = maneuver.primary.type,
                 degrees = maneuver.primary.degrees,
@@ -71,7 +73,9 @@ fun SampleGuidanceBanner(modifier: Modifier, state: ManeuverUiState) {
         }
         Text(
             text = if (isWaypointArrival) {
-                AnnotatedString(stringResource(id = R.string.dash_arrived_text))
+                AnnotatedString(stringResource(
+                    id = com.mapbox.dash.maneuver.R.string.dash_arrived_text)
+                )
             } else {
                 buildAnnotatedString {
                     when (val stepDistance = state.stepDistance) {

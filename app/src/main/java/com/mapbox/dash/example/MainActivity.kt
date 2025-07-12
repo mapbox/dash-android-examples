@@ -58,6 +58,8 @@ import com.mapbox.dash.driver.presentation.waypoint.DefaultContinueNavigationVie
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
 import com.mapbox.dash.example.relaxedmode.RelaxedModeActivity
+import com.mapbox.dash.example.theme.CustomThemeFactory
+import com.mapbox.dash.example.theme.RedThemeFactory
 import com.mapbox.dash.example.ui.SampleArrivalFeedback
 import com.mapbox.dash.example.ui.SampleCameraButton
 import com.mapbox.dash.example.ui.SampleContinueNavigation
@@ -99,6 +101,7 @@ import com.mapbox.dash.sdk.config.api.DashSidebarControl.Space
 import com.mapbox.dash.sdk.config.api.DashSidebarControl.Voice
 import com.mapbox.dash.sdk.config.api.DashSidebarUpdate
 import com.mapbox.dash.sdk.config.api.DashUiUpdate
+import com.mapbox.dash.sdk.config.api.ThemeFactory
 import com.mapbox.dash.sdk.config.api.camera
 import com.mapbox.dash.sdk.config.api.destinationPreview
 import com.mapbox.dash.sdk.config.api.leftSidebar
@@ -117,9 +120,12 @@ import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.sdk.search.api.DashSearchResultType
 import com.mapbox.dash.sdk.storage.ExternalProfile
 import com.mapbox.dash.state.defaults.camera.SimpleDefaults
+import com.mapbox.dash.theming.Theme
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
+import com.mapbox.navigation.mapgpt.setDefaultVoicePlayerMiddleware
+import com.mapbox.navigation.mapgpt.setVoicePlayerMiddleware
 import com.mapbox.navigation.weather.model.WeatherAlert
 import com.mapbox.navigation.weather.model.WeatherCondition
 import com.mapbox.navigation.weather.model.WeatherSystemOfMeasurement
@@ -302,7 +308,7 @@ class MainActivity : DrawerActivity() {
     }
 
     private fun themeCustomization() {
-        val themes = CustomDashTheme.names()
+        val themes = CustomDashTheme.values().map { it.name }
         menuBinding.themeSpinner.adapter =
             ArrayAdapter(this, android.R.layout.simple_spinner_item, themes).apply {
                 setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -313,9 +319,7 @@ class MainActivity : DrawerActivity() {
         ) { name ->
             Dash.applyUpdate {
                 theme {
-                    val t = CustomDashTheme.valueOf(name)
-                    dayStyleRes = t.dayResId
-                    nightStyleRes = t.nightResId
+                    themeFactory = CustomDashTheme.valueOf(name).themeFactory
                 }
             }
         }
@@ -984,6 +988,7 @@ class MainActivity : DrawerActivity() {
         }
 
         bindSwitch(menuBinding.toggleCustomVoicePlayer, setCustomVoicePlayer) { enabled ->
+
             if (enabled) {
                 Dash.controller.setVoicePlayerMiddleware(LocalVoicePlayerMiddleware())
             } else {
@@ -1107,8 +1112,8 @@ class MainActivity : DrawerActivity() {
         Dash.controller.observeMapEvents().observeWhenStarted(this) { event ->
             Log.d(TAG, ">> DashMapEvent | event = $event")
         }
-        Dash.controller.observeMapGptEvents().observeWhenStarted(this) { event ->
-            Log.d(TAG, ">> DashMapGptEvent | event = $event")
+        Dash.controller.observeGenericEvents().observeWhenStarted(this) { event ->
+            Log.d(TAG, ">> DashGenericEvent | event = $event")
         }
         Dash.controller.observeRouteProgress().observeWhenStarted(this) { progress ->
             progress.apply {
@@ -1184,22 +1189,12 @@ class MainActivity : DrawerActivity() {
     }
 
     internal enum class CustomDashTheme(
-        val dayResId: Int,
-        val nightResId: Int,
+        val themeFactory: ThemeFactory,
     ) {
 
-        DEFAULT(
-            com.mapbox.dash.theming.R.style.DashTheme_Day,
-            com.mapbox.dash.theming.R.style.DashTheme_Night
-        ),
-        CUSTOM(R.style.MyDashTheme_Day, R.style.MyDashTheme_Night),
-        RED(R.style.MyDashThemeRed_Day, R.style.MyDashThemeRed_Night),
-        ;
-
-        companion object {
-
-            fun names() = values().map { it.name }
-        }
+        DEFAULT(ThemeFactory(::Theme)),
+        CUSTOM(CustomThemeFactory),
+        RED(RedThemeFactory),
     }
 
     private fun bindSidebarSpinner(
