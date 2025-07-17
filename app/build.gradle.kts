@@ -96,6 +96,7 @@ dependencies {
     implementation("com.mapbox.navigationux:data-inputs:$uxfVersion")
     implementation("com.mapbox.navigationux:ev-rangemap:$uxfVersion")
     implementation("com.mapbox.navigationux:map-gpt:${uxfVersion}")
+    implementation("com.mapbox.navigationux:navigation-coordination:${uxfVersion}")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
