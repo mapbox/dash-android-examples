@@ -101,6 +101,7 @@ class MainApplication : Application() {
                 showSendDebugInfoButton = true
                 showSimulateLocationOption = true
                 showDisplaySendDebugInfoButtonOption = true
+                showCoordinationModeSelector = true
             }
             ui {
                 screenDirectionality = ScreenDirectionality.LEFT_TO_RIGHT
