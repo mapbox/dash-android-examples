@@ -47,6 +47,14 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/connectMapboxStack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Connect mapbox stack"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/toggleDebugLogs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

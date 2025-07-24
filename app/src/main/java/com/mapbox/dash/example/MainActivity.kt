@@ -107,6 +107,7 @@ import com.mapbox.dash.sdk.config.api.destinationPreview
 import com.mapbox.dash.sdk.config.api.leftSidebar
 import com.mapbox.dash.sdk.config.api.maneuverView
 import com.mapbox.dash.sdk.config.api.mapStyle
+import com.mapbox.dash.sdk.config.api.offline
 import com.mapbox.dash.sdk.config.api.rightSidebar
 import com.mapbox.dash.sdk.config.api.searchPanel
 import com.mapbox.dash.sdk.config.api.theme
@@ -243,6 +244,7 @@ class MainActivity : DrawerActivity() {
 
     // storage for configuration mutations
     private val showDebugLogs = MutableStateFlow(value = true)
+    private val connectMapboxStack = MutableStateFlow(value = true)
     private val setMap3dStyle = MutableStateFlow(value = true)
     private val addMapLayer = MutableStateFlow(value = false)
     private val showWeatherWarningAlongRoute = MutableStateFlow(value = false)
@@ -1017,6 +1019,15 @@ class MainActivity : DrawerActivity() {
                         showUpcomingLaneGuidance = enabled
                     }
                 }
+            }
+        }
+
+        bindSwitch(
+            switch = menuBinding.connectMapboxStack,
+            state = connectMapboxStack,
+        ) { isConnected ->
+            Dash.applyUpdate {
+                offline { isMapboxStackConnected = isConnected }
             }
         }
 
