@@ -1197,6 +1197,9 @@ class MainActivity : DrawerActivity() {
                 println(">> observeRouteWaypoints. waypoint[$index]: categories = ${item.categories}")
             }
         }
+        lifecycleScope.launch {
+            println(">> getOfflineRegionMetadata = ${Dash.controller.getOfflineRegionMetadata()}")
+        }
     }
 
     internal enum class CustomDashTheme(
