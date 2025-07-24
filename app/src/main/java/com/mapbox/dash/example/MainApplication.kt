@@ -94,6 +94,7 @@ class MainApplication : Application() {
                 searchEngine = ShowcaseSearchEngine()
             }
             offline {
+                isMapboxStackConnected = true
                 tilesPath = applicationContext.filesDir.absolutePath + "/prepared_tilestore"
                 tilesDiskQuota = 50.Gb
             }
