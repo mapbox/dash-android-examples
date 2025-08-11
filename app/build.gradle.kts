@@ -89,7 +89,7 @@ android {
 }
 
 dependencies {
-    val uxfVersion = "1.2.0-rc.1"
+    val uxfVersion = "1.2.0"
     implementation("com.mapbox.navigationux:android:$uxfVersion")
     implementation("com.mapbox.navigationux:cluster:$uxfVersion")
     implementation("com.mapbox.navigationux:weather-api:$uxfVersion")
@@ -109,8 +109,4 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
     testImplementation("junit:junit:4.13.2")
-}
-
-fun DependencyHandler.privateSdk(dependencyNotation: String) {
-    add("PrivateSdkImplementation", dependencyNotation)
 }
