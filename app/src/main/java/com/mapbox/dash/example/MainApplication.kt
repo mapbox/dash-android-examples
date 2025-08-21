@@ -5,7 +5,7 @@ import android.location.LocationManager
 import com.mapbox.common.location.Location
 import com.mapbox.dash.cluster.cluster
 import com.mapbox.dash.cluster.mapStyle
-import com.mapbox.dash.ev.api.EvDataProvider
+import com.mapbox.dash.example.theme.CustomThemeFactory
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.base.device.DashDeviceType
 import com.mapbox.dash.sdk.base.domain.model.AutoAddChargingStrategy
@@ -34,13 +34,16 @@ import com.mapbox.dash.sdk.config.api.routeOptions
 import com.mapbox.dash.sdk.config.api.search
 import com.mapbox.dash.sdk.config.api.slowTrafficNotification
 import com.mapbox.dash.sdk.config.api.speedLimitsOptions
-import com.mapbox.dash.example.theme.CustomThemeFactory
 import com.mapbox.dash.sdk.config.api.theme
 import com.mapbox.dash.sdk.config.api.ui
 import com.mapbox.dash.sdk.config.api.uiSettings
+import com.mapbox.dash.sdk.ev.api.EvDataProvider
+import com.mapbox.dash.sdk.ev.domain.model.Energy
+import com.mapbox.dash.sdk.ev.domain.model.Energy.Companion.kiloWattHours
 import com.mapbox.dash.state.defaults.camera.SimpleDefaults
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.navigation.mapgpt.mapGpt
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -177,10 +180,10 @@ class MainApplication : Application() {
      */
     private fun configureEvProvider() {
         val evDataProvider = object : EvDataProvider {
-            override val stateOfCharge = flowOf(50f)
             override val secondsRemainingToCharge = flowOf<Int?>(7200)
+            override val stateOfEnergy: Flow<Energy> = flowOf(60.kiloWattHours)
             override val isChargerPluggedIn = flowOf(true)
-            override val maxCharge = flowOf(57500)
+            override val maxCharge: Flow<Energy> = flowOf(100.kiloWattHours)
             override val connectorTypes = flowOf("ccs_combo_type1")
             override val efficiency = flowOf(5f) // 5 kilometers per kWh
             override val energyConsumptionCurve = flowOf("0,300;20,160;80,140;120,180")

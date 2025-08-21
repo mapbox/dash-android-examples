@@ -8,7 +8,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
 import com.mapbox.common.location.LocationServiceFactory
-import com.mapbox.dash.sdk.data.inputs.api.model.DashCompassData
+import com.mapbox.dash.sdk.data.inputs.model.DashCompassData
 import com.mapbox.navigation.base.geometry.Angle.Companion.degrees
 import com.mapbox.navigation.base.geometry.Point3D
 import kotlinx.coroutines.flow.MutableSharedFlow
