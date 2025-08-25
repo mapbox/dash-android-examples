@@ -114,6 +114,7 @@ import com.mapbox.dash.sdk.config.api.theme
 import com.mapbox.dash.sdk.config.api.ui
 import com.mapbox.dash.sdk.config.api.uiSettings
 import com.mapbox.dash.sdk.config.api.voices
+import com.mapbox.dash.sdk.data.inputs.updateCompassData
 import com.mapbox.dash.sdk.map.domain.style.DefaultMapLayerComposer
 import com.mapbox.dash.sdk.map.presentation.markers.DefaultRouteCalloutView
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
