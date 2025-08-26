@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +62,15 @@ import com.mapbox.dash.sdk.map.presentation.ui.BackCloseButtonState
 @Composable
 @Suppress("LongMethod")
 fun SampleEditTrip(state: EditTripUiState) {
+    LaunchedEffect(key1 = Unit) {
+        val indexOfAddNewWaypoint = state.items.lastIndexOf(EditTripItem.AddNewItem)
+        val lastWaypointIndex = state.items.indexOfLast { it is EditTripItem.Waypoint }
+
+        if (indexOfAddNewWaypoint > 0 && lastWaypointIndex >= 0 && indexOfAddNewWaypoint > lastWaypointIndex) {
+            state.onItemSwap(indexOfAddNewWaypoint, lastWaypointIndex)
+        }
+    }
+
     SampleEditTrip(
         items = state.items,
         onOpenFullScreenSearchClick = state.onOpenFullScreenSearchClick,
