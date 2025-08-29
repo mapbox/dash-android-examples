@@ -142,8 +142,14 @@ private fun SampleRoutesOverviewItem(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         SampleRoutesOverviewItemPrimaryInfo(item)
+        val secondRowText = buildString {
+            append("${item.distance.roundToLong()} m")
+            if (item.isEcoRoute && item.energyConsumptionSaving != null) {
+                append(" – eco – ${item.energyConsumptionSaving} lower emission")
+            }
+        }
         Text(
-            text = "${item.distance.roundToLong()} m",
+            text = secondRowText,
             color = Color.White,
             fontSize = 32.sp,
             lineHeight = 40.sp,
