@@ -11,6 +11,7 @@ import com.mapbox.dash.sdk.base.device.DashDeviceType
 import com.mapbox.dash.sdk.base.domain.model.AutoAddChargingStrategy
 import com.mapbox.dash.sdk.base.domain.model.BatteryComfortLevel
 import com.mapbox.dash.sdk.base.units.Gb
+import com.mapbox.dash.sdk.config.api.CustomKeys.ECO_ROUTES_ENABLED
 import com.mapbox.dash.sdk.config.api.DEFAULT_3D_STYLE
 import com.mapbox.dash.sdk.config.api.DEFAULT_DAY_STYLE
 import com.mapbox.dash.sdk.config.api.DEFAULT_NIGHT_STYLE
@@ -60,6 +61,8 @@ class MainApplication : Application() {
             context = applicationContext,
             accessToken = getString(R.string.mapbox_access_token),
         ) {
+            engineType = EngineType.PETROL
+            customValues[ECO_ROUTES_ENABLED] = true
             theme {
                 // Example of providing a custom theme to change the look-and-feel of Dash's UI components.
                 themeFactory = CustomThemeFactory
@@ -166,7 +169,6 @@ class MainApplication : Application() {
                 }
             }
 
-            engineType = EngineType.ELECTRIC
             device = DashDeviceType.Automobile
         }
         configureEvProvider()
