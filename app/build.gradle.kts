@@ -55,11 +55,6 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.7"
     }
-    configurations {
-        all {
-            exclude(group = "com.google.guava", module = "listenablefuture")
-        }
-    }
     packagingOptions {
         resources {
             excludes += setOf(
@@ -89,7 +84,7 @@ android {
 }
 
 dependencies {
-    val uxfVersion = "1.3.0-beta.1"
+    val uxfVersion = "1.3.0-rc.1"
     implementation("com.mapbox.navigationux:android:$uxfVersion")
     implementation("com.mapbox.navigationux:cluster:$uxfVersion")
     implementation("com.mapbox.navigationux:weather-api:$uxfVersion")
