@@ -77,10 +77,19 @@ fun SampleRouteCalloutView(state: RouteCalloutUiState) {
         else -> null
     }.orEmpty()
 
+    state.isEcoRoute
+
     val prefix = if (state.hasTollRoad) "$ " else ""
     val label = "$prefix $type".trim()
 
-    SampleRouteCalloutViewAnnotation(duration, label, state.layerId, state.callout.isPrimary, state.onClick)
+    SampleRouteCalloutViewAnnotation(
+        duration,
+        label,
+        state.layerId,
+        state.callout.isPrimary,
+        state.isEcoRoute,
+        state.onClick,
+    )
 }
 
 @Composable
@@ -89,6 +98,7 @@ private fun SampleRouteCalloutViewAnnotation(
     label: String,
     layerId: String,
     isPrimary: Boolean,
+    isEcoRoute: Boolean,
     onClick: () -> Unit,
 ) {
     // key prevents annotation contents from mixing
@@ -96,6 +106,7 @@ private fun SampleRouteCalloutViewAnnotation(
         duration,
         label,
         layerId,
+        isEcoRoute,
         isPrimary,
     ) {
         val anchorState = remember { mutableStateOf(value = ViewAnnotationAnchor.TOP_LEFT) }
@@ -120,6 +131,7 @@ private fun SampleRouteCalloutViewAnnotation(
                 anchor = anchorState.value,
                 duration = duration,
                 primary = isPrimary,
+                eco = isEcoRoute,
                 label = label,
                 onClick = onClick,
             )
@@ -177,6 +189,7 @@ private fun SampleRouteCalloutViewContent(
     anchor: ViewAnnotationAnchor,
     duration: Duration,
     label: String = "",
+    eco: Boolean = false,
     primary: Boolean = false,
     onClick: () -> Unit = {},
 ) {
@@ -196,9 +209,14 @@ private fun SampleRouteCalloutViewContent(
             color = if (primary) Color.White else Color.Black
         )
 
-        if (label.isNotEmpty()) {
+        if (label.isNotEmpty() || eco) {
+            val text = buildString {
+                append(label)
+                if (label.isNotEmpty() && eco) append(" – ")
+                if (eco) append("eco")
+            }
             Text(
-                label,
+                text,
                 color = if (primary) Color.White else Color.Black,
             )
         }
@@ -214,6 +232,7 @@ internal fun Preview_DefaultRouteCalloutView() {
             SampleRouteCalloutViewContent(
                 anchor = ViewAnnotationAnchor.TOP_LEFT,
                 duration = 5.minutes + 30.seconds,
+                eco = true,
                 label = "Fastest",
             )
             SampleRouteCalloutViewContent(
@@ -223,12 +242,13 @@ internal fun Preview_DefaultRouteCalloutView() {
             )
             SampleRouteCalloutViewContent(
                 anchor = ViewAnnotationAnchor.BOTTOM_RIGHT,
+                eco = true,
                 duration = -1.hours,
             )
             SampleRouteCalloutViewContent(
                 anchor = ViewAnnotationAnchor.BOTTOM_LEFT,
                 duration = 3.hours + 25.minutes + 30.seconds,
-                label = "$ Fastest",
+                label = "Fastest",
             )
         }
     }
