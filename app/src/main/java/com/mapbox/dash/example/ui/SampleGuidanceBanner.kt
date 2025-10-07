@@ -43,7 +43,10 @@ import com.mapbox.navigation.tripdata.maneuver.model.TurnIconResources
 import kotlinx.coroutines.flow.map
 
 @Composable
-fun SampleGuidanceBanner(modifier: Modifier, state: ManeuverUiState) {
+fun SampleGuidanceBanner(modifier: Modifier, state: ManeuverUiState?) {
+    if (state == null) {
+        return
+    }
     val defaultMargin = 20.dp
     val isWaypointArrival by remember {
         Dash.controller.observeNavigationState()

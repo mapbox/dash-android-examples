@@ -7,7 +7,6 @@ import com.mapbox.dash.cluster.cluster
 import com.mapbox.dash.cluster.mapStyle
 import com.mapbox.dash.example.theme.CustomThemeFactory
 import com.mapbox.dash.sdk.Dash
-import com.mapbox.dash.sdk.base.device.DashDeviceType
 import com.mapbox.dash.sdk.base.domain.model.AutoAddChargingStrategy
 import com.mapbox.dash.sdk.base.domain.model.BatteryComfortLevel
 import com.mapbox.dash.sdk.base.units.Gb
@@ -93,7 +92,7 @@ class MainApplication : Application() {
                 showSpeedLimitsOptions = true
             }
             search {
-                resultsAdapter = ShowcaseSearchResultsAdapter()
+                resultsAdapter = ShowcaseSearchResultsAdapter
                 searchEngine = ShowcaseSearchEngine()
             }
             offline {
@@ -167,7 +166,6 @@ class MainApplication : Application() {
             }
 
             engineType = EngineType.ELECTRIC
-            device = DashDeviceType.Automobile
         }
         configureEvProvider()
     }
