@@ -1,6 +1,7 @@
 package com.mapbox.dash.example
 
 import com.mapbox.dash.sdk.search.api.DashCategorySearchOptions
+import com.mapbox.dash.sdk.search.api.DashForwardOptions
 import com.mapbox.dash.sdk.search.api.DashSearchEngine
 import com.mapbox.dash.sdk.search.api.DashSearchEnginePolicy
 import com.mapbox.dash.sdk.search.api.DashSearchOptions
@@ -19,6 +20,11 @@ class ShowcaseSearchEngine(
         request: DashSearchRequest,
         options: DashSearchOptions,
     ): List<DashSearchSuggestion> = listOf(customSuggestion)
+
+    override suspend fun forward(
+        request: DashSearchRequest,
+        options: DashForwardOptions,
+    ): List<DashSearchResult> = listOf(customSearchResult)
 
     override suspend fun categorySearch(
         searchRequest: DashSearchRequest,

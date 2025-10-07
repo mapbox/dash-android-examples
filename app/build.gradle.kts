@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.mapbox.dash.example"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -84,7 +84,7 @@ android {
 }
 
 dependencies {
-    val uxfVersion = "1.3.0"
+    val uxfVersion = "1.16.0-beta.2"
     implementation("com.mapbox.navigationux:android:$uxfVersion")
     implementation("com.mapbox.navigationux:cluster:$uxfVersion")
     implementation("com.mapbox.navigationux:weather-api:$uxfVersion")

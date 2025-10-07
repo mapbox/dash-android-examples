@@ -49,6 +49,7 @@ import com.mapbox.dash.sdk.map.presentation.ui.DestinationPreviewUiState
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 import kotlinx.coroutines.launch
+import java.util.Date
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
@@ -286,6 +287,8 @@ object SampleDestinationPreview {
 
         override fun formatDuration(duration: Duration, truncateDurationUnit: DurationUnit): String =
             duration.toString(truncateDurationUnit)
+
+        override fun formatTime(time: Date): String = time.toString()
     }
 }
 
