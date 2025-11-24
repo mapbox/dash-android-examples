@@ -5,6 +5,7 @@ package com.mapbox.dash.example
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.mapbox.dash.sdk.Dash
+import com.mapbox.dash.sdk.event.DashCameraState
 import com.mapbox.geojson.Point
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 import com.mapbox.navigation.base.route.NavigationRoute
@@ -15,9 +16,12 @@ import com.mapbox.navigation.weather.model.WeatherQuery
 import com.mapbox.navigation.weather.model.WeatherSystemOfMeasurement
 import com.mapbox.navigation.weather.model.toIconResId
 import com.mapbox.turf.TurfMeasurement
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import java.util.Calendar
@@ -26,11 +30,14 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
-@OptIn(ExperimentalPreviewMapboxNavigationAPI::class, FlowPreview::class)
+@OptIn(ExperimentalPreviewMapboxNavigationAPI::class, FlowPreview::class, ExperimentalCoroutinesApi::class)
 class WeatherViewModel : ViewModel() {
 
+    val cameraState = MutableStateFlow<DashCameraState?>(null)
+
     private val weatherApi = MapboxWeatherApi()
-    private val observeCameraCenter = Dash.controller.observeCameraState()
+    private val observeCameraCenter = cameraState
+        .filterNotNull()
         .debounce(1.seconds)
         .mapNotNull { it.center }
         .distinctUntilChanged { old, new ->

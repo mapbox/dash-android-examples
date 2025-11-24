@@ -446,22 +446,12 @@
             android:paddingVertical="10dp"
             >
 
-            <TextView
-                android:layout_width="0dp"
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/toggleLeftSidebar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Left sidebar"
                 android:textAllCaps="true"
-                android:textColor="@color/colorOnSurface"
-                />
-
-            <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/spinnerLeftSidebar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:spinnerMode="dropdown"
-                android:textSize="12sp"
                 />
 
         </LinearLayout>
@@ -473,22 +463,12 @@
             android:paddingVertical="10dp"
             >
 
-            <TextView
-                android:layout_width="0dp"
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/toggleRightSidebar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Right sidebar"
                 android:textAllCaps="true"
-                android:textColor="@color/colorOnSurface"
-                />
-
-            <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/spinnerRightSidebar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:spinnerMode="dropdown"
-                android:textSize="12sp"
                 />
 
         </LinearLayout>

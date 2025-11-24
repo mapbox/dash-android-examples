@@ -27,10 +27,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.mapbox.dash.compose.noIndicationClickable
 import com.mapbox.dash.compose.shadow
 import com.mapbox.dash.sdk.Dash
+import com.mapbox.dash.sdk.event.DashCameraState
 import com.mapbox.dash.sdk.event.DashCameraTrackingMode
 import com.mapbox.dash.sdk.event.NavigationState
 import com.mapbox.dash.sdk.map.presentation.markers.RouteCalloutUiState
@@ -42,14 +42,18 @@ import com.mapbox.maps.viewannotation.annotatedLayerFeature
 import com.mapbox.maps.viewannotation.annotationAnchors
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
+import kotlinx.coroutines.flow.Flow
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun SampleRouteCalloutView(state: RouteCalloutUiState) {
-    val cameraMode = Dash.controller.observeCameraState().collectAsState(null).value?.mode ?: return
+fun SampleRouteCalloutView(
+    state: RouteCalloutUiState,
+    cameraState: Flow<DashCameraState>,
+) {
+    val cameraMode = cameraState.collectAsState(null).value?.mode ?: return
     val navigationState = Dash.controller.observeNavigationState().collectAsState(null).value ?: return
     val isActiveGuidance =
         navigationState is NavigationState.ActiveGuidance || navigationState is NavigationState.Arrival

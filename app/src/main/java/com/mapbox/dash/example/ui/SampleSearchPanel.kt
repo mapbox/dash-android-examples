@@ -20,10 +20,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.mapbox.dash.driver.presentation.search.SearchPanelState
 import com.mapbox.dash.example.R
-import com.mapbox.dash.sdk.Dash
 
 @Composable
-fun SampleSearchPanel(modifier: Modifier, state: SearchPanelState) {
+fun SampleSearchPanel(
+    modifier: Modifier,
+    state: SearchPanelState,
+    openSearch: () -> Unit,
+) {
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
@@ -36,7 +39,7 @@ fun SampleSearchPanel(modifier: Modifier, state: SearchPanelState) {
             modifier = Modifier
                 .size(128.dp)
                 .padding(all = 28.dp)
-                .clickable { Dash.controller.openSearch(searchQuery = null) },
+                .clickable(onClick = openSearch),
             painter = painterResource(id = R.drawable.ic_search_panel_query),
             contentDescription = null,
         )
