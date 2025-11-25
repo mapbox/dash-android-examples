@@ -11,17 +11,11 @@ import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicatorSpec
 import com.google.android.material.progressindicator.IndeterminateDrawable
 import com.mapbox.dash.example.databinding.ActivityDrawerBinding
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -62,7 +56,7 @@ abstract class DrawerActivity : AppCompatActivity() {
     protected fun bindSwitch(
         switch: SwitchCompat,
         state: MutableStateFlow<Boolean>,
-        onChange: (value: Boolean) -> Unit,
+        onChange: (value: Boolean) -> Unit = {},
     ) {
         state.observeWhenStarted(lifecycleOwner = this) { isChecked ->
             switch.isChecked = isChecked

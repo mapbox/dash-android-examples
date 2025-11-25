@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.mapbox.dash.example"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.mapbox.dash.example"
@@ -84,7 +84,7 @@ android {
 }
 
 dependencies {
-    val uxfVersion = "1.16.0"
+    val uxfVersion = "1.17.0-rc.1"
     implementation("com.mapbox.navigationux:android:$uxfVersion")
     implementation("com.mapbox.navigationux:cluster:$uxfVersion")
     implementation("com.mapbox.navigationux:weather-api:$uxfVersion")

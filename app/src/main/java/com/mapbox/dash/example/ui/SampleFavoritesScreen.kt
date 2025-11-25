@@ -117,7 +117,7 @@ private fun ColumnScope.FavoriteItems(state: FavoritesScreenState) {
             items(favoriteItems, key = { it.id }) { item ->
                 Row(
                     modifier = Modifier
-                        .animateItemPlacement()
+                        .animateItem()
                         .clip(RoundedCornerShape(8.dp))
                         .background(Color(red = 28, green = 28, blue = 36))
                         .clickable { state.onFavoriteSelected(item) },
@@ -165,7 +165,7 @@ private fun LazyListScope.initialFavoriteItems(state: FavoritesScreenState) {
     item {
         Row(
             modifier = Modifier
-                .animateItemPlacement()
+                .animateItem()
                 .height(128.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .background(Color(red = 28, green = 28, blue = 36))
@@ -192,7 +192,7 @@ private fun LazyListScope.initialFavoriteItems(state: FavoritesScreenState) {
     item {
         Row(
             modifier = Modifier
-                .animateItemPlacement()
+                .animateItem()
                 .height(128.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .background(Color(red = 28, green = 28, blue = 36))

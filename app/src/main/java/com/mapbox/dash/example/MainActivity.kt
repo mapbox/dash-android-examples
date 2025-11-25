@@ -1,9 +1,7 @@
 package com.mapbox.dash.example
 
 import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,28 +12,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.AppCompatSpinner
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.BiasAlignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
-import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -57,11 +35,9 @@ import com.mapbox.dash.driver.presentation.streetname.DefaultStreetNameView
 import com.mapbox.dash.driver.presentation.waypoint.DefaultContinueNavigationView
 import com.mapbox.dash.example.databinding.ActivityMainBinding
 import com.mapbox.dash.example.databinding.LayoutCustomizationMenuBinding
-import com.mapbox.dash.example.relaxedmode.RelaxedModeActivity
 import com.mapbox.dash.example.theme.CustomThemeFactory
 import com.mapbox.dash.example.theme.RedThemeFactory
 import com.mapbox.dash.example.ui.SampleArrivalFeedback
-import com.mapbox.dash.example.ui.SampleCameraButton
 import com.mapbox.dash.example.ui.SampleContinueNavigation
 import com.mapbox.dash.example.ui.SampleDestinationPreview
 import com.mapbox.dash.example.ui.SampleDriverNotificationView
@@ -92,23 +68,12 @@ import com.mapbox.dash.route.restore.DefaultResumeGuidanceView
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.DashNavigationFragment
 import com.mapbox.dash.sdk.config.api.DEFAULT_3D_STYLE
-import com.mapbox.dash.sdk.config.api.DashSidebarControl
-import com.mapbox.dash.sdk.config.api.DashSidebarControl.Feedback
-import com.mapbox.dash.sdk.config.api.DashSidebarControl.RangeMap
-import com.mapbox.dash.sdk.config.api.DashSidebarControl.Search
-import com.mapbox.dash.sdk.config.api.DashSidebarControl.Settings
-import com.mapbox.dash.sdk.config.api.DashSidebarControl.Space
-import com.mapbox.dash.sdk.config.api.DashSidebarControl.Voice
-import com.mapbox.dash.sdk.config.api.DashSidebarUpdate
-import com.mapbox.dash.sdk.config.api.DashUiUpdate
 import com.mapbox.dash.sdk.config.api.ThemeFactory
 import com.mapbox.dash.sdk.config.api.camera
 import com.mapbox.dash.sdk.config.api.destinationPreview
-import com.mapbox.dash.sdk.config.api.leftSidebar
 import com.mapbox.dash.sdk.config.api.maneuverView
 import com.mapbox.dash.sdk.config.api.mapStyle
 import com.mapbox.dash.sdk.config.api.offline
-import com.mapbox.dash.sdk.config.api.rightSidebar
 import com.mapbox.dash.sdk.config.api.searchPanel
 import com.mapbox.dash.sdk.config.api.theme
 import com.mapbox.dash.sdk.config.api.ui
@@ -128,13 +93,13 @@ import com.mapbox.maps.MapboxExperimental
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 import com.mapbox.navigation.mapgpt.setDefaultVoicePlayerMiddleware
 import com.mapbox.navigation.mapgpt.setVoicePlayerMiddleware
-import com.mapbox.navigation.weather.model.WeatherAlert
-import com.mapbox.navigation.weather.model.WeatherCondition
-import com.mapbox.navigation.weather.model.WeatherSystemOfMeasurement
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import com.mapbox.dash.sdk.config.api.SearchPanelPosition as RawSearchPanelPosition
@@ -172,9 +137,8 @@ class MainActivity : DrawerActivity() {
             override val distanceMeters = null
         }
 
-    private fun getDashNavigationFragment(): DashNavigationFragment? {
-        return supportFragmentManager.findFragmentById(R.id.container) as? DashNavigationFragment
-    }
+    private val dashNavigationFragmentFlow = MutableStateFlow<DashNavigationFragment?>(null)
+    private fun getDashNavigationFragment() = dashNavigationFragmentFlow.value
 
     override fun attachBaseContext(newBase: Context) {
         val originalTabletLayout = newBase.resources.configuration.smallestScreenWidthDp >= 600
@@ -203,6 +167,8 @@ class MainActivity : DrawerActivity() {
             // After initializing in your `MainApplication` class,
             // now you can transition to a new Dash Fragment instance
             supportFragmentManager.commitNow { replace(R.id.container, DashNavigationFragment.newInstance()) }
+            dashNavigationFragmentFlow.value =
+                supportFragmentManager.findFragmentById(R.id.container) as? DashNavigationFragment
         }
 
         initCustomizationMenu()
@@ -216,6 +182,9 @@ class MainActivity : DrawerActivity() {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.container, fragment)
                 .commitNow()
+
+            dashNavigationFragmentFlow.value =
+                supportFragmentManager.findFragmentById(R.id.container) as? DashNavigationFragment
         }
         sampleSensorEventManager = SampleSensorEventManager(this)
     }
@@ -257,9 +226,9 @@ class MainActivity : DrawerActivity() {
     private val setCustomCompassDataInputs = MutableStateFlow(value = false)
     private val showRouteOptionsInSettings = MutableStateFlow(value = false)
     private val showSpeedLimitsOptionsInSettings = MutableStateFlow(value = false)
-    private val leftSidebarMode = MutableStateFlow(SidebarMode.Transparent.name)
-    private val rightSidebarMode = MutableStateFlow(SidebarMode.Transparent.name)
-    private val overrideSidebarControls = MutableStateFlow(value = false)
+    private val leftSidebarVisible = MutableStateFlow(value = true)
+    private val rightSidebarVisible = MutableStateFlow(value = true)
+    private val overrideSidebarControls = MutableStateFlow(value = true)
     private val searchPanelPosition = MutableStateFlow(SearchPanelPosition.BottomLeft.name)
     private val setCustomArrivalFeedbackComposer = MutableStateFlow(value = false)
     private val setCustomContinueNavigationComposer = MutableStateFlow(value = false)
@@ -479,7 +448,7 @@ class MainActivity : DrawerActivity() {
             getDashNavigationFragment()?.let { fragment ->
                 fragment.setRouteCallout { state ->
                     if (overrideRouteCallout) {
-                        SampleRouteCalloutView(state)
+                        SampleRouteCalloutView(state, fragment.observeCameraState())
                     } else {
                         DefaultRouteCalloutView(state)
                     }
@@ -581,9 +550,12 @@ class MainActivity : DrawerActivity() {
             Dash.controller.hideEvRangeMap()
         }
 
-        Dash.controller.observeEvRangeMapState().observeWhenStarted(lifecycleOwner = this) { state ->
-            Dash.controller.setAdditionalPointsToFrame(state.rangeMapFramePoints)
-        }
+        combine(
+            Dash.controller.observeEvRangeMapState(),
+            dashNavigationFragmentFlow,
+        ) { state, fragment ->
+            fragment?.setAdditionalPointsToFrame(state.rangeMapFramePoints)
+        }.observeWhenStarted(this)
 
         menuBinding.customCompassDataInputs.setOnCheckedChangeListener { _, isChecked ->
             setCustomCompassDataInputs.value = isChecked
@@ -644,70 +616,25 @@ class MainActivity : DrawerActivity() {
         menuBinding.rightPaddingSlider.addOnChangeListener(paddingSliderChangeListener)
         menuBinding.bottomPaddingSlider.addOnChangeListener(paddingSliderChangeListener)
 
-        bindSidebarSpinner(menuBinding.spinnerLeftSidebar, leftSidebarMode, DashUiUpdate::leftSidebar)
-        bindSidebarSpinner(menuBinding.spinnerRightSidebar, rightSidebarMode, DashUiUpdate::rightSidebar)
+        bindSwitch(menuBinding.toggleLeftSidebar, leftSidebarVisible)
+        bindSwitch(menuBinding.toggleRightSidebar, rightSidebarVisible)
+        bindSwitch(menuBinding.toggleSidebarControls, overrideSidebarControls)
 
-        bindSwitch(
-            switch = menuBinding.toggleSidebarControls,
-            state = overrideSidebarControls,
-        ) { enabled ->
-            Dash.applyUpdate {
-                ui {
-                    rightSidebar {
-                        controls = if (enabled) {
-                            listOf(
-                                DashSidebarControl.Custom(
-                                    content = { modifier ->
-                                        WeatherAlertWidget(
-                                            modifier = modifier,
-                                            weatherAlertAtMapCenter = weatherVM.weatherAlertsAtMapCenter,
-                                        )
-                                    },
-                                ),
-                                DashSidebarControl.Button(
-                                    iconId = R.drawable.baseline_remove_red_eye_24,
-                                    onClick = {
-                                        val intent = Intent(
-                                            this@MainActivity,
-                                            RelaxedModeActivity::class.java,
-                                        )
-                                        this@MainActivity.startActivity(intent)
-                                    },
-                                ),
-                                DashSidebarControl.Speed,
-                                DashSidebarControl.Space(),
-                                DashSidebarControl.Button(
-                                    iconId = R.drawable.ic_waving_hand,
-                                    onClick = {
-                                        Toast.makeText(this@MainActivity, "Hey, Dash!", Toast.LENGTH_SHORT).show()
-                                    },
-                                ),
-                                DashSidebarControl.Routes,
-                                DashSidebarControl.Debug,
-                                DashSidebarControl.Custom {
-                                    CurrentWeatherWidget(it, weatherVM.weatherConditionAtMapCenter)
-                                },
-                            )
-                        } else {
-                            DashSidebarControl.defaultRightSidebarControls
-                        }
-                    }
-                    leftSidebar {
-                        controls = if (enabled) {
-                            listOf(
-                                DashSidebarControl.Custom { SampleCameraButton(it) },
-                                Feedback,
-                                RangeMap,
-                                Voice,
-                                Search,
-                                Settings,
-                            )
-                        } else {
-                            DashSidebarControl.defaultLeftSidebarControls
-                        }
-                    }
-                }
-            }
+        dashNavigationFragmentFlow.observeWhenStarted(this) { fragment ->
+            fragment?.setLeftSidebar(
+                DashLeftSidebarComposer(
+                    visible = leftSidebarVisible,
+                    override = overrideSidebarControls,
+                    dashNavigationFragment = fragment,
+                )
+            )
+            fragment?.setRightSidebar(
+                DashRightSidebarComposer(
+                    visible = rightSidebarVisible,
+                    override = overrideSidebarControls,
+                    weatherVM = weatherVM,
+                )
+            )
         }
 
         menuBinding.spinnerSearchPanelPosition.adapter =
@@ -804,7 +731,11 @@ class MainActivity : DrawerActivity() {
             val fragment = getDashNavigationFragment() ?: return@bindSwitch
             if (enabled) {
                 fragment.setSearchPanel { modifier, searchPanelState ->
-                    SampleSearchPanel(modifier = modifier, state = searchPanelState)
+                    SampleSearchPanel(
+                        modifier = modifier,
+                        state = searchPanelState,
+                        openSearch = { fragment.openSearch(null) },
+                    )
                 }
             } else {
                 fragment.setSearchPanel { modifier, searchPanelState ->
@@ -1120,10 +1051,16 @@ class MainActivity : DrawerActivity() {
             .show()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun registerEventsObservers() {
-        Dash.controller.observeMapEvents().observeWhenStarted(this) { event ->
-            Log.d(TAG, ">> DashMapEvent | event = $event")
-        }
+        dashNavigationFragmentFlow
+            .flatMapLatest { it?.observeCameraState() ?: emptyFlow() }
+            .observeWhenStarted(this, weatherVM.cameraState)
+        dashNavigationFragmentFlow
+            .flatMapLatest { it?.observeMapEvents() ?: emptyFlow() }
+            .observeWhenStarted(this) { event ->
+                Log.d(TAG, ">> DashMapEvent | event = $event")
+            }
         Dash.controller.observeGenericEvents().observeWhenStarted(this) { event ->
             Log.d(TAG, ">> DashGenericEvent | event = $event")
         }
@@ -1212,36 +1149,6 @@ class MainActivity : DrawerActivity() {
         RED(RedThemeFactory),
     }
 
-    private fun bindSidebarSpinner(
-        spinner: AppCompatSpinner,
-        sidebarMode: MutableStateFlow<String>,
-        updateSidebarConfig: DashUiUpdate.(DashSidebarUpdate.() -> Unit) -> Unit,
-    ) {
-        spinner.adapter = ArrayAdapter(this, R.layout.item_spinner, SidebarMode.values().map { it.name })
-        bindSpinner(
-            spinner,
-            sidebarMode,
-        ) { name ->
-            val mode = SidebarMode.valueOf(name)
-            Dash.applyUpdate {
-                ui {
-                    updateSidebarConfig {
-                        visible = mode != SidebarMode.Hidden
-                        background = if (mode == SidebarMode.Transparent) {
-                            Color.TRANSPARENT
-                        } else {
-                            ColorUtils.setAlphaComponent(Color.GRAY, 128)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private enum class SidebarMode {
-        Transparent, Background, Hidden,
-    }
-
     private enum class SearchPanelPosition {
         BottomLeft, TopLeft,
     }
@@ -1252,63 +1159,5 @@ class MainActivity : DrawerActivity() {
 
         private var tabletLayout: Boolean? = null
         private var densityDpi: Int? = null
-    }
-}
-
-@OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
-@Composable
-private fun WeatherAlertWidget(modifier: Modifier, weatherAlertAtMapCenter: Flow<List<WeatherAlert>>) {
-    val alerts = weatherAlertAtMapCenter.collectAsState(null).value?.joinToString("\n") { it.title }
-        ?.takeIf { it.isNotBlank() } ?: "No weather alerts in the center of the map"
-
-    Text(
-        modifier = modifier
-            .shadow(4.dp, shape = CircleShape)
-            .border(
-                width = 2.dp,
-                color = androidx.compose.ui.graphics.Color.Black,
-                shape = CircleShape,
-            )
-            .background(androidx.compose.ui.graphics.Color.White)
-            .padding(all = 20.dp),
-        text = alerts,
-        color = androidx.compose.ui.graphics.Color.Black,
-    )
-}
-
-@OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
-@Composable
-private fun CurrentWeatherWidget(modifier: Modifier, weatherConditionAtMapCenter: Flow<WeatherCondition>) {
-    val conditions = weatherConditionAtMapCenter.collectAsState(null).value ?: return
-
-    val unit = when (conditions.fields.systemOfMeasurement) {
-        WeatherSystemOfMeasurement.Imperial -> "F"
-        WeatherSystemOfMeasurement.Metric -> "C"
-        else -> "C"
-    }
-
-    Box(
-        modifier = modifier
-            .width(90.dp)
-            .height(90.dp)
-            .shadow(8.dp, shape = CircleShape)
-            .background(androidx.compose.ui.graphics.Color.White),
-    ) {
-        Image(
-            modifier = Modifier
-                .align(BiasAlignment(horizontalBias = 0.4f, verticalBias = 0.4f))
-                .size(40.dp),
-            colorFilter = ColorFilter.tint(androidx.compose.ui.graphics.Color.Black),
-            painter = painterResource(conditions.fields.iconCode.toIcon()),
-            contentDescription = null,
-        )
-        Text(
-            modifier = Modifier.align(
-                BiasAlignment(horizontalBias = -0.3f, verticalBias = -0.3f),
-            ),
-            text = "${conditions.fields.temperature?.toInt()} °$unit",
-            maxLines = 1,
-            color = androidx.compose.ui.graphics.Color.Black,
-        )
     }
 }

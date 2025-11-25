@@ -22,7 +22,7 @@ private fun repeatWhen(
 
 fun <T> Flow<T>.observeWhenStarted(
     lifecycleOwner: LifecycleOwner,
-    action: FlowCollector<T>,
+    action: FlowCollector<T> = FlowCollector {},
 ): Job {
     return repeatWhen(Lifecycle.State.STARTED, lifecycleOwner) {
         collect(action)

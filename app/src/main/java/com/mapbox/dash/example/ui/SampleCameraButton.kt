@@ -19,17 +19,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mapbox.dash.sdk.Dash
+import com.mapbox.dash.sdk.event.DashCameraButtonState
 import com.mapbox.dash.sdk.event.DashCameraTrackingMode.MODE_3D
 import com.mapbox.dash.sdk.event.DashCameraTrackingMode.MODE_OVERVIEW
 import com.mapbox.dash.sdk.event.DashCameraTrackingMode.MODE_TRACKING
 import com.mapbox.dash.sdk.event.DashCameraTrackingMode.MODE_TRACKING_NORTH
+import kotlinx.coroutines.flow.Flow
 
 @Composable
-fun SampleCameraButton(modifier: Modifier) {
-    val cameraButtonState = Dash.controller.observeCameraButtonState().collectAsState(null).value ?: return
+fun SampleCameraButton(
+    cameraButtonState: Flow<DashCameraButtonState>,
+) {
+    val cameraButtonState = cameraButtonState.collectAsState(null).value ?: return
     SampleCameraButton(
-        modifier = modifier,
         isVisible = cameraButtonState.visible,
         cameraTrackingState = cameraButtonState.cameraTrackingState,
         onClick = cameraButtonState.onClick

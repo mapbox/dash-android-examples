@@ -111,7 +111,7 @@ private fun ColumnScope.HistoryItems(
         items(historyItems, key = { it.id }) { item ->
             Row(
                 modifier = Modifier
-                    .animateItemPlacement()
+                    .animateItem()
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color(red = 28, green = 28, blue = 36))
                     .clickable { onHistoryItemClick(item) },
