@@ -148,7 +148,7 @@ private fun ColumnScope.FavoriteItems(state: FavoritesScreenState) {
                         modifier = Modifier
                             .size(128.dp)
                             .clickable {
-                                scope.launch { Dash.controller.removeFavoriteItem(item) }
+                                scope.launch { Dash.controller.removeFavoriteItem(item, DashFavoriteType.REGULAR) }
                             }
                             .padding(all = 32.dp),
                         painter = painterResource(id = R.drawable.ic_remove_history_item),

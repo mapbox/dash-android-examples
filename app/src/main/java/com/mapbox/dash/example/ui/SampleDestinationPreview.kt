@@ -257,7 +257,7 @@ object SampleDestinationPreview {
                                 if (!isFavorite) {
                                     Dash.controller.addFavoriteItem(place.origin, DashFavoriteType.REGULAR)
                                 } else {
-                                    Dash.controller.removeFavoriteItem(place.origin)
+                                    Dash.controller.removeFavoriteItem(place.origin, DashFavoriteType.REGULAR)
                                 }
                             }
                         }
