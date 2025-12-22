@@ -48,11 +48,11 @@ internal class UXFBackgroundService : Service() {
         }
         Dash.controller.observeNavigationState()
             .distinctUntilChangedBy { it.javaClass.simpleName }
-            .onEach {
-                val state = when (it) {
-                    is NavigationState.ActiveGuidance -> UXFBackgroundState.ACTIVE_GUIDANCE
-                    is NavigationState.TripPlanning -> UXFBackgroundState.TRIP_PLANNING
-                    else -> UXFBackgroundState.FREE_DRIVE
+            .onEach { navigationState ->
+                val state = if (navigationState is NavigationState.ActiveGuidance) {
+                    UXFBackgroundState.ACTIVE_GUIDANCE
+                } else {
+                    UXFBackgroundState.FREE_DRIVE
                 }
                 updateNotification(state)
             }
