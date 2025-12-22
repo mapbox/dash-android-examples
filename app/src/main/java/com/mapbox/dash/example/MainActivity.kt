@@ -583,7 +583,7 @@ class MainActivity : DrawerActivity() {
             Dash.controller.addFavoriteItem(favoriteItem, DashFavoriteType.REGULAR)
         }
         menuBinding.removeFromFavorites.bindAction {
-            Dash.controller.removeFavoriteItem(favoriteItem)
+            Dash.controller.removeFavoriteItem(favoriteItem, DashFavoriteType.REGULAR)
         }
         menuBinding.btnSearchApi.bindAction {
             Dash.controller.search(menuBinding.etSearchApi.text.toString())
