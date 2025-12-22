@@ -114,7 +114,6 @@ class MainApplication : Application() {
                 freeDriveCamera3DModeEnabled = true
             }
             camera {
-                freeDrive3DMode = SimpleDefaults(zoom = 16.5, pitch = 30.0)
                 lookAheadMeters = 1.0
             }
             destinationPreview {
