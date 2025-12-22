@@ -71,6 +71,7 @@ import com.mapbox.dash.sdk.config.api.camera
 import com.mapbox.dash.sdk.config.api.destinationPreview
 import com.mapbox.dash.sdk.config.api.maneuverView
 import com.mapbox.dash.sdk.config.api.mapStyle
+import com.mapbox.dash.sdk.config.api.network
 import com.mapbox.dash.sdk.config.api.offline
 import com.mapbox.dash.sdk.config.api.searchPanel
 import com.mapbox.dash.sdk.config.api.theme
@@ -943,7 +944,7 @@ class MainActivity : DrawerActivity() {
             state = connectMapboxStack,
         ) { isConnected ->
             Dash.applyUpdate {
-                offline { isMapboxStackConnected = isConnected }
+                network { isMapboxStackConnected = isConnected }
             }
         }
 

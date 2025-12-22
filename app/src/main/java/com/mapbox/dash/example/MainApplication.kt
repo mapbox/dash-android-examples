@@ -27,6 +27,7 @@ import com.mapbox.dash.sdk.config.api.fasterRouteNotification
 import com.mapbox.dash.sdk.config.api.incidentNotification
 import com.mapbox.dash.sdk.config.api.locationSimulation
 import com.mapbox.dash.sdk.config.api.mapStyle
+import com.mapbox.dash.sdk.config.api.network
 import com.mapbox.dash.sdk.config.api.offline
 import com.mapbox.dash.sdk.config.api.roadCameraNotification
 import com.mapbox.dash.sdk.config.api.routeOptions
@@ -95,8 +96,10 @@ class MainApplication : Application() {
                 resultsAdapter = ShowcaseSearchResultsAdapter
                 searchEngine = ShowcaseSearchEngine()
             }
-            offline {
+            network {
                 isMapboxStackConnected = true
+            }
+            offline {
                 tilesPath = applicationContext.filesDir.absolutePath + "/prepared_tilestore"
                 tilesDiskQuota = 50.Gb
             }
