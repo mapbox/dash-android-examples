@@ -10,21 +10,20 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 
-private fun repeatWhen(
-    state: Lifecycle.State,
+fun repeatWhenStarted(
     lifecycleOwner: LifecycleOwner,
     block: suspend CoroutineScope.() -> Unit,
 ): Job {
     return lifecycleOwner.lifecycleScope.launch {
-        lifecycleOwner.repeatOnLifecycle(state, block)
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED, block)
     }
 }
 
 fun <T> Flow<T>.observeWhenStarted(
     lifecycleOwner: LifecycleOwner,
-    action: FlowCollector<T> = FlowCollector {},
+    action: FlowCollector<T>,
 ): Job {
-    return repeatWhen(Lifecycle.State.STARTED, lifecycleOwner) {
+    return repeatWhenStarted(lifecycleOwner) {
         collect(action)
     }
 }

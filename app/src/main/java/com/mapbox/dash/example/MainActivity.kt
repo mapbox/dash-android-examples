@@ -94,9 +94,11 @@ import com.mapbox.navigation.mapgpt.setDefaultVoicePlayerMiddleware
 import com.mapbox.navigation.mapgpt.setVoicePlayerMiddleware
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
@@ -477,7 +479,7 @@ class MainActivity : DrawerActivity() {
             }
         }
 
-        menuBinding.layersManagerCard.bind(this)
+        menuBinding.layersManagerCard.bind(lifecycleOwner = this, dashNavigationFragmentFlow)
     }
 
     private fun settingCustomization() {
@@ -548,12 +550,14 @@ class MainActivity : DrawerActivity() {
             Dash.controller.hideEvRangeMap()
         }
 
-        combine(
-            Dash.controller.observeEvRangeMapState(),
-            dashNavigationFragmentFlow,
-        ) { state, fragment ->
-            fragment?.setAdditionalPointsToFrame(state.rangeMapFramePoints)
-        }.observeWhenStarted(this)
+        repeatWhenStarted(lifecycleOwner = this) {
+            combine(
+                Dash.controller.observeEvRangeMapState(),
+                dashNavigationFragmentFlow.filterNotNull(),
+            ) { state, fragment ->
+                fragment.setAdditionalPointsToFrame(state.rangeMapFramePoints)
+            }.collect()
+        }
 
         menuBinding.customCompassDataInputs.setOnCheckedChangeListener { _, isChecked ->
             setCustomCompassDataInputs.value = isChecked
