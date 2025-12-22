@@ -38,6 +38,8 @@ import com.mapbox.dash.sdk.config.api.theme
 import com.mapbox.dash.sdk.config.api.ui
 import com.mapbox.dash.sdk.config.api.uiSettings
 import com.mapbox.dash.sdk.ev.api.EvDataProvider
+import com.mapbox.dash.sdk.ev.domain.model.ChargingCurve
+import com.mapbox.dash.sdk.ev.domain.model.ChargingPoint
 import com.mapbox.dash.sdk.ev.domain.model.Energy
 import com.mapbox.dash.sdk.ev.domain.model.Energy.Companion.kiloWattHours
 import com.mapbox.dash.state.defaults.camera.SimpleDefaults
@@ -187,7 +189,16 @@ class MainApplication : Application() {
             override val connectorTypes = flowOf("ccs_combo_type1")
             override val efficiency = flowOf(5f) // 5 kilometers per kWh
             override val energyConsumptionCurve = flowOf("0,300;20,160;80,140;120,180")
-            override val chargingCurve = flowOf("0,100000;40000,70000;60000,30000;80000,10000")
+            override val chargingCurve = flowOf(
+                ChargingCurve(
+                    listOf(
+                        ChargingPoint(0.kiloWattHours, 100_000),
+                        ChargingPoint(40.kiloWattHours, 70_000),
+                        ChargingPoint(60.kiloWattHours, 30_000),
+                        ChargingPoint(80.kiloWattHours, 10_000),
+                    )
+                ),
+            )
         }
 
         Dash.controller.setEvDataProvider(evDataProvider)
