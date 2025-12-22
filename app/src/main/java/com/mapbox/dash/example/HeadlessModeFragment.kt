@@ -48,19 +48,12 @@ class HeadlessModeFragment : Fragment() {
 
                     is NavigationState.FreeDrive -> {
                         button.isVisible = true
-                        button.text = "Set destination"
+                        button.text = "Start navigation"
                         button.bindAction {
                             val location = controller.observeRawLocation().first()
                             val destination = location.getRandomDestinationAround()
                             controller.setDestination(destination)
-                        }
-                    }
-
-                    is NavigationState.TripPlanning -> {
-                        button.isVisible = true
-                        button.text = "Start navigation"
-                        button.bindAction {
-                            controller.startNavigation(controller.observeRoutes().first().routes.first())
+                            controller.startNavigation()
                         }
                     }
 
