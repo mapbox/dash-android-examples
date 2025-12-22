@@ -60,8 +60,8 @@ fun SampleTripSummaryView(
         SampleEtaView(
             modifier = Modifier.fillMaxWidth(),
             arrivalTime = model.legArrivalTime,
-            remainingDistance = model.legDistanceRemaining,
-            remainingTime = model.legTimeRemaining,
+            remainingDistance = model.formattedLegDistanceRemaining,
+            remainingTime = model.formattedLegTimeRemaining,
             isOffline = model.isOffline,
             stateOfCharge = model.legStateOfCharge,
             fractionTraveled = model.fractionTraveled,

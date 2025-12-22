@@ -57,7 +57,7 @@ fun SampleRouteCalloutView(
     val navigationState = Dash.controller.observeNavigationState().collectAsState(null).value ?: return
     val isActiveGuidance =
         navigationState is NavigationState.ActiveGuidance || navigationState is NavigationState.Arrival
-    val isOverview = cameraMode == DashCameraTrackingMode.MODE_OVERVIEW
+    val isOverview = cameraMode == DashCameraTrackingMode.MODE_ROUTE_OVERVIEW
 
     if (isActiveGuidance && !isOverview && state.callout.isPrimary) return
 

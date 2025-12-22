@@ -8,11 +8,19 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import com.mapbox.dash.example.databinding.LayoutLayersManagerBinding
 import com.mapbox.dash.example.observeWhenStarted
+import com.mapbox.dash.example.repeatWhenStarted
 import com.mapbox.dash.sdk.Dash
+import com.mapbox.dash.sdk.DashNavigationFragment
 import com.mapbox.dash.sdk.base.layer.DashMapStyleLayer
 import com.mapbox.dash.sdk.base.layer.DashMapStyleLayersConfig
 import com.mapbox.dash.sdk.config.api.mapStyle
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.update
+import kotlin.collections.plus
 
 private const val TRANSIT_LAYER_ID = "transit-label"
 private const val POI_LAYER_ID = "poi-label"
@@ -44,15 +52,11 @@ class LayersManagerCard @JvmOverloads constructor(
         }
         binding.toggleTransit.isChecked = true
         binding.toggleTransit.setOnCheckedChangeListener { _, isChecked ->
-            layers.value = layers.value.toMutableMap().apply {
-                this[TRANSIT_LAYER_ID] = getTransitLayer(visible = isChecked)
-            }
+            layers.update { it + (TRANSIT_LAYER_ID to getTransitLayer(visible = isChecked)) }
         }
         binding.togglePoi.isChecked = true
         binding.togglePoi.setOnCheckedChangeListener { _, isChecked ->
-            layers.value = layers.value.toMutableMap().apply {
-                this[POI_LAYER_ID] = getPoiLayer(visible = isChecked)
-            }
+            layers.update { it + (POI_LAYER_ID to getPoiLayer(visible = isChecked)) }
         }
         binding.toggleDistractingElements.setOnCheckedChangeListener { _, isChecked ->
             layers.value = if (isChecked) {
@@ -73,13 +77,12 @@ class LayersManagerCard @JvmOverloads constructor(
         }
     }
 
-    internal fun bind(lifecycleOwner: LifecycleOwner) {
-        layers.observeWhenStarted(lifecycleOwner) {
-            Dash.applyUpdate {
-                mapStyle {
-                    mapStyleLayersConfig = DashMapStyleLayersConfig(layers = it.values.toList())
-                }
-            }
+    internal fun bind(lifecycleOwner: LifecycleOwner, dashNavigationFragmentFlow: Flow<DashNavigationFragment?>) {
+        repeatWhenStarted(lifecycleOwner) {
+            combine(layers, dashNavigationFragmentFlow.filterNotNull()) { layers, dashNavigationFragment ->
+                val mapStyleLayersConfig = DashMapStyleLayersConfig(layers = layers.values.toList())
+                dashNavigationFragment.setMapStyleLayersConfig(mapStyleLayersConfig)
+            }.collect()
         }
     }
 }

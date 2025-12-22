@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -25,6 +26,7 @@ import com.mapbox.dash.driver.presentation.SidebarComposer
 import com.mapbox.dash.driver.presentation.SidebarScope
 import com.mapbox.dash.sdk.DashNavigationFragment
 import com.mapbox.dash.sdk.event.DashCameraButtonState
+import com.mapbox.dash.sdk.event.DashCameraPerspective
 import com.mapbox.dash.sdk.event.DashCameraTrackingMode
 import kotlinx.coroutines.flow.StateFlow
 
@@ -61,10 +63,16 @@ class DashLeftSidebarComposer(
         }.value ?: return
         if (cameraButtonState.visible) {
             val icon = when (cameraButtonState.cameraTrackingState) {
-                DashCameraTrackingMode.MODE_TRACKING -> Icons.Default.LocationOn
-                DashCameraTrackingMode.MODE_TRACKING_NORTH -> Icons.Default.KeyboardArrowUp
-                DashCameraTrackingMode.MODE_3D -> Icons.Default.Star
-                DashCameraTrackingMode.MODE_OVERVIEW -> Icons.Default.Home
+                DashCameraTrackingMode.MODE_FOLLOWING -> {
+                    when (cameraButtonState.cameraPerspective) {
+                        DashCameraPerspective.CAMERA_3D -> Icons.Default.Star
+                        DashCameraPerspective.CAMERA_2D -> Icons.Default.LocationOn
+                        DashCameraPerspective.CAMERA_2D_NORTH -> Icons.Default.KeyboardArrowUp
+                        else -> Icons.Default.Close
+                    }
+                }
+                DashCameraTrackingMode.MODE_ROUTE_OVERVIEW -> Icons.Default.Home
+                DashCameraTrackingMode.MODE_POINTS_OVERVIEW -> Icons.Default.AccountBox
                 else -> Icons.Default.Close
             }
             Image(

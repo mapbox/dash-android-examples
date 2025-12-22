@@ -23,7 +23,6 @@ import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultDestinationPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultRoutesOverview
 import com.mapbox.dash.destination.preview.presentation.compose.DefaultOfflineRouteAlert
-import com.mapbox.dash.destination.preview.presentation.tripoverview.DefaultTripOverview
 import com.mapbox.dash.driver.notification.presentation.DefaultDriverNotificationView
 import com.mapbox.dash.driver.presentation.DefaultArrivalFeedbackView
 import com.mapbox.dash.driver.presentation.edittrip.DefaultEditTripCard
@@ -55,7 +54,6 @@ import com.mapbox.dash.example.ui.SampleRoutesOverview
 import com.mapbox.dash.example.ui.SampleSearchArea
 import com.mapbox.dash.example.ui.SampleSearchPanel
 import com.mapbox.dash.example.ui.SampleStreetName
-import com.mapbox.dash.example.ui.SampleTripOverview
 import com.mapbox.dash.example.ui.SampleTripSummaryView
 import com.mapbox.dash.example.ui.SampleUpcomingManeuversBanner
 import com.mapbox.dash.fullscreen.search.DefaultFullScreenSearch
@@ -73,6 +71,7 @@ import com.mapbox.dash.sdk.config.api.camera
 import com.mapbox.dash.sdk.config.api.destinationPreview
 import com.mapbox.dash.sdk.config.api.maneuverView
 import com.mapbox.dash.sdk.config.api.mapStyle
+import com.mapbox.dash.sdk.config.api.network
 import com.mapbox.dash.sdk.config.api.offline
 import com.mapbox.dash.sdk.config.api.searchPanel
 import com.mapbox.dash.sdk.config.api.theme
@@ -95,9 +94,11 @@ import com.mapbox.navigation.mapgpt.setDefaultVoicePlayerMiddleware
 import com.mapbox.navigation.mapgpt.setVoicePlayerMiddleware
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
@@ -241,7 +242,6 @@ class MainActivity : DrawerActivity() {
     private val setCustomRoutesOverviewComposer = MutableStateFlow(value = false)
     private val setCustomTripSummaryComposer = MutableStateFlow(value = false)
     private val setCustomEditTripComposer = MutableStateFlow(value = false)
-    private val setCustomTripOverviewComposer = MutableStateFlow(value = false)
     private val setCustomSearchScreen = MutableStateFlow(value = false)
     private val setCustomOfflineRouteAlert = MutableStateFlow(value = false)
     private val setCustomResumeGuidanceView = MutableStateFlow(value = false)
@@ -479,7 +479,7 @@ class MainActivity : DrawerActivity() {
             }
         }
 
-        menuBinding.layersManagerCard.bind(this)
+        menuBinding.layersManagerCard.bind(lifecycleOwner = this, dashNavigationFragmentFlow)
     }
 
     private fun settingCustomization() {
@@ -550,12 +550,14 @@ class MainActivity : DrawerActivity() {
             Dash.controller.hideEvRangeMap()
         }
 
-        combine(
-            Dash.controller.observeEvRangeMapState(),
-            dashNavigationFragmentFlow,
-        ) { state, fragment ->
-            fragment?.setAdditionalPointsToFrame(state.rangeMapFramePoints)
-        }.observeWhenStarted(this)
+        repeatWhenStarted(lifecycleOwner = this) {
+            combine(
+                Dash.controller.observeEvRangeMapState(),
+                dashNavigationFragmentFlow.filterNotNull(),
+            ) { state, fragment ->
+                fragment.setAdditionalPointsToFrame(state.rangeMapFramePoints)
+            }.collect()
+        }
 
         menuBinding.customCompassDataInputs.setOnCheckedChangeListener { _, isChecked ->
             setCustomCompassDataInputs.value = isChecked
@@ -586,7 +588,7 @@ class MainActivity : DrawerActivity() {
             Dash.controller.addFavoriteItem(favoriteItem, DashFavoriteType.REGULAR)
         }
         menuBinding.removeFromFavorites.bindAction {
-            Dash.controller.removeFavoriteItem(favoriteItem)
+            Dash.controller.removeFavoriteItem(favoriteItem, DashFavoriteType.REGULAR)
         }
         menuBinding.btnSearchApi.bindAction {
             Dash.controller.search(menuBinding.etSearchApi.text.toString())
@@ -854,19 +856,6 @@ class MainActivity : DrawerActivity() {
         }
 
         bindSwitch(
-            switch = menuBinding.toggleCustomTripOverview,
-            state = setCustomTripOverviewComposer,
-        ) { enabled ->
-            getDashNavigationFragment()?.setTripOverview { modifier, state ->
-                if (enabled) {
-                    SampleTripOverview(state)
-                } else {
-                    DefaultTripOverview(state = state, modifier = modifier)
-                }
-            }
-        }
-
-        bindSwitch(
             switch = menuBinding.toggleCustomSearchScreen,
             state = setCustomSearchScreen,
         ) { enabled ->
@@ -959,7 +948,7 @@ class MainActivity : DrawerActivity() {
             state = connectMapboxStack,
         ) { isConnected ->
             Dash.applyUpdate {
-                offline { isMapboxStackConnected = isConnected }
+                network { isMapboxStackConnected = isConnected }
             }
         }
 
