@@ -227,6 +227,7 @@ class MainActivity : DrawerActivity() {
     private val setCustomCompassDataInputs = MutableStateFlow(value = false)
     private val showRouteOptionsInSettings = MutableStateFlow(value = false)
     private val showSpeedLimitsOptionsInSettings = MutableStateFlow(value = false)
+    private val shoveGestureEnabled = MutableStateFlow(value = true)
     private val leftSidebarVisible = MutableStateFlow(value = true)
     private val rightSidebarVisible = MutableStateFlow(value = true)
     private val overrideSidebarControls = MutableStateFlow(value = true)
@@ -501,6 +502,13 @@ class MainActivity : DrawerActivity() {
             Dash.applyUpdate {
                 uiSettings {
                     this.showSpeedLimitsOptions = showSpeedLimitsOptions
+                }
+            }
+        }
+        bindSwitch(menuBinding.shoveGestureEnabled, shoveGestureEnabled) { shoveGestureEnabled ->
+            Dash.applyUpdate {
+                camera {
+                    isShoveGestureEnabled = shoveGestureEnabled
                 }
             }
         }

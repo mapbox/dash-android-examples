@@ -117,6 +117,7 @@ class MainApplication : Application() {
             }
             camera {
                 lookAheadMeters = 1.0
+                isShoveGestureEnabled = true
             }
             destinationPreview {
                 skipDestinationPreview = false
