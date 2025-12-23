@@ -177,6 +177,15 @@
             android:textAllCaps="true"
             />
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/shoveGestureEnabled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Shove gesture enabled"
+            android:textAllCaps="true"
+            android:checked="true"
+            />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
