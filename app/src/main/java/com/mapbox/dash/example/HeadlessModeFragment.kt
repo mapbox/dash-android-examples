@@ -52,8 +52,8 @@ class HeadlessModeFragment : Fragment() {
                         button.bindAction {
                             val location = controller.observeRawLocation().first()
                             val destination = location.getRandomDestinationAround()
-                            controller.setDestination(destination)
-                            controller.startNavigation()
+                            val routes = controller.fetchRoutes(destination)
+                            controller.startNavigation(routes.getOrThrow().first())
                         }
                     }
 

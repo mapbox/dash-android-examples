@@ -41,6 +41,7 @@ object ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
         override val customName: String? = null
         override val type = DashSearchResultType.ADDRESS
         override val categories = listOf("test category")
+        override val categoryIds: List<String> = listOf("test-id")
         override val description = null
         override val distanceMeters = null
         override val metadata = mapOf("metadata4" to "value4")

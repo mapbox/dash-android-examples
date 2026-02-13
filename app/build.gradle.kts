@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.mapbox.dash.example"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.mapbox.dash.example"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 

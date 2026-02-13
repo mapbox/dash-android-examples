@@ -80,7 +80,7 @@ import com.mapbox.dash.sdk.config.api.uiSettings
 import com.mapbox.dash.sdk.config.api.voices
 import com.mapbox.dash.sdk.data.inputs.updateCompassData
 import com.mapbox.dash.sdk.map.domain.style.DefaultMapLayerComposer
-import com.mapbox.dash.sdk.map.presentation.markers.DefaultRouteCalloutView
+import com.mapbox.dash.driver.presentation.markers.DefaultRouteCalloutView
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
 import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.sdk.search.api.DashSearchResultType
@@ -134,6 +134,7 @@ class MainActivity : DrawerActivity() {
             override val pinCoordinate: Point = coordinate
             override val type = DashSearchResultType.ADDRESS
             override val categories = listOf("some category")
+            override val categoryIds: List<String> = listOf("test-id")
             override val description = null
             override val distanceMeters = null
         }
@@ -541,7 +542,8 @@ class MainActivity : DrawerActivity() {
             val controller = Dash.controller
             val location = controller.observeRawLocation().first()
             val destination = location.getRandomDestinationAround()
-            controller.setDestination(destination)
+            val routes = controller.fetchRoutes(destination)
+            controller.startNavigation(routes.getOrThrow().first())
         }
 
         // stop an active navigation session, if there's one
@@ -826,8 +828,12 @@ class MainActivity : DrawerActivity() {
                         )
                     }
                 } else {
-                    fragment.setRoutesOverview { modifier, routesOverviewState, _ ->
-                        DefaultRoutesOverview(modifier = modifier, state = routesOverviewState)
+                    fragment.setRoutesOverview { modifier, routesOverviewState, backCloseButtonState ->
+                        DefaultRoutesOverview(
+                            modifier = modifier,
+                            state = routesOverviewState,
+                            backCloseButtonState = backCloseButtonState,
+                        )
                     }
                 }
             }

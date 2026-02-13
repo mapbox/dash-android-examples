@@ -67,7 +67,8 @@ internal class UXFBackgroundService : Service() {
             UXFBackgroundServiceAction.SET_DESTINATION -> coroutineScope.launch {
                 val location = controller.observeRawLocation().first()
                 val destination = location.getRandomDestinationAround()
-                controller.setDestination(destination)
+                val routes = controller.fetchRoutes(destination)
+                controller.startNavigation(routes.getOrThrow().first())
             }
 
             UXFBackgroundServiceAction.START_NAVIGATION -> coroutineScope.launch {

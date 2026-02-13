@@ -29,11 +29,11 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.mapbox.dash.compose.noIndicationClickable
 import com.mapbox.dash.compose.shadow
+import com.mapbox.dash.driver.presentation.markers.RouteCalloutUiState
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.event.DashCameraState
-import com.mapbox.dash.sdk.event.DashCameraTrackingMode
+import com.mapbox.dash.sdk.event.DashCameraMode
 import com.mapbox.dash.sdk.event.NavigationState
-import com.mapbox.dash.sdk.map.presentation.markers.RouteCalloutUiState
 import com.mapbox.maps.ViewAnnotationAnchor
 import com.mapbox.maps.ViewAnnotationAnchorConfig
 import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
@@ -57,19 +57,19 @@ fun SampleRouteCalloutView(
     val navigationState = Dash.controller.observeNavigationState().collectAsState(null).value ?: return
     val isActiveGuidance =
         navigationState is NavigationState.ActiveGuidance || navigationState is NavigationState.Arrival
-    val isOverview = cameraMode == DashCameraTrackingMode.MODE_ROUTE_OVERVIEW
+    val isOverview = cameraMode == DashCameraMode.MODE_ROUTE_OVERVIEW
 
-    if (isActiveGuidance && !isOverview && state.callout.isPrimary) return
+    if (isActiveGuidance && !isOverview && state.isPrimary) return
 
     val duration = if (!isOverview && isActiveGuidance) {
-        state.callout.durationDifferenceWithPrimary
+        state.durationDifferenceWithPrimary
     } else {
-        state.callout.route.directionsRoute.duration().seconds
+        state.duration
     }
 
     val type = when {
         isActiveGuidance && !isOverview -> {
-            if (state.callout.durationDifferenceWithPrimary.isNegative()) {
+            if (state.durationDifferenceWithPrimary.isNegative()) {
                 "Slower"
             } else {
                 "Faster"
@@ -84,7 +84,7 @@ fun SampleRouteCalloutView(
     val prefix = if (state.hasTollRoad) "$ " else ""
     val label = "$prefix $type".trim()
 
-    SampleRouteCalloutViewAnnotation(duration, label, state.layerId, state.callout.isPrimary, state.onClick)
+    SampleRouteCalloutViewAnnotation(duration, label, state.layerId, state.isPrimary, state.onClick)
 }
 
 @Composable
