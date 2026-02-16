@@ -27,7 +27,7 @@ import com.mapbox.dash.driver.presentation.SidebarScope
 import com.mapbox.dash.sdk.DashNavigationFragment
 import com.mapbox.dash.sdk.event.DashCameraButtonState
 import com.mapbox.dash.sdk.event.DashCameraPerspective
-import com.mapbox.dash.sdk.event.DashCameraTrackingMode
+import com.mapbox.dash.sdk.event.DashCameraMode
 import kotlinx.coroutines.flow.StateFlow
 
 class DashLeftSidebarComposer(
@@ -62,8 +62,8 @@ class DashLeftSidebarComposer(
             dashNavigationFragment.observeCameraButtonState().collect { value = it }
         }.value ?: return
         if (cameraButtonState.visible) {
-            val icon = when (cameraButtonState.cameraTrackingState) {
-                DashCameraTrackingMode.MODE_FOLLOWING -> {
+            val icon = when (cameraButtonState.cameraMode) {
+                DashCameraMode.MODE_FOLLOWING -> {
                     when (cameraButtonState.cameraPerspective) {
                         DashCameraPerspective.CAMERA_3D -> Icons.Default.Star
                         DashCameraPerspective.CAMERA_2D -> Icons.Default.LocationOn
@@ -71,8 +71,8 @@ class DashLeftSidebarComposer(
                         else -> Icons.Default.Close
                     }
                 }
-                DashCameraTrackingMode.MODE_ROUTE_OVERVIEW -> Icons.Default.Home
-                DashCameraTrackingMode.MODE_POINTS_OVERVIEW -> Icons.Default.AccountBox
+                DashCameraMode.MODE_ROUTE_OVERVIEW -> Icons.Default.Home
+                DashCameraMode.MODE_POINTS_OVERVIEW -> Icons.Default.AccountBox
                 else -> Icons.Default.Close
             }
             Image(

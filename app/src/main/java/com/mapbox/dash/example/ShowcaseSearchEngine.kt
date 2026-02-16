@@ -59,6 +59,7 @@ class ShowcaseSearchEngine(
             override val pinCoordinate: Point = coordinate
             override val type = DashSearchResultType.ADDRESS
             override val categories = listOf("test category")
+            override val categoryIds: List<String> = listOf("test-id")
             override val description = null
             override val distanceMeters = null
         }
