@@ -542,8 +542,7 @@ class MainActivity : DrawerActivity() {
             val controller = Dash.controller
             val location = controller.observeRawLocation().first()
             val destination = location.getRandomDestinationAround()
-            val routes = controller.fetchRoutes(destination)
-            controller.startNavigation(routes.getOrThrow().first())
+            getDashNavigationFragment()?.setDestination(destination)
         }
 
         // stop an active navigation session, if there's one
