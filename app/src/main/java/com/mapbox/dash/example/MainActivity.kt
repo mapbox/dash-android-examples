@@ -176,15 +176,17 @@ class MainActivity : DrawerActivity() {
         initCustomizationMenu()
         registerEventsObservers()
         headlessMode.observeWhenStarted(this) { enabled ->
-            val fragment = if (enabled) {
-                HeadlessModeFragment.newInstance()
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
+            val newFragment = if (enabled) {
+                if (currentFragment is HeadlessModeFragment) null else HeadlessModeFragment.newInstance()
             } else {
-                DashNavigationFragment.newInstance()
+                if (currentFragment is DashNavigationFragment) null else DashNavigationFragment.newInstance()
             }
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, fragment)
-                .commitNow()
-
+            newFragment?.let {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.container, it)
+                    .commitNow()
+            }
             dashNavigationFragmentFlow.value =
                 supportFragmentManager.findFragmentById(R.id.container) as? DashNavigationFragment
         }
