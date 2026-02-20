@@ -35,7 +35,7 @@ object ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
         override val address = null
         override val coordinate = Point.fromLngLat(-77.0342, 38.9044)
         override val etaMinutes = null
-        override val id = "customSearchResultId1122334455"
+        override val id = "customSearchResultId1122334455_$index"
         override val mapboxId: String? = null
         override val name = "Custom result $index"
         override val customName: String? = null
