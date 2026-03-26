@@ -1,5 +1,6 @@
 package com.mapbox.dash.example
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.location.LocationManager
 import com.mapbox.common.location.Location
@@ -42,7 +43,7 @@ import com.mapbox.dash.sdk.ev.domain.model.ChargingCurve
 import com.mapbox.dash.sdk.ev.domain.model.ChargingPoint
 import com.mapbox.dash.sdk.ev.domain.model.Energy
 import com.mapbox.dash.sdk.ev.domain.model.Energy.Companion.kiloWattHours
-import com.mapbox.dash.state.defaults.camera.SimpleDefaults
+import com.mapbox.dash.sdk.signals.api.domain.model.VehicleEvConnectorType
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.navigation.mapgpt.mapGpt
 import kotlinx.coroutines.flow.Flow
@@ -180,15 +181,20 @@ class MainApplication : Application() {
      * Reference Docs https://docs.mapbox.com/android/navigation/ux/guides/coordination/electric-vehicle/
      * Interface Docs https://docs.mapbox.com/android/navigation/api/uxframework/1.0.0-beta.40/ev-api/com.mapbox.dash.ev.api/-ev-data-provider/?query=interface%20EvDataProvider
      */
+    // VehicleEvConnectorType is @RestrictTo(LIBRARY_GROUP_PREFIX) but is used in the public EvDataProvider API — suppress until fixed in the library
+    @SuppressLint("RestrictedApi")
     private fun configureEvProvider() {
         val evDataProvider = object : EvDataProvider {
             override val secondsRemainingToCharge = flowOf<Int?>(7200)
             override val stateOfEnergy: Flow<Energy> = flowOf(60.kiloWattHours)
-            override val isChargerPluggedIn = flowOf(true)
+            override val isCharging = flowOf(true)
             override val maxCharge: Flow<Energy> = flowOf(100.kiloWattHours)
-            override val connectorTypes = flowOf("ccs_combo_type1")
+            override val connectorTypes = flowOf(setOf(VehicleEvConnectorType.IEC_TYPE_1_CCS_DC))
             override val efficiency = flowOf(5f) // 5 kilometers per kWh
-            override val energyConsumptionCurve = flowOf("0,300;20,160;80,140;120,180")
+            override val energyConsumptionCurveReal = flowOf("0,300;20,160;80,140;120,180")
+            override val energyConsumptionCurveFreeflow = flowOf("0,300;20,160;80,140;120,180")
+            override val energyConsumptionCurveBlendingRatio = flowOf<String?>(null)
+            override val energyConsumptionCurveSpeedLimit = flowOf<Int?>(null)
             override val chargingCurve = flowOf(
                 ChargingCurve(
                     listOf(

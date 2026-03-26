@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.mapbox.dash.driver.R
 import com.mapbox.dash.example.DestinationWeatherForecast
 import com.mapbox.dash.example.toIcon
+import com.mapbox.dash.models.TrafficGradientStop
 import com.mapbox.dash.models.WaypointData
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 
@@ -47,10 +48,10 @@ internal fun SampleEtaView(
     isOffline: Boolean = false,
     stateOfCharge: Int? = null,
     fractionTraveled: Float = 0.6f,
-    trafficGradientStops: List<Pair<Float, Color?>> = listOf(
-        (0.150f to Color.Yellow),
-        (0.450f to Color.Red),
-        (0.650f to Color.Blue),
+    trafficGradientStops: List<TrafficGradientStop> = listOf(
+        TrafficGradientStop(0.150f, Color.Yellow),
+        TrafficGradientStop(0.450f, Color.Red),
+        TrafficGradientStop(0.650f, Color.Blue),
     ),
     waypointsData: List<WaypointData>,
     weatherForecast: DestinationWeatherForecast? = null,
@@ -142,10 +143,10 @@ internal fun SampleEtaView(
 private fun SampleTripProgress(
     modifier: Modifier = Modifier,
     fractionTraveled: Float = 0.6f,
-    trafficGradientStops: List<Pair<Float, Color?>> = listOf(
-        (0.150f to Color.Yellow),
-        (0.450f to Color.Red),
-        (0.650f to Color.Blue),
+    trafficGradientStops: List<TrafficGradientStop> = listOf(
+        TrafficGradientStop(0.150f, Color.Yellow),
+        TrafficGradientStop(0.450f, Color.Red),
+        TrafficGradientStop(0.650f, Color.Blue),
     ),
     waypointsData: List<WaypointData>,
 ) {
@@ -167,8 +168,9 @@ private fun SampleTripProgress(
                         startX = 0f,
                         endX = Float.POSITIVE_INFINITY,
                         colorStops = Array(trafficGradientStops.size) { index ->
-                            val (offset, color) = trafficGradientStops[index]
-                            offset to (color ?: Color.White.copy(alpha = 0.2f))
+                            val stop = trafficGradientStops[index]
+                            val color = if (stop.color == Color.Unspecified) Color.White.copy(alpha = 0.2f) else stop.color
+                            stop.offset to color
                         },
                     ),
                 ),

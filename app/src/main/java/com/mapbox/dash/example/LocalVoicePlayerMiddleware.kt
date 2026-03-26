@@ -7,8 +7,9 @@ import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
+import android.media.AudioManager
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
-import com.mapbox.navigation.audio.focus.AudioFocusOwner
+import com.mapbox.navigation.audio.focus.model.AudioFocusOwner
 import com.mapbox.navigation.audio.text.Announcement
 import com.mapbox.navigation.audio.text.PlayerCallback
 import com.mapbox.navigation.audio.text.Voice
@@ -69,7 +70,18 @@ class LocalVoicePlayerMiddleware :
             return
         }
 
-        middlewareContext.audioFocusManager.request(AudioFocusOwner.TextToSpeech) { isGranted ->
+        middlewareContext.audioFocusManager.request(
+            owner = AudioFocusOwner.TextToSpeech,
+            focusCallback = {
+                when (it) {
+                    AudioManager.AUDIOFOCUS_LOSS,
+                    AudioManager.AUDIOFOCUS_LOSS_TRANSIENT,
+                    AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK,
+                    -> stop()
+                    else -> Unit
+                }
+            },
+        ) { isGranted ->
             if (isGranted) {
                 voicePlayer?.play(announcement, progress, callback)
             } else {

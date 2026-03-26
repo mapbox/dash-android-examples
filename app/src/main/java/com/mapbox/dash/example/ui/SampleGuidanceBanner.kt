@@ -81,7 +81,7 @@ fun SampleGuidanceBanner(modifier: Modifier, state: ManeuverUiState?) {
                 )
             } else {
                 buildAnnotatedString {
-                    when (val stepDistance = state.stepDistance) {
+                    when (val stepDistance = state.formattedStepDistance) {
                         is FormattedStepDistance.Arrival -> append(stepDistance.text)
                         is FormattedStepDistance.DistanceRemaining -> {
                             append(stepDistance.distance)
