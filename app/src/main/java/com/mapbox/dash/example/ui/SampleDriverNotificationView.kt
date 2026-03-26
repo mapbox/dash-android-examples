@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import com.mapbox.dash.driver.notification.R
 import com.mapbox.dash.driver.notification.presentation.BetterEvRouteType
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.BetterEvRoute
+import com.mapbox.dash.sdk.config.api.BetterEvRouteStrategy
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.BorderCrossing
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.EvChargingStationBusy
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.FasterAlternativeAvailable
@@ -463,10 +464,10 @@ internal fun Preview_DriverNotifications() {
                             100.0,
                         ),
                     ),
-                    DriverNotificationUiState(BetterEvRoute(15f, BetterEvRouteType.NO_ADDITIONAL_CHARGING)),
-                    DriverNotificationUiState(BetterEvRoute(20f, BetterEvRouteType.EXCLUDE_PLANNED_CHARGING)),
-                    DriverNotificationUiState(BetterEvRoute(25f, BetterEvRouteType.INCLUDE_ADDITIONAL_CHARGING)),
-                    DriverNotificationUiState(BetterEvRoute(30f, BetterEvRouteType.WITH_THE_SAME_CHARGING)),
+                    DriverNotificationUiState(BetterEvRoute(15f, BetterEvRouteType.NO_ADDITIONAL_CHARGING, BetterEvRouteStrategy.Notification.SwitchToBetterRoute())),
+                    DriverNotificationUiState(BetterEvRoute(20f, BetterEvRouteType.EXCLUDE_PLANNED_CHARGING, BetterEvRouteStrategy.Notification.SwitchToBetterRoute())),
+                    DriverNotificationUiState(BetterEvRoute(25f, BetterEvRouteType.INCLUDE_ADDITIONAL_CHARGING, BetterEvRouteStrategy.Notification.SwitchToBetterRoute())),
+                    DriverNotificationUiState(BetterEvRoute(30f, BetterEvRouteType.WITH_THE_SAME_CHARGING, BetterEvRouteStrategy.Notification.SwitchToBetterRoute())),
                     DriverNotificationUiState(EvChargingStationBusy())
                 ),
             ) {

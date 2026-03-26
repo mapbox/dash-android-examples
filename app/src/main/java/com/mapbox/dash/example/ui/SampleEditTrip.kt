@@ -64,7 +64,7 @@ fun SampleEditTrip(state: EditTripUiState) {
     SampleEditTrip(
         items = state.items,
         onOpenFullScreenSearchClick = state.onOpenFullScreenSearchClick,
-        onRemoveClick = { waypoint -> state.onRemoveWaypoints(setOf(waypoint)) },
+        onRemoveClick = { waypoint -> state.onRemoveWaypoints(setOf(waypoint.realTripIndex)) },
         onDoneClick = state.onDoneClick,
         onItemSwap = state.onItemSwap,
         onAddChargers = state.onAddChargersClick,
