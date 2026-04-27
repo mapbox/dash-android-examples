@@ -16,8 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,11 +34,8 @@ import androidx.compose.ui.unit.sp
 import com.mapbox.dash.example.R
 import com.mapbox.dash.maneuver.presentation.ui.FormattedStepDistance
 import com.mapbox.dash.maneuver.presentation.ui.ManeuverUiState
-import com.mapbox.dash.sdk.Dash
-import com.mapbox.dash.sdk.event.NavigationState
 import com.mapbox.navigation.tripdata.maneuver.api.MapboxTurnIconsApi
 import com.mapbox.navigation.tripdata.maneuver.model.TurnIconResources
-import kotlinx.coroutines.flow.map
 
 @Composable
 fun SampleGuidanceBanner(modifier: Modifier, state: ManeuverUiState?) {
@@ -48,13 +43,8 @@ fun SampleGuidanceBanner(modifier: Modifier, state: ManeuverUiState?) {
         return
     }
     val defaultMargin = 20.dp
-    val isWaypointArrival by remember {
-        Dash.controller.observeNavigationState()
-            .map {
-                it is NavigationState.Arrival
-            }
-    }.collectAsState(false)
-    val maneuver = state.maneuver
+    val isWaypointArrival = state.isWaypointArrival
+    val maneuverInfo = state.maneuverInfo
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -62,26 +52,30 @@ fun SampleGuidanceBanner(modifier: Modifier, state: ManeuverUiState?) {
             .padding(defaultMargin),
         verticalArrangement = Arrangement.spacedBy(defaultMargin),
     ) {
-        if (!isWaypointArrival) {
+        if (!isWaypointArrival && maneuverInfo != null) {
             ManeuverTurnIcon(
-                modifier = Modifier.size(dimensionResource(
-                    id = com.mapbox.dash.maneuver.R.dimen.maneuver_view_primary_turn_icon_size)
+                modifier = Modifier.size(
+                    dimensionResource(
+                        id = com.mapbox.dash.maneuver.R.dimen.maneuver_view_primary_turn_icon_size
+                    )
                 ),
                 iconStyle = R.style.ManeuverTurnIconStylePrimary,
-                type = maneuver.primary.type,
-                degrees = maneuver.primary.degrees,
-                maneuverModifier = maneuver.primary.modifier,
-                drivingSide = maneuver.primary.drivingSide,
+                type = maneuverInfo.maneuver.primary.type,
+                degrees = maneuverInfo.maneuver.primary.degrees,
+                maneuverModifier = maneuverInfo.maneuver.primary.modifier,
+                drivingSide = maneuverInfo.maneuver.primary.drivingSide,
             )
         }
         Text(
-            text = if (isWaypointArrival) {
-                AnnotatedString(stringResource(
-                    id = com.mapbox.dash.maneuver.R.string.dash_arrived_text)
+            text = if (isWaypointArrival || maneuverInfo == null) {
+                AnnotatedString(
+                    stringResource(
+                        id = com.mapbox.dash.maneuver.R.string.dash_arrived_text
+                    )
                 )
             } else {
                 buildAnnotatedString {
-                    when (val stepDistance = state.formattedStepDistance) {
+                    when (val stepDistance = maneuverInfo.formattedStepDistance) {
                         is FormattedStepDistance.Arrival -> append(stepDistance.text)
                         is FormattedStepDistance.DistanceRemaining -> {
                             append(stepDistance.distance)
