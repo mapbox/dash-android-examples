@@ -1,0 +1,414 @@
+package com.mapbox.dash.showcase.app.ui.custom.notificaiton
+
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.mapbox.dash.compose.shadow
+import com.mapbox.dash.driver.notification.presentation.BetterEvRouteType
+import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.BetterEvRoute
+import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.BorderCrossing
+import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.EvChargingStationBusy
+import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.FasterAlternativeAvailable
+import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.Incident
+import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.RoadCamera
+import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.SlowTraffic
+import com.mapbox.dash.driver.notification.presentation.DriverNotificationUiState
+import com.mapbox.dash.sdk.config.api.RoadCameraType.DANGER_ZONE_ENTER
+import com.mapbox.dash.sdk.config.api.RoadCameraType.DANGER_ZONE_EXIT
+import com.mapbox.dash.sdk.config.api.RoadCameraType.RED_LIGHT
+import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CAMERA
+import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CAMERA_RED_LIGHT
+import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CONTROL_ZONE_ENTER
+import com.mapbox.dash.sdk.config.api.RoadCameraType.SPEED_CONTROL_ZONE_EXIT
+import com.mapbox.dash.showcase.app.R
+import com.mapbox.dash.showcase.app.theme.SampleColors
+import com.mapbox.dash.showcase.app.theme.SampleIcons
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.DurationUnit
+
+@Composable
+fun SampleDriverNotificationView(
+    modifier: Modifier = Modifier,
+    uiState: DriverNotificationUiState,
+) {
+    val context = LocalContext.current
+    when (val notification = uiState.driverNotification) {
+        is FasterAlternativeAvailable -> {
+            DriverNotificationView(
+                modifier,
+                stringResource(com.mapbox.dash.text.R.string.dash_driver_notification_faster_route_available),
+                context.getString(
+                    com.mapbox.dash.text.R.string.dash_driver_notification_faster_save_time,
+                    notification.diffDuration.toString(DurationUnit.MINUTES),
+                ),
+                com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_faster_route_available,
+                com.mapbox.dash.text.R.string.dash_driver_notification_show,
+                { uiState.onAcceptClick(notification) },
+                com.mapbox.dash.text.R.string.dash_driver_notification_faster_route_decline,
+                { uiState.onDismissClick(notification) },
+            )
+        }
+
+        is BorderCrossing -> {
+            DriverNotificationView(
+                modifier,
+                context.getString(
+                    com.mapbox.dash.text.R.string.dash_driver_notification_border_crossing_title,
+                ),
+                context.getString(
+                    com.mapbox.dash.text.R.string.dash_driver_notification_border_crossing_distance,
+                    notification.distanceInMeters.toInt().toString(),
+                ),
+                com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_border_crossing,
+                com.mapbox.dash.text.R.string.dash_driver_notification_show,
+                null,
+                com.mapbox.dash.text.R.string.dash_driver_notification_dismiss,
+                { uiState.onDismissClick(notification) },
+            )
+        }
+
+        is RoadCamera -> {
+            val (iconRes, stringRes) = when (notification.roadCameraType) {
+                SPEED_CAMERA -> Pair(
+                    com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_speed_camera,
+                    com.mapbox.dash.text.R.string.dash_driver_notification_speed_camera,
+                )
+
+                SPEED_CAMERA_RED_LIGHT -> Pair(
+                    com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_speed_camera_red_light,
+                    com.mapbox.dash.text.R.string.dash_driver_notification_speed_camera_red_light,
+                )
+
+                RED_LIGHT -> Pair(
+                    com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_camera_red_light,
+                    com.mapbox.dash.text.R.string.dash_driver_notification_camera_red_light,
+                )
+
+                SPEED_CONTROL_ZONE_ENTER -> Pair(
+                    com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_speed_control_zone,
+                    com.mapbox.dash.text.R.string.dash_driver_notification_speed_control_zone,
+                )
+
+                SPEED_CONTROL_ZONE_EXIT -> Pair(
+                    com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_speed_control_zone,
+                    com.mapbox.dash.text.R.string.dash_driver_notification_speed_control_zone_exit,
+                )
+
+                DANGER_ZONE_ENTER -> Pair(
+                    com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_danger_zone,
+                    com.mapbox.dash.text.R.string.dash_driver_notification_danger_zone,
+                )
+
+                DANGER_ZONE_EXIT -> Pair(
+                    com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_danger_zone,
+                    com.mapbox.dash.text.R.string.dash_driver_notification_danger_zone_exit,
+                )
+
+                else -> Pair(null, null)
+            }
+            if (stringRes != null && iconRes != null) {
+                DriverNotificationView(
+                    modifier,
+                    stringResource(stringRes),
+                    notification.distanceInMeters.toInt().toString(),
+                    iconRes,
+                    0,
+                    null,
+                    com.mapbox.dash.text.R.string.dash_driver_notification_dismiss,
+                    { uiState.onDismissClick(notification) },
+                )
+            }
+        }
+
+        is SlowTraffic -> {
+            DriverNotificationView(
+                modifier,
+                stringResource(com.mapbox.dash.text.R.string.dash_driver_notification_heavy_traffic),
+                context.getString(
+                    com.mapbox.dash.text.R.string.dash_driver_notification_heavy_traffic_delay,
+                    notification.diffDuration.toString(DurationUnit.MINUTES),
+                ),
+                com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_heavy_traffic,
+                0,
+                null,
+                com.mapbox.dash.text.R.string.dash_driver_notification_dismiss,
+                { uiState.onDismissClick(notification) },
+            )
+        }
+
+        is Incident -> {
+            DriverNotificationView(
+                modifier,
+                notification.type.toString(),
+                notification.duration?.let { duration ->
+                    context.getString(
+                        R.string.showcase_dash_driver_notification_incident_description,
+                        duration.toString(DurationUnit.MINUTES, 0),
+                        notification.distanceInMeters?.toInt(),
+                    )
+                },
+                com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_universal,
+                0,
+                null,
+                com.mapbox.dash.text.R.string.dash_driver_notification_dismiss,
+                { uiState.onDismissClick(notification) },
+                notification.timeToDismiss,
+            )
+        }
+
+        is BetterEvRoute -> {
+            val resources = when (notification.betterRouteType) {
+                BetterEvRouteType.EXCLUDE_PLANNED_CHARGING,
+                BetterEvRouteType.EXCLUDE_SERVER_DEFINED_PLANNED_CHARGING,
+                -> Triple(
+                    SampleIcons.skipCharging,
+                    context.getString(com.mapbox.dash.text.R.string.dash_driver_notification_better_ev_route_skip_charging),
+                    context.getString(com.mapbox.dash.text.R.string.dash_driver_notification_better_ev_route_skip_charging),
+                )
+
+                BetterEvRouteType.INCLUDE_ADDITIONAL_CHARGING -> Triple(
+                    SampleIcons.chargingNeeded,
+                    context.getString(com.mapbox.dash.text.R.string.dash_driver_notification_better_ev_route_need_charging),
+                    context.getString(
+                        com.mapbox.dash.text.R.string.dash_driver_notification_better_ev_route_soc_details,
+                        notification.minDestinationSoc.toInt(),
+                    ),
+                )
+
+                else -> Triple(
+                    SampleIcons.fastAlternative,
+                    context.getString(com.mapbox.dash.text.R.string.dash_driver_notification_better_ev_route_general),
+                    context.getString(
+                        com.mapbox.dash.text.R.string.dash_driver_notification_better_ev_route_soc_details,
+                        notification.minDestinationSoc.toInt(),
+                    ),
+                )
+            }
+            DriverNotificationView(
+                modifier,
+                resources.second,
+                resources.third,
+                resources.first,
+                com.mapbox.dash.text.R.string.dash_driver_notification_show,
+                { uiState.onAcceptClick(notification) },
+                com.mapbox.dash.text.R.string.dash_driver_notification_dismiss,
+                { uiState.onDismissClick(notification) },
+            )
+        }
+        is EvChargingStationBusy -> {
+            DriverNotificationView(
+                modifier,
+                context.getString(com.mapbox.dash.text.R.string.dash_driver_notification_busy_station_description),
+                context.getString(com.mapbox.dash.text.R.string.dash_driver_notification_busy_station_title),
+                com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_ev_charging_station_busy,
+                com.mapbox.dash.text.R.string.dash_driver_notification_show,
+                { uiState.onAcceptClick(notification) },
+                com.mapbox.dash.text.R.string.dash_driver_notification_dismiss,
+                { uiState.onDismissClick(notification) },
+            )
+        }
+
+        else -> {}
+    }
+}
+
+@Composable
+private fun DriverNotificationView(
+    modifier: Modifier,
+    title: String,
+    description: String?,
+    @DrawableRes iconId: Int,
+    @StringRes acceptButtonText: Int,
+    onAcceptClick: (() -> Unit)? = {},
+    @StringRes dismissButtonText: Int,
+    onDismissClick: (() -> Unit)? = {},
+    timeToDismiss: Duration? = null,
+) {
+
+    val defaultPadding = dimensionResource(com.mapbox.dash.driver.notification.R.dimen.driver_notification_view_padding)
+    Column(
+        modifier = modifier
+            .shadow(shape = RoundedCornerShape(16.dp))
+            .background(color = SampleColors.primary.copy(alpha = 0.3f))
+            .padding(defaultPadding),
+        verticalArrangement = Arrangement.spacedBy(defaultPadding),
+    ) {
+        DriverNotificationDescription(
+            title,
+            description,
+            iconId,
+        )
+
+        DriverNotificationButtonsContainer(
+            acceptButtonText,
+            onAcceptClick,
+            dismissButtonText,
+            onDismissClick,
+            timeToDismiss,
+        )
+    }
+}
+
+@Composable
+private fun DriverNotificationDescription(
+    title: String,
+    description: String?,
+    @DrawableRes iconId: Int,
+) {
+
+    Row(
+        modifier = Modifier.height(IntrinsicSize.Max),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Image(
+            modifier = Modifier.size(dimensionResource(com.mapbox.dash.driver.notification.R.dimen.driver_notification_icon_size)),
+            painter = painterResource(iconId),
+            contentDescription = null,
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(start = dimensionResource(com.mapbox.dash.driver.notification.R.dimen.driver_notification_view_padding)),
+            verticalArrangement = if (description != null) Arrangement.SpaceBetween else Arrangement.Center,
+        ) {
+            Text(
+                text = title,
+                color = SampleColors.primary,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+            if (description != null) {
+                Text(
+                    text = description,
+                    color = SampleColors.textPrimary,
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Normal,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DriverNotificationButtonsContainer(
+    @StringRes acceptButtonText: Int,
+    onAcceptClick: (() -> Unit)? = {},
+    @StringRes dismissButtonText: Int,
+    onDismissClick: (() -> Unit)? = {},
+    timeToDismiss: Duration? = null,
+) {
+
+    Column(
+        modifier = Modifier,
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(com.mapbox.dash.driver.notification.R.dimen.driver_notification_view_padding)),
+    ) {
+
+        if (onAcceptClick != null) {
+            DriverNotificationButton(
+                textColor = SampleColors.textPrimary,
+                backgroundColor = SampleColors.primary,
+                actionButtonText = acceptButtonText,
+                onActionButtonClick = onAcceptClick,
+            )
+        }
+
+        if (onDismissClick != null) {
+
+            val animationStarted = remember { mutableStateOf(false) }
+            val progress by animateFloatAsState(
+                targetValue = if (animationStarted.value) 1f else 0f,
+                animationSpec = tween(
+                    durationMillis = (timeToDismiss ?: 15000.milliseconds).toInt(DurationUnit.MILLISECONDS),
+                    easing = LinearEasing,
+                ),
+            ) {
+                if (it == 1f) {
+                    onDismissClick()
+                }
+            }
+
+            DriverNotificationButton(
+                textColor = SampleColors.primary,
+                backgroundColor = SampleColors.primary.copy(alpha = 0.5f),
+                actionButtonText = dismissButtonText,
+                onActionButtonClick = onDismissClick,
+                progress = progress,
+            )
+
+            LaunchedEffect(Unit) {
+                animationStarted.value = true
+            }
+        }
+    }
+}
+
+@Composable
+fun DriverNotificationButton(
+    modifier: Modifier = Modifier,
+    textColor: Color,
+    backgroundColor: Color,
+    @StringRes actionButtonText: Int,
+    onActionButtonClick: () -> Unit = {},
+    progress: Float = 0f,
+) {
+    Text(
+        text = stringResource(id = actionButtonText),
+        color = textColor,
+        fontSize = 32.sp,
+        fontWeight = FontWeight.SemiBold,
+        modifier = modifier
+            .height(dimensionResource(id = com.mapbox.dash.theming.R.dimen.button_height))
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(
+                brush = if (progress == 0f) {
+                    SolidColor(backgroundColor)
+                } else {
+                    Brush.horizontalGradient(
+                        0f to SampleColors.primary.copy(alpha = 0.5f),
+                        progress to SampleColors.primary.copy(alpha = 0.5f),
+                        progress to backgroundColor,
+                        1f to backgroundColor,
+                    )
+                },
+            )
+            .clickable(enabled = true, onClick = onActionButtonClick)
+            .wrapContentSize(align = Alignment.Center),
+    )
+}

@@ -3,15 +3,15 @@
     <shortcut
         android:shortcutId="compose"
         android:enabled="true"
-        android:icon="@drawable/ic_destination"
+        android:icon="@drawable/mapbox_navigation_puck_icon"
         android:shortcutShortLabel="@string/shortcut_service_label"
         android:shortcutLongLabel="@string/shortcut_service_label"
         android:shortcutDisabledMessage="@string/shortcut_service_label">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.mapbox.dash.example"
+            android:targetPackage="com.mapbox.dash.showcase.app"
             android:data=""
-            android:targetClass="com.mapbox.dash.example.service.UXFBackgroundServiceLauncherActivity" />
+            android:targetClass="com.mapbox.dash.showcase.app.service.UXFBackgroundServiceLauncherActivity" />
         <categories android:name="android.shortcut.conversation" />
         <capability-binding android:key="actions.intent.CREATE_MESSAGE" />
     </shortcut>

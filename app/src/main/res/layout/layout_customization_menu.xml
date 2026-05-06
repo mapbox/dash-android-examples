@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingBottom="80dp"
-    tools:layout_width="300dp">
+    tools:layout_width="300dp"
+    >
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/holo_blue_dark"
         android:paddingHorizontal="15dp"
-        android:paddingTop="60dp"
+        android:paddingTop="32dp"
         android:paddingBottom="10dp"
-        android:text="Dash Customizations"
+        android:text="DASH Customizations"
         android:textColor="#fff"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         />
 
@@ -28,6 +29,22 @@
         android:padding="10dp"
         >
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleHeadlessMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Headless mode"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleLocationSimulation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Simulate location"
+            android:textAllCaps="true"
+            />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnResetNavigationState"
             android:layout_width="match_parent"
@@ -35,14 +52,6 @@
             android:layout_gravity="center"
             android:backgroundTint="@android:color/holo_red_dark"
             android:text="Reset navigation state"
-            android:textAllCaps="true"
-            />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/toggleHeadlessMode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Headless mode"
             android:textAllCaps="true"
             />
 
@@ -82,15 +91,135 @@
                 android:layout_height="wrap_content"
                 />
 
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/enableMapLayer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Add custom map layer"
+                android:textAllCaps="true"
+                />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/overrideRouteCallouts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Override route callouts"
+                android:textAllCaps="true"
+                />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/overrideSearchAreaButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Override search this area"
+                android:textAllCaps="true"
+                />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/enableWeatherAlongRoute"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Show weather warning along route"
+                android:textAllCaps="true"
+                />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/enableEvChargePoint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Show charge point state on the route"
+                android:textAllCaps="true"
+                />
+
+            <com.mapbox.dash.showcase.app.menu.LayersManagerCard
+                android:id="@+id/layersManagerCard"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
         </LinearLayout>
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/enableKeyboardMode"
+            android:id="@+id/enableMapGpt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="enable keyboard mode"
+            android:checked="true"
+            android:text="enable mapgpt"
             android:textAllCaps="true"
             />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/showAvatar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="show default avatar"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/showKeyboardMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="show default keyboard mode"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/showCarousel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="show default carousel"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/showChatBubble"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="show default chat bubble"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/customChatBubble"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="custom chat bubble"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/customMapGptCarouselCardParams"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="custom map gpt carousel card params"
+            android:textAllCaps="true"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="MapGPT Avatar"
+                />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/avatarsSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/set3dMapStyle"
@@ -101,57 +230,20 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/addCustomMapLayer"
+            android:id="@+id/setNightMapStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ADD CUSTOM MAP LAYER"
+            android:text="SET NIGHT MAP style"
             android:textAllCaps="true"
             />
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/toggleCustomStreetNameView"
+            android:id="@+id/setSatelliteMapStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Set custom street name label"
+            android:text="SET SATELLITE MAP style"
             android:textAllCaps="true"
             />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/overrideSearchAreaButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Override search this area"
-            android:textAllCaps="true"
-            />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/overrideRouteCallouts"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Override route callouts"
-            android:textAllCaps="true"
-            />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/showWeatherWarningAlongRoute"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="SHOW WEATHER WARNINGS ALONG ROUTE"
-            android:textAllCaps="true"
-            />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/showEvChargeStatePoints"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="SHOW EV STATE POINTS"
-            android:textAllCaps="true"
-            />
-
-        <com.mapbox.dash.example.view.LayersManagerCard
-            android:id="@+id/layersManagerCard"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/setTtsOfflineMode"
@@ -161,11 +253,87 @@
             android:textAllCaps="true"
             />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="UserInputOwnerMiddleware"
+                />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spinnerUserInputOwnerMiddleware"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/useCustomVoicePlayerMiddleware"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Custom TextPlayerMiddleware"
+            android:textAllCaps="false"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="RemoteTtsProvider"
+                />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spinnerRemoteTtsProvider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
+
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/showRouteOptions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Settings: Show Route Options"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/avoidHighways"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Route Option: Avoid Highways"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/avoidTolls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Route Option: Avoid Tolls"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/avoidFerries"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Route Option: Avoid Ferries"
             android:textAllCaps="true"
             />
 
@@ -178,12 +346,67 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/debugPanelShowPreferredNetworks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DebugPanel: Show preferred networks"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/debugPanelShowSpeedLimits"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DebugPanel: Show speed limits"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/debugPanelShowLocalTts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DebugPanel: Show local TTS"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/setNavigationSuggestions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set navigation suggestions"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/setReverseUiMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set reverse UI mode"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/setInjectCustomSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Custom search results"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/screenDirectionality"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Left Hand Traffic Layout"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/shoveGestureEnabled"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Shove gesture enabled"
             android:textAllCaps="true"
-            android:checked="true"
             />
 
         <TextView
@@ -204,12 +427,32 @@
             />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnStartNullNavigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Start Destination Route"
+            android:textAllCaps="true"
+            />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnStopNavigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:backgroundTint="@android:color/holo_blue_dark"
             android:text="Stop navigation"
+            android:textAllCaps="true"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnContinueNavigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Navigate next leg"
             android:textAllCaps="true"
             />
 
@@ -233,11 +476,40 @@
             android:textAllCaps="true"
             />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/customCompassDataInputs"
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Custom compass data inputs"
+            android:hint="FullScreen search query"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnOpenSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Open search"
+            android:textAllCaps="true"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCloseSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Close search"
+            android:textAllCaps="true"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSearchOnMap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Search on Map"
             android:textAllCaps="true"
             />
 
@@ -329,6 +601,38 @@
             android:textAllCaps="true"
             />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCategorySearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Open Map with Cinema"
+            android:textAllCaps="true"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="Custom search engine policy"
+                />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/customSearchEnginePolicySpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -369,8 +673,8 @@
             android:layout_height="wrap_content"
             android:stepSize="5"
             android:valueFrom="0"
-            app:labelBehavior="withinBounds"
             android:valueTo="70"
+            app:labelBehavior="withinBounds"
             />
 
         <TextView
@@ -448,40 +752,6 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="10dp"
-            >
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/toggleLeftSidebar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Left sidebar"
-                android:textAllCaps="true"
-                />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="10dp"
-            >
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/toggleRightSidebar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Right sidebar"
-                android:textAllCaps="true"
-                />
-
-        </LinearLayout>
-
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/toggleSidebarControls"
             android:layout_width="match_parent"
@@ -526,6 +796,14 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomRecenterPill"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom recenter camera button"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/toggleCustomMarkerFactory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -537,15 +815,31 @@
             android:id="@+id/toggleCustomPlacesList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Set custom places composer"
+            android:text="Set custom places list composer"
             android:textAllCaps="true"
             />
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/toggleCustomDestinationPreview"
+            android:id="@+id/toggleCustomPlacePreview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Set custom destination preview"
+            android:text="Set custom destination preview composer"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomManeuver"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom guidance banner"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomUpcomingManeuvers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom upcoming maneuvers banner"
             android:textAllCaps="true"
             />
 
@@ -553,7 +847,7 @@
             android:id="@+id/toggleCustomRoutesOverview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Set custom routes overview"
+            android:text="Set custom routes composer"
             android:textAllCaps="true"
             />
 
@@ -566,10 +860,50 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomEndActiveGuidance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom end active guidance"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/toggleCustomEditTrip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Set custom edit trip"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomArrivalFeedback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom arrival feedback"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomContinueNavigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom continue navigation"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleTabletLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enable tablet layout"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomDriverNotification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom driver notification"
             android:textAllCaps="true"
             />
 
@@ -606,6 +940,14 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleCustomStreetNameView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set custom street name label"
+            android:textAllCaps="true"
+            />
+
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/toggleUpcomingLaneGuidance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -614,50 +956,10 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/toggleTabletLayout"
+            android:id="@+id/toggleCustomCompassDataInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Enable tablet layout"
-            android:textAllCaps="true"
-            />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/toggleCustomArrivalFeedbackComposer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Set custom arrival feedback"
-            android:textAllCaps="true"
-            />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/toggleCustomContinueComposer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Set custom continue navigation"
-            android:textAllCaps="true"
-            />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/toggleCustomGuidanceComposer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Set custom guidance banner"
-            android:textAllCaps="true"
-            />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/toggleCustomUpcomingManeuvers"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Set custom upcoming maneuvers banner"
-            android:textAllCaps="true"
-            />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/toggleCustomDriverNotification"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Set custom driver notification"
+            android:text="Use custom compass data input"
             android:textAllCaps="true"
             />
 
@@ -694,80 +996,79 @@
                 />
 
         </LinearLayout>
+    </LinearLayout>
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/toggleCustomVoicePlayer"
-            android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Enable custom voice player"
-            android:textAllCaps="true"
+            android:layout_gravity="start"
+            android:text="MapStyle mode"
             />
 
-        <LinearLayout
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/mapStyleMode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp"
-            >
+            />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:text="MapStyle mode"
-                />
+    </LinearLayout>
 
-            <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/mapStyleMode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        >
 
-        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="MapStyle theme"
+            />
 
-        <LinearLayout
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/mapStyleTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp"
-            >
+            />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:text="MapStyle theme"
-                />
+    </LinearLayout>
 
-            <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/mapStyleTheme"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        >
 
-        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="UI mode"
+            />
 
-        <LinearLayout
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/uiMode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp"
-            >
+            />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:text="UI mode"
-                />
-
-            <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/uiMode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-
-        </LinearLayout>
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggleShowConnectivityProblemsInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Show connectivity problems info"
+            android:textAllCaps="true"
+            />
 
     </LinearLayout>
 
@@ -779,10 +1080,11 @@
         >
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            >
 
             <TextView
                 android:id="@+id/currentProfile"
@@ -811,6 +1113,38 @@
             android:backgroundTint="@android:color/holo_blue_dark"
             android:text="Remove a profile"
             android:textAllCaps="true"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnShowRoutes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:text="Show current routes"
+            android:textAllCaps="true"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="Vehicle type"
+            />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/engineType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             />
 
     </LinearLayout>
