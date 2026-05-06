@@ -4,7 +4,7 @@
 
     <application>
         <activity
-            android:name="com.mapbox.dash.showcase.app.ShowcaseClusterActivity"
+            android:name=".ShowcaseClusterActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
