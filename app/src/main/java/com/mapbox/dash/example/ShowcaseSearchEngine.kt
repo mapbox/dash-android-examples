@@ -41,7 +41,8 @@ class ShowcaseSearchEngine(
             override val descriptionText = "Suggestion provided by a third-party service"
             override val address = null
             override val distanceMeters = 3200.0
-            override val categories = null
+            override val categories = listOf("Test Category")
+            override val categoryIds = listOf("test_category")
             override val etaMinutes = 5.0
             override val poweredByAi = false
             override val type: DashSearchSuggestion.Type = DashSearchSuggestion.Type.Point
