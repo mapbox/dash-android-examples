@@ -25,7 +25,8 @@ object ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
         override val address = null
         override val type = DashSearchSuggestion.Type.Point
         override val distanceMeters = 3200.0
-        override val categories = null
+        override val categories = listOf("Test Category")
+        override val categoryIds = listOf("test_category")
         override val etaMinutes = 5.0
         override val poweredByAi = false
         override val metadata = mapOf("metadata3" to "value3")

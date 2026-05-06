@@ -113,7 +113,6 @@ class MainApplication : Application() {
             }
             ui {
                 screenDirectionality = ScreenDirectionality.LEFT_TO_RIGHT
-                freeDriveCamera3DModeEnabled = true
             }
             camera {
                 lookAheadMeters = 1.0

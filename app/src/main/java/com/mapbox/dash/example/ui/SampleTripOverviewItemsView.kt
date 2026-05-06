@@ -39,7 +39,7 @@ import kotlin.time.DurationUnit
 internal fun SampleTripOverviewItems(
     modifier: Modifier = Modifier,
     items: List<TripOverviewItem>,
-    onWaypointClick: (DashSearchResult) -> Unit,
+    onWaypointClick: (DashSearchResult, Int) -> Unit,
     onEndOfChargeClick: (List<Point>) -> Unit,
 ) {
     Column(modifier = modifier) {
@@ -55,7 +55,7 @@ internal fun SampleTripOverviewItems(
                     title = item.searchResult.name,
                     etaMinutes = item.etaMinutes,
                     stateOfCharge = item.stateOfCharge,
-                    onClick = { onWaypointClick(item.searchResult) },
+                    onClick = { onWaypointClick(item.searchResult, item.waypointIndex) },
                     showArrow = true,
                 )
 
@@ -72,7 +72,7 @@ internal fun SampleTripOverviewItems(
                     etaMinutes = item.etaMinutes,
                     stateOfCharge = item.stateOfCharge,
                     chargeData = item.chargeData,
-                    onClick = { onWaypointClick(item.searchResult) },
+                    onClick = { onWaypointClick(item.searchResult, item.waypointIndex) },
                     showArrow = true,
                 )
             }
