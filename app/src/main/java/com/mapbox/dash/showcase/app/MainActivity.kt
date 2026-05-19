@@ -103,7 +103,7 @@ import com.mapbox.dash.showcase.app.ui.custom.places.SamplePlacesView
 import com.mapbox.dash.showcase.app.ui.custom.searcharea.SampleSearchArea
 import com.mapbox.dash.showcase.app.ui.custom.streetname.SampleStreetName
 import com.mapbox.dash.showcase.app.ui.custom.tripsummary.SampleTripSummaryView
-import com.mapbox.dash.state.defaults.camera.SimpleDefaults
+import com.mapbox.dash.state.defaults.camera.FollowingDefaults
 import com.mapbox.dash.theming.Theme
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
@@ -835,7 +835,7 @@ class MainActivity : DrawerActivity() {
             if (fromUser) {
                 Dash.applyUpdate {
                     camera {
-                        freeDriveDefaults = SimpleDefaults(freeDriveDefaults.zoom, value.toDouble())
+                        freeDriveDefaults = FollowingDefaults(freeDriveDefaults.zoom, value.toDouble())
                     }
                 }
             }
