@@ -85,7 +85,7 @@ android {
 }
 
 dependencies {
-    val uxfVersion = "1.23.0"
+    val uxfVersion = "1.24.0"
     implementation("com.mapbox.navigationux:android:$uxfVersion")
     implementation("com.mapbox.navigationux:cluster:$uxfVersion")
     implementation("com.mapbox.navigationux:weather-api:$uxfVersion")

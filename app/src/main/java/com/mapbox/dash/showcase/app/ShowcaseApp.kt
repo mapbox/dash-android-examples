@@ -60,7 +60,7 @@ import com.mapbox.dash.sdk.navigation.coordination.config.navCoordination
 import com.mapbox.dash.sdk.signals.api.domain.model.VehicleEvConnectorType
 import com.mapbox.dash.showcase.app.theme.CustomThemeFactory
 import com.mapbox.dash.state.defaults.camera.ActiveGuidanceDefaults
-import com.mapbox.dash.state.defaults.camera.SimpleDefaults
+import com.mapbox.dash.state.defaults.camera.FollowingDefaults
 import com.mapbox.navigation.audio.text.PersonaVoice
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 import com.mapbox.navigation.mapgpt.mapGpt
@@ -138,7 +138,7 @@ class ShowcaseApp : Application() {
             }
             camera {
                 lookAheadMeters = 1.0
-                freeDriveDefaults = SimpleDefaults(zoom = 15.0)
+                freeDriveDefaults = FollowingDefaults(zoom = 15.0)
                 activeGuidanceDefaults = ActiveGuidanceDefaults(defaultPitch = 45.0)
                 isShoveGestureEnabled = false
             }
