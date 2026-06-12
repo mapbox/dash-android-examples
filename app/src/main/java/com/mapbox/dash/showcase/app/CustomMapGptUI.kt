@@ -199,7 +199,7 @@ fun CustomKeyboardModeCollapsed(
             }
 
             // Avatar at the bottom and using the Petter avatar for customization example.
-            @SuppressLint("RestrictedApi")
+            @SuppressLint("RestrictToUsage", "RestrictedApi")
             if (mapGptComposeConfig.showAvatar) {
                 mapGptCompose.Avatar(
                     onClick = mapGptCompose::onActivationClicked,

@@ -17,6 +17,7 @@ import com.mapbox.dash.sdk.config.api.DEFAULT_SATELLITE_STYLE
 import com.mapbox.dash.sdk.config.api.DashFasterRouteNotificationAcceptanceStrategy
 import com.mapbox.dash.sdk.config.api.DashFasterRouteNotificationTimeoutAction
 import com.mapbox.dash.sdk.config.api.DashIncidentNotificationType
+import com.mapbox.dash.sdk.config.api.EngineType
 import com.mapbox.dash.sdk.config.api.MapIncidentsVisibility
 import com.mapbox.dash.sdk.config.api.MapTrafficLightsVisibility
 import com.mapbox.dash.sdk.config.api.MapTrafficVisibility
@@ -69,6 +70,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
+@Suppress("MagicNumber")
 class ShowcaseApp : Application() {
 
     @OptIn(
@@ -76,15 +78,16 @@ class ShowcaseApp : Application() {
         MapboxExperimental::class,
         com.mapbox.maps.MapboxExperimental::class,
     )
-    @Suppress("MagicNumber")
     override fun onCreate() {
         super.onCreate()
         Dash.init(
             context = this,
             accessToken = getString(R.string.mapbox_access_token),
         ) {
+            engineType = EngineType.PETROL
             logLevel = LogsExtra.LOG_LEVEL_DEBUG
             unitOfMeasurement = UnitOfMeasurement.AUTO
+
             theme {
                 themeFactory = CustomThemeFactory
             }
@@ -273,7 +276,7 @@ class ShowcaseApp : Application() {
                         ChargingPoint(40.kiloWattHours, 70_000),
                         ChargingPoint(60.kiloWattHours, 30_000),
                         ChargingPoint(80.kiloWattHours, 10_000),
-                    )
+                    ),
                 ),
             )
         }

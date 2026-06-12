@@ -26,7 +26,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mapbox.dash.driver.presentation.end.TripSummaryUiState
-import com.mapbox.dash.showcase.app.R
 import com.mapbox.dash.showcase.app.WeatherController
 import kotlin.math.roundToInt
 

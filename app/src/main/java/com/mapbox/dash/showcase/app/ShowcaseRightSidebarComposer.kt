@@ -37,7 +37,7 @@ class ShowcaseRightSidebarComposer(
 
     @Composable
     override fun SidebarScope.Content() {
-        if (layoutViewModel.overrideSidebarControls.collectAsState().value) {
+        if (layoutViewModel.overrideSidebarControls.value) {
             val context = LocalContext.current
             WeatherAlertWidget()
             Button(

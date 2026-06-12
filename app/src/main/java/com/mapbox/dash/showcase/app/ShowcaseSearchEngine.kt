@@ -1,5 +1,6 @@
 package com.mapbox.dash.showcase.app
 
+import androidx.compose.runtime.mutableStateOf
 import com.mapbox.dash.sdk.search.api.DashCategorySearchOptions
 import com.mapbox.dash.sdk.search.api.DashForwardOptions
 import com.mapbox.dash.sdk.search.api.DashSearchEngine
@@ -10,11 +11,21 @@ import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.sdk.search.api.DashSearchResultType
 import com.mapbox.dash.sdk.search.api.DashSearchSuggestion
 import com.mapbox.geojson.Point
+import com.mapbox.search.common.RoutablePoint
 
 @Suppress("MagicNumber")
 object ShowcaseSearchEngine : DashSearchEngine {
 
-    override var processingPolicyFlag: Int = DashSearchEnginePolicy.CUSTOM_ENGINE_RESULTS
+    private val valuesToNamesMapping = mapOf(
+        "ORIGIN_ENGINES_RESULTS" to DashSearchEnginePolicy.ORIGIN_ENGINES_RESULTS,
+        "CUSTOM_ENGINE_RESULTS" to DashSearchEnginePolicy.CUSTOM_ENGINE_RESULTS,
+        "COMBINED" to (DashSearchEnginePolicy.ORIGIN_ENGINES_RESULTS or DashSearchEnginePolicy.CUSTOM_ENGINE_RESULTS),
+    )
+    val allPolicies = valuesToNamesMapping.keys.toList()
+
+    val selectedPolicyName = mutableStateOf("COMBINED")
+
+    override val processingPolicyFlag get() = valuesToNamesMapping.getValue(selectedPolicyName.value)
 
     override suspend fun search(
         request: DashSearchRequest,
@@ -45,6 +56,8 @@ object ShowcaseSearchEngine : DashSearchEngine {
         override val etaMinutes = 5.0
         override val poweredByAi = false
         override val metadata = mapOf("metadata1" to "value1")
+        override val coordinate: Point? = null
+        override val routablePoints: List<RoutablePoint>? = null
     }
 
     private val customSearchResult = object : DashSearchResult {

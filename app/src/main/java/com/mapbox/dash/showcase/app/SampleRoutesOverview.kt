@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mapbox.dash.destination.preview.presentation.RoutesOverviewState
 import com.mapbox.dash.sdk.map.presentation.ui.BackCloseButtonState
+import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 import kotlin.time.DurationUnit
 
@@ -188,7 +189,7 @@ private fun SampleRoutesOverviewItemPrimaryInfo(item: RoutesOverviewState.Item) 
             fontWeight = FontWeight.Bold,
         )
         Spacer(modifier = Modifier.weight(1f))
-        item.stateOfCharge?.let { stateOfCharge ->
+        item.stateOfCharge?.roundToInt()?.let { stateOfCharge ->
             Text(
                 text = "$stateOfCharge %",
                 color = Color.White,

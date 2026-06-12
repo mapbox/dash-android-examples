@@ -1,18 +1,13 @@
 package com.mapbox.dash.showcase.app
 
 import android.Manifest
-import android.content.Context
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -20,21 +15,44 @@ import androidx.appcompat.app.AlertDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import androidx.lifecycle.Lifecycle
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import com.google.android.material.slider.Slider.OnChangeListener
 import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultDestinationPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultRoutesOverview
@@ -61,8 +79,12 @@ import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.DashNavigationFragment
 import com.mapbox.dash.sdk.config.api.DEFAULT_3D_STYLE
 import com.mapbox.dash.sdk.config.api.EngineType
+import com.mapbox.dash.sdk.config.api.MapStyleMode
+import com.mapbox.dash.sdk.config.api.MapStyleTheme
 import com.mapbox.dash.sdk.config.api.ScreenDirectionality
+import com.mapbox.dash.sdk.config.api.SearchPanelPosition
 import com.mapbox.dash.sdk.config.api.ThemeFactory
+import com.mapbox.dash.sdk.config.api.UiModeSettings
 import com.mapbox.dash.sdk.config.api.camera
 import com.mapbox.dash.sdk.config.api.destinationPreview
 import com.mapbox.dash.sdk.config.api.locationSimulation
@@ -81,12 +103,15 @@ import com.mapbox.dash.sdk.map.domain.style.DefaultMapLayerComposer
 import com.mapbox.dash.sdk.map.presentation.ui.DefaultRecenterButton
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
 import com.mapbox.dash.sdk.search.api.DashNavigationSuggestion
-import com.mapbox.dash.sdk.search.api.DashSearchRecord
 import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.sdk.search.api.DashSearchResultType
 import com.mapbox.dash.sdk.storage.ExternalProfile
-import com.mapbox.dash.showcase.app.databinding.ActivityMainBinding
-import com.mapbox.dash.showcase.app.databinding.LayoutCustomizationMenuBinding
+import com.mapbox.dash.showcase.app.menu.LayersManagerCard
+import com.mapbox.dash.showcase.app.menu.MenuButton
+import com.mapbox.dash.showcase.app.menu.MenuDropDown
+import com.mapbox.dash.showcase.app.menu.MenuEditText
+import com.mapbox.dash.showcase.app.menu.MenuSlider
+import com.mapbox.dash.showcase.app.menu.MenuSwitch
 import com.mapbox.dash.showcase.app.theme.CustomThemeFactory
 import com.mapbox.dash.showcase.app.theme.RedThemeFactory
 import com.mapbox.dash.showcase.app.ui.DefaultUiModeMapper
@@ -107,21 +132,25 @@ import com.mapbox.dash.state.defaults.camera.FollowingDefaults
 import com.mapbox.dash.theming.Theme
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
+import com.mapbox.navigation.audio.text.TTS_PROVIDER_CORE
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
+import com.mapbox.navigation.mapgpt.LottieMapGptAvatar
+import com.mapbox.navigation.mapgpt.core.textplayer.TTS_PROVIDER_MAP_GPT
 import com.mapbox.navigation.mapgpt.mapGpt
 import com.mapbox.navigation.mapgpt.mapGptCompose
-import com.mapbox.navigation.mapgpt.setDefaultUserInputMiddleware
 import com.mapbox.navigation.mapgpt.setDefaultVoicePlayerMiddleware
-import com.mapbox.navigation.mapgpt.setUserInputMiddleware
 import com.mapbox.navigation.mapgpt.setVoicePlayerMiddleware
 import com.mapbox.navigation.mapgpt.stopMapGptConversation
 import com.mapbox.navigation.mapgpt.ui.MapGptCarouselCardParams
 import com.mapbox.navigation.mapgpt.updateMapGptContextOverrides
+import com.mapbox.navigation.mapgpt.useroutput.PrebuiltMapGptAvatars
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -129,12 +158,11 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
-import com.mapbox.dash.sdk.config.api.SearchPanelPosition as RawSearchPanelPosition
 
 @Suppress("MagicNumber", "LargeClass")
 @OptIn(
@@ -143,21 +171,24 @@ import com.mapbox.dash.sdk.config.api.SearchPanelPosition as RawSearchPanelPosit
 )
 class MainActivity : DrawerActivity() {
 
-    private val binding by lazy { ActivityMainBinding.inflate(LayoutInflater.from(this)) }
-    private val menuBinding by lazy { LayoutCustomizationMenuBinding.inflate(LayoutInflater.from(this)) }
-
     private val mapGptVM by viewModels<MapGptViewModel>()
-    private val themeVM by viewModels<ThemeViewModel>()
-    private val userInputVM by viewModels<UserInputMiddlewareViewModel>()
-    private val voicePlayerVM by viewModels<VoicePlayerViewModel>()
     private val layoutVM by viewModels<LayoutViewModel>()
-    private val searchVM by viewModels<SearchViewModel>()
-    private val mapStyleVM by viewModels<MapStyleViewModel>()
-    private val settingsVM by viewModels<SettingsViewModel>()
     private val evViewModel by viewModels<EvViewModel>()
 
+    private val fragmentFlow by lazy {
+        callbackFlow {
+            val callbacks = object : FragmentManager.FragmentLifecycleCallbacks() {
+                override fun onFragmentCreated(fm: FragmentManager, fragment: Fragment, savedInstanceState: Bundle?) {
+                    trySend(fragment)
+                }
+            }
+            supportFragmentManager.registerFragmentLifecycleCallbacks(callbacks, false)
+            awaitClose { supportFragmentManager.unregisterFragmentLifecycleCallbacks(callbacks) }
+        }.stateIn(lifecycleScope, SharingStarted.Eagerly, supportFragmentManager.findFragmentById(R.id.container))
+    }
+
     private val dashNavigationFragmentFlow by lazy {
-        layoutVM.headlessMode.map { getDashNavigationFragment() }
+        fragmentFlow.map { it as? DashNavigationFragment }
     }
     private val weatherController by lazy { WeatherController(dashNavigationFragmentFlow) }
 
@@ -203,228 +234,23 @@ class MainActivity : DrawerActivity() {
     }
 
     private fun getDashNavigationFragment(): DashNavigationFragment? {
-        return supportFragmentManager.findFragmentById(R.id.container) as? DashNavigationFragment
-    }
-
-    override fun attachBaseContext(newBase: Context) {
-        val originalTabletLayout = newBase.resources.configuration.smallestScreenWidthDp >= 600
-        val originalDensityDpi = newBase.resources.configuration.densityDpi
-        val tabletLayout = tabletLayout ?: originalTabletLayout.also { tabletLayout = it }
-        val densityDpi = densityDpi ?: originalDensityDpi.also { densityDpi = it }
-        if (tabletLayout == originalTabletLayout && densityDpi == originalDensityDpi) {
-            return super.attachBaseContext(newBase)
-        }
-        val overrideConfiguration = Configuration(newBase.resources.configuration)
-        overrideConfiguration.smallestScreenWidthDp = if (tabletLayout) 600 else 599
-        overrideConfiguration.densityDpi = densityDpi
-        super.attachBaseContext(newBase.createConfigurationContext(overrideConfiguration))
+        return fragmentFlow.value as? DashNavigationFragment
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        observeHeadlessMode()
+        if (savedInstanceState == null) {
+            val newFragment = if (BuildConfig.HEADLESS_MODE_ENABLED) {
+                HeadlessModeFragment.newInstance()
+            } else {
+                DashNavigationFragment.newInstance()
+            }
+            supportFragmentManager.commit { replace(R.id.container, newFragment) }
+        }
+
         initCustomizationMenu()
         registerEventsObservers()
-
-        bindSwitch(
-            menuBinding.toggleCustomPlacesList,
-            layoutVM.setCustomPlacesListComposer,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setPlacesPreview { state, modifier ->
-                    SamplePlacesView(
-                        placesListUiState = state,
-                        modifier = modifier,
-                    )
-                }
-            } else {
-                fragment.setPlacesPreview { state, modifier ->
-                    DefaultPlacesPreview(state = state, modifier = modifier)
-                }
-            }
-        }
-
-        bindSwitch(
-            menuBinding.toggleCustomPlacePreview,
-            layoutVM.setCustomPlacePreviewComposer,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setDestinationPreview { modifier, state ->
-                    SampleDestinationPreview(modifier, state, weatherController)
-                }
-            } else {
-                fragment.setDestinationPreview { modifier, _ ->
-                    DefaultDestinationPreview(modifier)
-                }
-            }
-        }
-
-        bindSwitch(
-            menuBinding.toggleLocationSimulation,
-            settingsVM.locationSimulationEnabled,
-        ) { enabled ->
-            Dash.applyUpdate {
-                locationSimulation {
-                    this.locationSimulationEnabled = enabled
-                }
-            }
-        }
-
-        bindSwitch(
-            menuBinding.toggleCustomManeuver,
-            layoutVM.setCustomManeuver,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setManeuver { modifier, state ->
-                    SampleGuidanceBanner(modifier, state)
-                }
-            } else {
-                fragment.setManeuver { modifier, state ->
-                    DefaultManeuverView(modifier, state)
-                }
-            }
-        }
-
-        bindSwitch(
-            menuBinding.toggleCustomUpcomingManeuvers,
-            layoutVM.setCustomUpcomingManeuvers,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setUpcomingManeuvers { modifier, state ->
-                    SampleUpcomingManeuversBanner(modifier, state)
-                }
-            } else {
-                fragment.setUpcomingManeuvers { modifier, state ->
-                    DefaultUpcomingManeuversView(modifier, state)
-                }
-            }
-        }
-
-        bindSwitch(
-            menuBinding.toggleCustomRoutesOverview,
-            layoutVM.setCustomRoutesOverviewComposer,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setRoutesOverview { modifier, routesOverviewState, backCloseButtonState ->
-                    SampleRoutesOverview(
-                        modifier = modifier,
-                        routesOverviewState = routesOverviewState,
-                        backCloseButtonState = backCloseButtonState,
-                    )
-                }
-            } else {
-                fragment.setRoutesOverview { modifier, routesOverviewState, backCloseButtonState ->
-                    DefaultRoutesOverview(modifier, routesOverviewState, backCloseButtonState)
-                }
-            }
-        }
-
-        bindSwitch(
-            menuBinding.toggleCustomSearchScreen,
-            layoutVM.setCustomSearchScreen,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setFullScreenSearch { modifier, setFullScreenSearch ->
-                    SampleFullScreenSearch(modifier = modifier, state = setFullScreenSearch)
-                }
-                fragment.setFavoritesScreen { modifier, favoritesScreenState ->
-                    SampleFavoritesScreen(modifier = modifier, state = favoritesScreenState)
-                }
-                fragment.setEditFavoriteScreen { modifier, editFavoriteScreenState ->
-                    SampleEditFavoriteScreen(modifier = modifier, state = editFavoriteScreenState)
-                }
-            } else {
-                fragment.setFullScreenSearch { modifier, fullScreenSearchState ->
-                    DefaultFullScreenSearch(modifier = modifier, state = fullScreenSearchState)
-                }
-                fragment.setFavoritesScreen { modifier, favoritesScreenState ->
-                    DefaultFavoritesScreen(modifier = modifier, state = favoritesScreenState)
-                }
-                fragment.setEditFavoriteScreen { modifier, editFavoriteScreenState ->
-                    DefaultEditFavoriteScreen(modifier = modifier, state = editFavoriteScreenState)
-                }
-            }
-        }
-
-        bindSwitch(
-            menuBinding.toggleCustomOfflineAlert,
-            layoutVM.setCustomOfflineRouteAlert,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setOfflineRouteAlert { modifier, offlineRouteAlertState ->
-                    SampleOfflineRouteAlert(modifier = modifier, state = offlineRouteAlertState)
-                }
-            } else {
-                fragment.setOfflineRouteAlert { modifier, offlineRouteAlertState ->
-                    DefaultOfflineRouteAlert(modifier = modifier, state = offlineRouteAlertState)
-                }
-            }
-        }
-
-        bindSwitch(
-            menuBinding.toggleCustomResumeGuidanceView,
-            layoutVM.setCustomResumeGuidanceView,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setResumeGuidanceView { modifier, resumeGuidanceViewState ->
-                    SampleResumeGuidanceView(modifier, resumeGuidanceViewState)
-                }
-            } else {
-                fragment.setResumeGuidanceView { modifier, resumeGuidanceViewState ->
-                    DefaultResumeGuidanceView(modifier, resumeGuidanceViewState)
-                }
-            }
-        }
-
-        bindSwitch(
-            menuBinding.toggleCustomRangeMapInfoView,
-            layoutVM.setCustomRangeMapInfoView,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setRangeMapInfoView { modifier, state ->
-                    SampleRangeMapInfoView(modifier, state)
-                }
-            } else {
-                fragment.setRangeMapInfoView { modifier, state ->
-                    DefaultRangeMapInfoView(modifier, state)
-                }
-            }
-        }
-
-        bindSwitch(menuBinding.toggleShowConnectivityProblemsInfo, showConnectivityProblemsInfo) { enabled ->
-            Dash.applyUpdate {
-                Log.d(TAG, "Update showConnectivityProblemsInfo: $enabled")
-                ui {
-                    this.showOfflineModeInfo = enabled
-                }
-            }
-        }
-
-        layoutVM.navigationSuggestionsEnabled
-            .flatMapLatest { enabled ->
-                if (enabled) {
-                    combine(
-                        Dash.controller.observeFavorites(),
-                        Dash.controller.observeHistory(),
-                    ) { favorites, history -> favorites + history }
-                } else {
-                    flowOf(emptyList<DashSearchRecord>())
-                }
-            }
-            .map { records -> records.map { record -> DashNavigationSuggestion(record) } }
-            .observeWhenStarted(this) { suggestions ->
-                Dash.controller.setNavigationSuggestions(suggestions)
-            }
 
         Dash.controller.updateMapGptContextOverrides {
             // 10% Override the context so that MapGPT thinks the electric battery is low.
@@ -442,34 +268,6 @@ class MainActivity : DrawerActivity() {
                     keyboardSplitMode = true
                     keyboardWidthDp = 800
                 }
-            }
-        }
-
-        menuBinding.toggleCustomCompassDataInput.setOnCheckedChangeListener { _, isChecked ->
-            if (sampleSensorEventManager == null) {
-                menuBinding.toggleCustomCompassDataInput.isChecked = false
-                Toast.makeText(
-                    this@MainActivity,
-                    "Failed to create Custom SensorManager",
-                    Toast.LENGTH_SHORT,
-                ).show()
-            }
-            layoutVM.setCustomCompassDataInput.value = isChecked && sampleSensorEventManager != null
-        }
-
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                layoutVM.setCustomCompassDataInput
-                    .flatMapLatest { enabled ->
-                        if (enabled) {
-                            sampleSensorEventManager?.compassData ?: emptyFlow()
-                        } else {
-                            emptyFlow()
-                        }
-                    }
-                    .collect { compassData ->
-                        Dash.controller.updateCompassData(compassData)
-                    }
             }
         }
     }
@@ -499,44 +297,1117 @@ class MainActivity : DrawerActivity() {
         }
     }
 
-    private fun observeHeadlessMode() {
-        layoutVM.headlessMode.observeWhenStarted(this) { enabled ->
-            val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
-            if (enabled) {
-                if (currentFragment is HeadlessModeFragment) null else HeadlessModeFragment.newInstance()
-            } else {
-                if (currentFragment is DashNavigationFragment) null else DashNavigationFragment.newInstance()
-            }?.let { newFragment ->
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, newFragment)
-                    .commitNow()
-            }
-        }
-    }
-
     override fun onStop() {
         super.onStop()
         Dash.controller.stopMapGptConversation()
     }
 
-    override fun onCreateContentView(): View {
-        return binding.root
-    }
+    @Composable
+    override fun MenuView(modifier: Modifier) {
+        Column(modifier = modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(colorResource(android.R.color.holo_blue_dark))
+                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+                    .padding(8.dp),
+                text = "DASH Customizations",
+                color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            MenuSwitch(
+                text = "HEADLESS MODE",
+                flow = fragmentFlow,
+                transform = { it is HeadlessModeFragment },
+                onCheckedChange = { enabled ->
+                    val currentFragment = fragmentFlow.value
+                    val newFragment = if (enabled) {
+                        if (currentFragment is HeadlessModeFragment) return@MenuSwitch
+                        HeadlessModeFragment.newInstance()
+                    } else {
+                        if (currentFragment is DashNavigationFragment) return@MenuSwitch
+                        DashNavigationFragment.newInstance()
+                    }
+                    supportFragmentManager.commit { replace(R.id.container, newFragment) }
+                },
+            )
+            MenuSwitch(
+                text = "SIMULATE LOCATION",
+                initial = false,
+                onCheckedChange = { enabled ->
+                    Dash.applyUpdate {
+                        locationSimulation {
+                            this.locationSimulationEnabled = enabled
+                        }
+                    }
+                },
+            )
+            MenuButton(
+                text = "RESET NAVIGATION STATE",
+                backgroundId = android.R.color.holo_red_dark,
+                onClick = {
+                    Dash.controller.resetNavigationState(
+                        // Reset the navigation state to the Free Drive mode
+                        // and show the route recovery prompt
+                        shouldShowRouteRecoveryPrompt = true,
+                    )
+                },
+            )
+            MenuSwitch(
+                text = "CONNECT MAPBOX STACK",
+                initial = true,
+                onCheckedChange = { isConnected ->
+                    Dash.applyUpdate {
+                        network { isMapboxStackConnected = isConnected }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "ENABLE DEBUG LOGCAT",
+                initial = true,
+                onCheckedChange = { isChecked ->
+                    Dash.applyUpdate {
+                        logLevel = if (isChecked) LogsExtra.LOG_LEVEL_DEBUG else LogsExtra.LOG_LEVEL_INFO
+                    }
+                },
+            )
+            MenuDropDown(
+                options = CustomDashTheme.entries.map { it.name },
+                initial = CustomDashTheme.CUSTOM.name,
+                onValueChange = { name ->
+                    Dash.applyUpdate {
+                        theme {
+                            themeFactory = CustomDashTheme.valueOf(name).themeFactory
+                        }
+                    }
+                },
+                label = "Dash Theme",
+            )
+            MenuDropDown(
+                options = listOf(
+                    MapLayer.Default.name, MapLayer.Custom.name,
+                    MapLayer.WeatherAlongRoute.name, MapLayer.EvChargePoint.name,
+                ),
+                initial = MapLayer.Default.name,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onValueChange = { dashNavigationFragment, mapLayer ->
+                    when (MapLayer.valueOf(mapLayer)) {
+                        MapLayer.Default -> dashNavigationFragment.setMapLayer(DefaultMapLayerComposer)
+                        MapLayer.Custom -> dashNavigationFragment.setMapLayer {
+                            middleSlot {
+                                CustomLayerBlock()
+                            }
 
-    override fun onCreateMenuView(): View {
-        return menuBinding.root
+                            topSlot {
+                                WeatherLayer()
+                            }
+                        }
+                        MapLayer.WeatherAlongRoute -> dashNavigationFragment.setMapLayer {
+                            topSlot {
+                                WeatherAlongRouteBlock(weatherController.weatherWarningsAlongRoute) { message ->
+                                    Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                        MapLayer.EvChargePoint -> dashNavigationFragment.setMapLayer {
+                            topSlot {
+                                EvChargePointBlock(evViewModel.chargePoints) { message ->
+                                    Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    }
+                },
+                label = "Map Layer",
+            )
+            LayersManagerCard(dashNavigationFragmentFlow)
+            MenuSwitch(
+                text = "ENABLE MAPGPT",
+                initial = BuildConfig.MAP_GPT_ENABLED,
+                onCheckedChange = { isChecked ->
+                    Dash.applyUpdate {
+                        mapGpt {
+                            isEnabled = isChecked
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SHOW DEFAULT AVATAR",
+                flow = mapGptCompose.config,
+                transform = { it.showAvatar },
+                onCheckedChange = { isChecked ->
+                    mapGptCompose.config.update { config ->
+                        config.build { showAvatar = isChecked }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SHOW DEFAULT KEYBOARD MODE",
+                flow = mapGptCompose.config,
+                transform = { it.showKeyboardMode },
+                onCheckedChange = { isChecked ->
+                    mapGptCompose.config.update { config ->
+                        config.build { showKeyboardMode = isChecked }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SHOW DEFAULT CAROUSEL",
+                flow = mapGptCompose.config,
+                transform = { it.showCarousel },
+                onCheckedChange = { isChecked ->
+                    mapGptCompose.config.update { config ->
+                        config.build { showCarousel = isChecked }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SHOW DEFAULT CHAT BUBBLE",
+                flow = mapGptCompose.config,
+                transform = { it.showChatBubble },
+                onCheckedChange = { isChecked ->
+                    mapGptCompose.config.update { config ->
+                        config.build { showChatBubble = isChecked }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "CUSTOM CHAT BUBBLE",
+                state = mapGptVM.mapGptCustomChatBubble,
+            )
+            MenuSwitch(
+                text = "CUSTOM MAP GPT CAROUSEL CARD PARAMS",
+                flow = mapGptCompose.mapGptCarouselCardParams,
+                transform = { it != null },
+                onCheckedChange = { isChecked ->
+                    mapGptCompose.mapGptCarouselCardParams.value = if (isChecked) {
+                        MapGptCarouselCardParams(
+                            backgroundColor = Color.Magenta,
+                            backgroundShape = RoundedCornerShape(0.dp),
+                            paddingStart = 16.dp,
+                            paddingVertical = 8.dp,
+                            paddingEnd = 0.dp,
+                            maxWidth = Dp.Unspecified,
+                        )
+                    } else {
+                        null
+                    }
+                },
+            )
+            MenuDropDown(
+                options = sampleAvatars.keys.toList(),
+                flow = mapGptCompose.config,
+                transform = { it.avatar?.name ?: UNSET_VALUE },
+                onValueChange = { avatarName ->
+                    mapGptCompose.config.update { config ->
+                        config.build { avatar = sampleAvatars[avatarName] }
+                    }
+                },
+                label = "MapGPT Avatar",
+            )
+            MenuSwitch(
+                text = "SET 3D MAP STYLE",
+                initial = true,
+                onCheckedChange = { enabled ->
+                    Dash.applyUpdate {
+                        mapStyle {
+                            map3dStyleUri = if (enabled) DEFAULT_3D_STYLE else ""
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET NIGHT MAP STYLE",
+                initial = true,
+                onCheckedChange = { enabled ->
+                    Dash.applyUpdate {
+                        mapStyle {
+                            nightStyleUri = if (enabled) ShowcaseApp.NIGHT_MAP_STYLE else ""
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET SATELLITE MAP STYLE",
+                initial = true,
+                onCheckedChange = { enabled ->
+                    Dash.applyUpdate {
+                        mapStyle {
+                            satelliteStyleUri = if (enabled) ShowcaseApp.SATELLITE_MAP_STYLE else ""
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "OFFLINE TTS",
+                initial = false,
+                onCheckedChange = { setOfflineTts ->
+                    Dash.applyUpdate {
+                        voices {
+                            preferLocalTts = setOfflineTts
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "Custom TextPlayerMiddleware",
+                initial = false,
+                onCheckedChange = { useCustomVoicePlayerMiddleware ->
+                    if (useCustomVoicePlayerMiddleware) {
+                        Dash.controller.setVoicePlayerMiddleware(LocalVoicePlayerMiddleware())
+                    } else {
+                        Dash.controller.setDefaultVoicePlayerMiddleware()
+                    }
+                },
+            )
+            MenuDropDown(
+                options = listOf(TTS_PROVIDER_CORE, TTS_PROVIDER_MAP_GPT),
+                initial = TTS_PROVIDER_CORE,
+                onValueChange = { provider ->
+                    Dash.applyUpdate {
+                        voices { remoteTtsProvider = provider }
+                    }
+                },
+                label = "RemoteTtsProvider",
+            )
+            MenuSwitch(
+                text = "SETTINGS: SHOW ROUTE OPTIONS",
+                initial = true,
+                onCheckedChange = { showRouteOptions ->
+                    Dash.applyUpdate {
+                        uiSettings {
+                            this.showRouteOptions = showRouteOptions
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "ROUTE OPTION: AVOID HIGHWAYS",
+                initial = true,
+                onCheckedChange = { avoidHighways ->
+                    Dash.applyUpdate {
+                        routeOptions {
+                            this.avoidHighways = avoidHighways
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "ROUTE OPTION: AVOID TOLLS",
+                initial = true,
+                onCheckedChange = { avoidTolls ->
+                    Dash.applyUpdate {
+                        routeOptions {
+                            this.avoidTolls = avoidTolls
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "ROUTE OPTION: AVOID FERRIES",
+                initial = true,
+                onCheckedChange = { avoidFerries ->
+                    Dash.applyUpdate {
+                        routeOptions {
+                            this.avoidFerries = avoidFerries
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SETTINGS: SHOW SPEED LIMITS OPTIONS",
+                initial = true,
+                onCheckedChange = { showSpeedLimitsOptions ->
+                    Dash.applyUpdate {
+                        uiSettings {
+                            this.showSpeedLimitsOptions = showSpeedLimitsOptions
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SETTINGS: SHOW PREFERRED NETWORKS",
+                initial = false,
+                onCheckedChange = { showPreferredNetworks ->
+                    Dash.applyUpdate {
+                        uiSettings {
+                            this.showPreferredNetworks = showPreferredNetworks
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SETTINGS: SHOW LOCAL TTS",
+                initial = false,
+                onCheckedChange = { showLocalTtsOptions ->
+                    Dash.applyUpdate {
+                        uiSettings {
+                            this.showLocalTtsOptions = showLocalTtsOptions
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET NAVIGATION SUGGESTIONS",
+                initial = false,
+                onCheckedChange = { enabled ->
+                    if (enabled) {
+                        combine(
+                            Dash.controller.observeFavorites(),
+                            Dash.controller.observeHistory(),
+                        ) { favorites, history -> favorites + history }
+                            .collect { records ->
+                                val suggestions = records.map { DashNavigationSuggestion(it) }
+                                Dash.controller.setNavigationSuggestions(suggestions)
+                            }
+                    } else {
+                        Dash.controller.setNavigationSuggestions(emptyList())
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET REVERSE UI MODE",
+                initial = false,
+                onCheckedChange = { enabled ->
+                    Dash.applyUpdate {
+                        ui {
+                            uiModeMapper = if (enabled) ReversedUiModeMapper else DefaultUiModeMapper
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "LEFT HAND TRAFFIC LAYOUT",
+                initial = false,
+                onCheckedChange = { useLeftHandTrafficLayout ->
+                    Dash.applyUpdate {
+                        ui {
+                            screenDirectionality = if (useLeftHandTrafficLayout) {
+                                ScreenDirectionality.RIGHT_TO_LEFT
+                            } else {
+                                ScreenDirectionality.LEFT_TO_RIGHT
+                            }
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SHOVE GESTURE ENABLED",
+                initial = false,
+                onCheckedChange = { shoveGestureEnabled ->
+                    Dash.applyUpdate {
+                        camera {
+                            isShoveGestureEnabled = shoveGestureEnabled
+                        }
+                    }
+                },
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                text = "Coordination api",
+            )
+            MenuButton(
+                text = "SET DESTINATION",
+                onClick = {
+                    val location = Dash.controller.observeRawLocation().first()
+                    val destination = location.getRandomDestinationAround()
+                    getDashNavigationFragment()?.setDestination(destination)
+                },
+            )
+            MenuButton(
+                text = "START DESTINATION ROUTE",
+                onClick = { Dash.controller.startNavigation(0) },
+            )
+            MenuButton(
+                text = "STOP NAVIGATION",
+                onClick = { Dash.controller.stopNavigation() },
+            )
+            MenuButton(
+                text = "NAVIGATE NEXT LEG",
+                onClick = { Dash.controller.navigateNextRouteLeg() },
+            )
+            MenuButton(
+                text = "SHOW EV RANGE MAP",
+                onClick = { Dash.controller.showEvRangeMap() },
+            )
+            MenuButton(
+                text = "HIDE EV RANGE MAP",
+                onClick = { Dash.controller.hideEvRangeMap() },
+            )
+            val fullScreenSearchQuery = rememberSaveable { mutableStateOf("") }
+            MenuEditText(
+                state = fullScreenSearchQuery,
+                hint = "FullScreen search query",
+            )
+            MenuButton(
+                text = "OPEN SEARCH",
+                onClick = {
+                    closeDrawers()
+                    val query = fullScreenSearchQuery.value
+                    val newYork = Point.fromLngLat(-73.98200596982161, 40.72726118601179)
+                    getDashNavigationFragment()?.openSearch(query, newYork)
+                },
+            )
+            MenuButton(
+                text = "CLOSE SEARCH",
+                onClick = {
+                    closeDrawers()
+                    getDashNavigationFragment()?.closeSearch()
+                },
+            )
+            MenuButton(
+                text = "SEARCH ON MAP",
+                onClick = {
+                    closeDrawers()
+                    val query = fullScreenSearchQuery.value
+                    getDashNavigationFragment()?.openMapWithSearch(query)
+                },
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                text = "History api",
+            )
+            MenuButton(
+                text = "CLEAN HISTORY",
+                onClick = { Dash.controller.cleanHistory() },
+            )
+            MenuButton(
+                text = "ADD TO HISTORY",
+                onClick = { Dash.controller.addHistoryItem(searchItem) },
+            )
+            MenuButton(
+                text = "REMOVE FROM HISTORY",
+                onClick = { Dash.controller.removeHistoryItem(searchItem) },
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                text = "Favorites api",
+            )
+            MenuButton(
+                text = "ADD TO FAVORITES",
+                onClick = { Dash.controller.addFavoriteItem(searchItem, DashFavoriteType.HOME) },
+            )
+            MenuButton(
+                text = "REMOVE FROM FAVORITES",
+                onClick = { Dash.controller.removeFavoriteItem(searchItem, DashFavoriteType.HOME) },
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                text = "Search api",
+            )
+            val searchApiQuery = rememberSaveable { mutableStateOf("") }
+            MenuEditText(
+                state = searchApiQuery,
+                hint = "Search api query",
+            )
+            MenuButton(
+                text = "SEARCH QUERY",
+                onClick = {
+                    // simulate 2 sequentially requests. The first one should be canceled and
+                    // Dash.controller.observeSearchRequestStatus() should provide a valid status.
+                    // delay(200) is needed to give enough time to start a request,
+                    // otherwise it will be canceled immediately.
+                    delay(200)
+                    performSearch("aaa")
+                    delay(200)
+                    performSearch(searchApiQuery.value)
+                },
+            )
+            MenuButton(
+                text = "OPEN MAP WITH CINEMA",
+                onClick = {
+                    getDashNavigationFragment()?.openMapWithCategorySearch("cinema", "Cinema")
+                    closeDrawers()
+                },
+            )
+            MenuSwitch(
+                text = "CUSTOM SEARCH RESULTS",
+                state = ShowcaseSearchResultsAdapter.enabled,
+            )
+            MenuDropDown(
+                options = ShowcaseSearchEngine.allPolicies,
+                state = ShowcaseSearchEngine.selectedPolicyName,
+                label = "Custom search engine policy",
+            )
+            MenuDropDown(
+                options = CustomLocationPuck.names(),
+                initial = CustomLocationPuck.DEFAULT.name,
+                onValueChange = { selection ->
+                    val puck = CustomLocationPuck.valueOf(selection).getLocationPuck(this@MainActivity)
+                    Dash.applyUpdate {
+                        theme {
+                            locationPuck = puck
+                        }
+                    }
+                },
+                label = "Location Puck",
+            )
+            val freeDrivePitch = rememberSaveable { mutableFloatStateOf(0f) }
+            MenuSlider(
+                state = freeDrivePitch,
+                valueRange = 0f..70f,
+                label = "FREE DRIVE PITCH",
+            )
+            LaunchedEffect(freeDrivePitch.value) {
+                Dash.applyUpdate {
+                    camera {
+                        val pitch = freeDrivePitch.value.toDouble()
+                        freeDriveDefaults = FollowingDefaults(freeDriveDefaults.zoom, pitch)
+                    }
+                }
+            }
+            Text(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                text = "Safe area",
+            )
+            val leftPadding = rememberSaveable { mutableFloatStateOf(0f) }
+            MenuSlider(
+                state = leftPadding,
+                valueRange = 0f..100f,
+                label = "LEFT PADDING",
+            )
+            val topPadding = rememberSaveable { mutableFloatStateOf(0f) }
+            MenuSlider(
+                state = topPadding,
+                valueRange = 0f..100f,
+                label = "TOP PADDING",
+            )
+            val rightPadding = rememberSaveable { mutableFloatStateOf(0f) }
+            MenuSlider(
+                state = rightPadding,
+                valueRange = 0f..100f,
+                label = "RIGHT PADDING",
+            )
+            val bottomPadding = rememberSaveable { mutableFloatStateOf(0f) }
+            MenuSlider(
+                state = bottomPadding,
+                valueRange = 0f..100f,
+                label = "BOTTOM PADDING",
+            )
+            val density = LocalDensity.current
+            LaunchedEffect(density, leftPadding.value, topPadding.value, rightPadding.value, bottomPadding.value) {
+                with(density) {
+                    dashNavigationFragmentFlow.filterNotNull().collect { dashNavigationFragment ->
+                        dashNavigationFragment.setSafeAreaPaddings(
+                            leftPadding.value.dp.roundToPx(), topPadding.value.dp.roundToPx(),
+                            rightPadding.value.dp.roundToPx(), bottomPadding.value.dp.roundToPx(),
+                        )
+                    }
+                }
+            }
+            MenuSwitch(
+                text = "OVERRIDE SIDEBAR CONTROLS",
+                state = layoutVM.overrideSidebarControls,
+            )
+            MenuDropDown(
+                options = listOf(SearchPanelPosition.BOTTOM_LEFT, SearchPanelPosition.TOP_LEFT),
+                initial = SearchPanelPosition.BOTTOM_LEFT,
+                onValueChange = { position ->
+                    Dash.applyUpdate {
+                        ui {
+                            searchPanel {
+                                this.position = position
+                            }
+                        }
+                    }
+                },
+                label = "Search panel position",
+            )
+            MenuSwitch(
+                text = "ENABLE CUSTOM MARKER FACTORY",
+                initial = false,
+                onCheckedChange = { enabled ->
+                    Dash.applyUpdate {
+                        mapStyle {
+                            markerFactory = if (enabled) {
+                                SampleMarkerFactory(this@MainActivity)
+                            } else {
+                                null
+                            }
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM SEARCH PANEL",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setSearchPanel { modifier, searchPanelState ->
+                            SampleSearchPanel(modifier, searchPanelState, fragment)
+                        }
+                    } else {
+                        fragment.setSearchPanel { modifier, searchPanelState ->
+                            DefaultSearchPanelView(modifier, searchPanelState)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM RECENTER CAMERA BUTTON",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setRecenterCamera { modifier, recenterCameraState ->
+                            Image(
+                                modifier = modifier
+                                    .width(dimensionResource(id = com.mapbox.dash.theming.R.dimen.map_round_button_width))
+                                    .height(dimensionResource(id = com.mapbox.dash.theming.R.dimen.map_round_button_height))
+                                    .background(Color.White)
+                                    .clickable(onClick = recenterCameraState.onRecenterClick)
+                                    .padding(dimensionResource(id = com.mapbox.dash.theming.R.dimen.round_button_padding)),
+                                painter = painterResource(R.drawable.baseline_my_location_24),
+                                contentDescription = "Recenter button",
+                            )
+                        }
+                    } else {
+                        fragment.setRecenterCamera { modifier, recenterCameraState ->
+                            DefaultRecenterButton(modifier, recenterCameraState)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM PLACES LIST",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setPlacesPreview { state, modifier ->
+                            SamplePlacesView(state, modifier)
+                        }
+                    } else {
+                        fragment.setPlacesPreview { state, modifier ->
+                            DefaultPlacesPreview(state, modifier)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM DESTINATION PREVIEW",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setDestinationPreview { modifier, state ->
+                            SampleDestinationPreview(modifier, state, weatherController)
+                        }
+                    } else {
+                        fragment.setDestinationPreview { modifier, _ ->
+                            DefaultDestinationPreview(modifier)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM GUIDANCE BANNER",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setManeuver { modifier, state ->
+                            SampleGuidanceBanner(modifier, state)
+                        }
+                    } else {
+                        fragment.setManeuver { modifier, state ->
+                            DefaultManeuverView(modifier, state)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM UPCOMING MANEUVERS",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setUpcomingManeuvers { modifier, state ->
+                            SampleUpcomingManeuversBanner(modifier, state)
+                        }
+                    } else {
+                        fragment.setUpcomingManeuvers { modifier, state ->
+                            DefaultUpcomingManeuversView(modifier, state)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM ROUTES OVERVIEW",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setRoutesOverview { modifier, routesOverviewState, backCloseButtonState ->
+                            SampleRoutesOverview(modifier, routesOverviewState, backCloseButtonState)
+                        }
+                    } else {
+                        fragment.setRoutesOverview { modifier, routesOverviewState, backCloseButtonState ->
+                            DefaultRoutesOverview(modifier, routesOverviewState, backCloseButtonState)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM TRIP SUMMARY",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setTripSummary { modifier, tripSummaryUiState ->
+                            SampleTripSummaryView(modifier, tripSummaryUiState, weatherController)
+                        }
+                    } else {
+                        fragment.setTripSummary { modifier, tripSummaryUiState ->
+                            DefaultTripSummary(modifier, tripSummaryUiState)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM END ACTIVE GUIDANCE",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setEndActiveGuidance { modifier, uiState ->
+                            SampleEndActiveGuidance(modifier, uiState)
+                        }
+                    } else {
+                        fragment.setEndActiveGuidance { modifier, uiState ->
+                            DefaultEndActiveGuidanceView(modifier, uiState)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM EDIT TRIP",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setEditTrip { _, state ->
+                            SampleEditTrip(state)
+                        }
+                    } else {
+                        fragment.setEditTrip { modifier, state ->
+                            DefaultEditTripCard(modifier, state)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM ARRIVAL FEEDBACK",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setArrivalFeedback { modifier, state ->
+                            SampleArrivalView(modifier, state)
+                        }
+                    } else {
+                        fragment.setArrivalFeedback { modifier, state ->
+                            DefaultArrivalFeedbackView(modifier, state)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM CONTINUE NAVIGATION",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setContinueNavigation { modifier, state ->
+                            SampleContinueNavigation(modifier, state)
+                        }
+                    } else {
+                        fragment.setContinueNavigation { modifier, state ->
+                            DefaultContinueNavigationView(modifier, state)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM DRIVER NOTIFICATION",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setDriverNotification { modifier, uiState ->
+                            SampleDriverNotificationView(modifier, uiState)
+                        }
+                    } else {
+                        fragment.setDriverNotification { modifier, uiState ->
+                            DefaultDriverNotificationView(modifier, uiState)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM SEARCH SCREEN",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setFullScreenSearch { modifier, setFullScreenSearch ->
+                            SampleFullScreenSearch(modifier, setFullScreenSearch)
+                        }
+                        fragment.setFavoritesScreen { modifier, favoritesScreenState ->
+                            SampleFavoritesScreen(modifier, favoritesScreenState)
+                        }
+                        fragment.setEditFavoriteScreen { modifier, editFavoriteScreenState ->
+                            SampleEditFavoriteScreen(modifier, editFavoriteScreenState)
+                        }
+                    } else {
+                        fragment.setFullScreenSearch { modifier, fullScreenSearchState ->
+                            DefaultFullScreenSearch(modifier, fullScreenSearchState)
+                        }
+                        fragment.setFavoritesScreen { modifier, favoritesScreenState ->
+                            DefaultFavoritesScreen(modifier, favoritesScreenState)
+                        }
+                        fragment.setEditFavoriteScreen { modifier, editFavoriteScreenState ->
+                            DefaultEditFavoriteScreen(modifier, editFavoriteScreenState)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM OFFLINE ALERT",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setOfflineRouteAlert { modifier, offlineRouteAlertState ->
+                            SampleOfflineRouteAlert(modifier, offlineRouteAlertState)
+                        }
+                    } else {
+                        fragment.setOfflineRouteAlert { modifier, offlineRouteAlertState ->
+                            DefaultOfflineRouteAlert(modifier, offlineRouteAlertState)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM RESUME GUIDANCE VIEW",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setResumeGuidanceView { modifier, resumeGuidanceViewState ->
+                            SampleResumeGuidanceView(modifier, resumeGuidanceViewState)
+                        }
+                    } else {
+                        fragment.setResumeGuidanceView { modifier, resumeGuidanceViewState ->
+                            DefaultResumeGuidanceView(modifier, resumeGuidanceViewState)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM STREET NAME LABEL",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setStreetNameLabel { modifier, uiState ->
+                            SampleStreetName(modifier, uiState)
+                        }
+                    } else {
+                        fragment.setStreetNameLabel { modifier, uiState ->
+                            DefaultStreetNameView(modifier, uiState)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SET CUSTOM RANGE MAP INFO VIEW",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setRangeMapInfoView { modifier, state ->
+                            SampleRangeMapInfoView(modifier, state)
+                        }
+                    } else {
+                        fragment.setRangeMapInfoView { modifier, state ->
+                            DefaultRangeMapInfoView(modifier, state)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "OVERRIDE ROUTE CALLOUTS",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, overrideRouteCallout ->
+                    fragment.setRouteCallout { state ->
+                        if (overrideRouteCallout) {
+                            SampleRouteCalloutView(state, fragment)
+                        } else {
+                            DefaultRouteCalloutView(state)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "OVERRIDE SEARCH THIS AREA",
+                initial = false,
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onCheckedChange = { fragment, enabled ->
+                    if (enabled) {
+                        fragment.setSearchArea { uiState ->
+                            SampleSearchArea(uiState)
+                        }
+                    } else {
+                        fragment.setSearchArea { uiState ->
+                            DefaultSearchAreaButton(uiState)
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "ENABLE SIMPLE CARD HEADERS",
+                initial = false,
+                onCheckedChange = { enabled ->
+                    Dash.applyUpdate {
+                        destinationPreview {
+                            titleSingleLine = enabled
+                        }
+                        ui {
+                            showCloseButtonInCards = !enabled
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SHOW LANE GUIDANCE FOR UPCOMING MANEUVERS",
+                initial = false,
+                onCheckedChange = { enabled ->
+                    Dash.applyUpdate {
+                        ui {
+                            maneuverView {
+                                showUpcomingLaneGuidance = enabled
+                            }
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "SHOW CONNECTIVITY PROBLEMS INFO",
+                initial = false,
+                onCheckedChange = { enabled ->
+                    Dash.applyUpdate {
+                        Log.d(TAG, "Update showConnectivityProblemsInfo: $enabled")
+                        ui {
+                            this.showOfflineModeInfo = enabled
+                        }
+                    }
+                },
+            )
+            MenuSwitch(
+                text = "USE CUSTOM COMPASS DATA INPUT",
+                initial = false,
+                onCheckedChange = { enabled ->
+                    if (enabled) {
+                        sampleSensorEventManager?.compassData?.collect { compassData ->
+                            Dash.controller.updateCompassData(compassData)
+                        }
+                    }
+                },
+                enabled = sampleSensorEventManager != null,
+            )
+            MenuDropDown(
+                options = listOf(MapStyleMode.MODE_3D, MapStyleMode.MODE_2D, MapStyleMode.SATELLITE),
+                initial = MapStyleMode.MODE_3D,
+                onValueChange = { mode ->
+                    Dash.applyUpdate {
+                        ui {
+                            mapStyleMode = mode
+                        }
+                    }
+                },
+                label = "MapStyle mode",
+            )
+            MenuDropDown(
+                options = listOf(MapStyleTheme.DEFAULT, MapStyleTheme.FADED, MapStyleTheme.MONO),
+                initial = MapStyleTheme.DEFAULT,
+                onValueChange = { theme ->
+                    Dash.applyUpdate {
+                        ui {
+                            mapStyleTheme = theme
+                        }
+                    }
+                },
+                label = "MapStyle theme",
+            )
+            MenuDropDown(
+                options = listOf(
+                    UiModeSettings.AUTO, UiModeSettings.SYSTEM, UiModeSettings.DAWN,
+                    UiModeSettings.DAY, UiModeSettings.DUSK, UiModeSettings.NIGHT,
+                ),
+                initial = UiModeSettings.AUTO,
+                onValueChange = { mode ->
+                    Dash.applyUpdate {
+                        ui {
+                            uiModeSettings = mode
+                        }
+                    }
+                },
+                label = "UI mode",
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                val profile = produceState<ExternalProfile?>(initialValue = null) {
+                    Dash.controller.observeExternalProfile().collect { value = it }
+                }
+                Text(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 8.dp),
+                    text = stringResource(R.string.current_profile, profile.value?.id ?: UNSET_VALUE),
+                )
+                MenuButton(
+                    modifier = Modifier.width(IntrinsicSize.Min),
+                    text = "SWITCH",
+                    onClick = {
+                        showProfileAlert { profileId ->
+                            Dash.controller.setExternalProfile(profileId?.let { ExternalProfile(it) })
+                        }
+                    },
+                )
+            }
+            MenuButton(
+                text = "REMOVE A PROFILE",
+                onClick = {
+                    showProfileAlert { profileId ->
+                        lifecycleScope.launch {
+                            Dash.controller.removeExternalProfile(profileId)
+                        }
+                    }
+                },
+            )
+            MenuButton(
+                text = "SHOW CURRENT ROUTES",
+                onClick = { getDashNavigationFragment()?.showRoutesOverview() },
+            )
+            MenuDropDown(
+                options = listOf(
+                    EngineType.GAS, EngineType.PETROL, EngineType.DIESEL, EngineType.BIO_DIESEL,
+                    EngineType.ELECTRIC, EngineType.HYDROGEN, EngineType.HYBRID,
+                ),
+                initial = EngineType.PETROL,
+                onValueChange = { type ->
+                    Dash.applyUpdate {
+                        engineType = type
+                    }
+                },
+                label = "Vehicle type",
+            )
+        }
     }
-
-    // storage for configuration mutations
-    private val showDebugLogs = MutableStateFlow(value = true)
-    private val connectMapboxStack = MutableStateFlow(value = true)
-    private val setMap3dStyle = MutableStateFlow(value = true)
-    private val setMapNightStyle = MutableStateFlow(value = true)
-    private val setMapSatelliteStyle = MutableStateFlow(value = true)
-    private val overrideRouteCallouts = MutableStateFlow(value = false)
-    private val setOfflineTts = MutableStateFlow(value = false)
-    private val useCustomVoicePlayerMiddleware = MutableStateFlow(value = false)
-    private val showConnectivityProblemsInfo = MutableStateFlow(value = false)
 
     private fun isLocationPermissionGranted(): Boolean {
         val locationPermissions =
@@ -562,211 +1433,6 @@ class MainActivity : DrawerActivity() {
             dashNavigationFragment.setLeftSidebar(ShowcaseLeftSidebarComposer(layoutVM, dashNavigationFragment))
             dashNavigationFragment.setRightSidebar(ShowcaseRightSidebarComposer(layoutVM, weatherController))
         }
-        menuBinding.toggleHeadlessMode.setOnCheckedChangeListener { _, isChecked ->
-            layoutVM.headlessMode.value = isChecked
-        }
-        menuBinding.btnResetNavigationState.bindAction {
-            Dash.controller.resetNavigationState(
-                // Reset the navigation state to the Free Drive mode
-                // and show the route recovery prompt
-                shouldShowRouteRecoveryPrompt = true,
-            )
-        }
-        bindSwitch(
-            menuBinding.toggleCustomTripSummary,
-            layoutVM.setCustomTripSummary,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setTripSummary { modifier, tripSummaryUiState ->
-                    SampleTripSummaryView(modifier, tripSummaryUiState, weatherController)
-                }
-            } else {
-                fragment.setTripSummary { modifier, tripSummaryUiState ->
-                    DefaultTripSummary(modifier, tripSummaryUiState)
-                }
-            }
-        }
-        bindSwitch(
-            menuBinding.toggleCustomEndActiveGuidance,
-            layoutVM.setCustomEndActiveGuidance,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setEndActiveGuidance { modifier, uiState ->
-                    SampleEndActiveGuidance(modifier, uiState)
-                }
-            } else {
-                fragment.setEndActiveGuidance { modifier, uiState ->
-                    DefaultEndActiveGuidanceView(modifier, uiState)
-                }
-            }
-        }
-        bindSwitch(
-            menuBinding.toggleCustomEditTrip,
-            layoutVM.setCustomEditTrip,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setEditTrip { _, state ->
-                    SampleEditTrip(state = state)
-                }
-            } else {
-                fragment.setEditTrip { modifier, state ->
-                    DefaultEditTripCard(state = state, modifier = modifier)
-                }
-            }
-        }
-
-        bindSwitch(
-            menuBinding.toggleCustomArrivalFeedback,
-            layoutVM.setCustomArrivalFeedback,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setArrivalFeedback { modifier, state ->
-                    SampleArrivalView(modifier, state)
-                }
-            } else {
-                fragment.setArrivalFeedback { modifier, state ->
-                    DefaultArrivalFeedbackView(state = state, modifier = modifier)
-                }
-            }
-        }
-
-        bindSwitch(
-            menuBinding.toggleCustomContinueNavigation,
-            layoutVM.setCustomContinueNavigation,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setContinueNavigation { modifier, state ->
-                    SampleContinueNavigation(modifier, state)
-                }
-            } else {
-                fragment.setContinueNavigation { modifier, state ->
-                    DefaultContinueNavigationView(state = state, modifier = modifier)
-                }
-            }
-        }
-        bindSwitch(menuBinding.toggleDebugLogs, showDebugLogs) { isChecked ->
-            // mutate config to enable debug logs
-            // this uses mutate + apply in a single function
-            Dash.applyUpdate {
-                logLevel = if (isChecked) LogsExtra.LOG_LEVEL_DEBUG else LogsExtra.LOG_LEVEL_INFO
-            }
-        }
-
-        bindSwitch(menuBinding.connectMapboxStack, connectMapboxStack) { isConnected ->
-            Dash.applyUpdate {
-                network { isMapboxStackConnected = isConnected }
-            }
-        }
-
-        bindSwitch(
-            menuBinding.toggleCustomDriverNotification,
-            layoutVM.setCustomDriverNotification,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setDriverNotification { modifier, uiState ->
-                    SampleDriverNotificationView(modifier, uiState)
-                }
-            } else {
-                fragment.setDriverNotification { modifier, uiState ->
-                    DefaultDriverNotificationView(modifier, uiState)
-                }
-            }
-        }
-
-        val themes = CustomDashTheme.entries.map { it.name }
-        menuBinding.themeSpinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, themes).apply {
-            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        }
-        bindSpinner(menuBinding.themeSpinner, themeVM.dashTheme) { name ->
-            Dash.applyUpdate {
-                theme {
-                    themeFactory = CustomDashTheme.valueOf(name).themeFactory
-                }
-            }
-        }
-        menuBinding.layersManagerCard.bind(lifecycleOwner = this, dashNavigationFragmentFlow)
-        configureMapLayerToggle()
-        mapGptCustomizations()
-        mapStyleCustomizations()
-        settingCustomization()
-
-        bindSwitch(menuBinding.avoidHighways, layoutVM.avoidHighways) { avoidHighways ->
-            Dash.applyUpdate {
-                routeOptions {
-                    this.avoidHighways = avoidHighways
-                }
-            }
-        }
-
-        bindSwitch(menuBinding.avoidTolls, layoutVM.avoidTolls) { avoidTolls ->
-            Dash.applyUpdate {
-                routeOptions {
-                    this.avoidTolls = avoidTolls
-                }
-            }
-        }
-
-        bindSwitch(menuBinding.avoidFerries, layoutVM.avoidFerries) { avoidFerries ->
-            Dash.applyUpdate {
-                routeOptions {
-                    this.avoidFerries = avoidFerries
-                }
-            }
-        }
-
-        bindSwitch(menuBinding.screenDirectionality, layoutVM.leftHandTrafficLayout) { useLeftHandTrafficLayout ->
-            Dash.applyUpdate {
-                ui {
-                    screenDirectionality = when (useLeftHandTrafficLayout) {
-                        true -> ScreenDirectionality.RIGHT_TO_LEFT
-                        false -> ScreenDirectionality.LEFT_TO_RIGHT
-                    }
-                }
-            }
-        }
-        bindSwitch(menuBinding.shoveGestureEnabled, layoutVM.shoveGestureEnabled) { shoveGestureEnabled ->
-            Dash.applyUpdate {
-                camera {
-                    isShoveGestureEnabled = shoveGestureEnabled
-                }
-            }
-        }
-
-        menuBinding.btnSetDestination.bindAction {
-            val controller = Dash.controller
-            val location = controller.observeRawLocation().first()
-            val destination = location.getRandomDestinationAround()
-            getDashNavigationFragment()?.setDestination(destination)
-        }
-
-        menuBinding.btnStartNullNavigation.bindAction {
-            Dash.controller.startNavigation(0)
-        }
-
-        menuBinding.btnStopNavigation.bindAction {
-            val controller = Dash.controller
-            controller.stopNavigation()
-        }
-
-        menuBinding.btnContinueNavigation.bindAction {
-            val controller = Dash.controller
-            controller.navigateNextRouteLeg()
-        }
-
-        menuBinding.btnShowEvRangeMap.bindAction {
-            Dash.controller.showEvRangeMap()
-        }
-
-        menuBinding.btnHideEvRangeMap.bindAction {
-            Dash.controller.hideEvRangeMap()
-        }
-
         repeatWhenStarted(lifecycleOwner = this) {
             combine(
                 Dash.controller.observeEvRangeMapState(),
@@ -775,283 +1441,6 @@ class MainActivity : DrawerActivity() {
                 fragment.setAdditionalPointsToFrame(state.rangeMapFramePoints)
             }.collect()
         }
-
-        menuBinding.btnOpenSearch.bindAction {
-            closeDrawers()
-            val query = menuBinding.etSearch.text.toString()
-            val newYork = Point.fromLngLat(-73.98200596982161, 40.72726118601179)
-            getDashNavigationFragment()?.openSearch(query, newYork)
-        }
-
-        menuBinding.btnCloseSearch.bindAction {
-            closeDrawers()
-            getDashNavigationFragment()?.closeSearch()
-        }
-
-        menuBinding.btnSearchOnMap.bindAction {
-            closeDrawers()
-            val query = menuBinding.etSearch.text.toString()
-            getDashNavigationFragment()?.openMapWithSearch(query)
-        }
-
-        menuBinding.cleanHistory.bindAction {
-            Dash.controller.cleanHistory()
-        }
-        menuBinding.addToHistory.bindAction {
-            Dash.controller.addHistoryItem(searchItem)
-        }
-        menuBinding.removeFromHistory.bindAction {
-            Dash.controller.removeHistoryItem(searchItem)
-        }
-        menuBinding.addToFavorites.bindAction {
-            Dash.controller.addFavoriteItem(searchItem, DashFavoriteType.HOME)
-        }
-        menuBinding.removeFromFavorites.bindAction {
-            Dash.controller.removeFavoriteItem(searchItem, DashFavoriteType.HOME)
-        }
-        menuBinding.btnSearchApi.bindAction {
-            // simulate 2 sequentially requests. The first one should be cancelled and
-            // Dash.controller.observeSearchRequestStatus() should provide a valid status.
-            // delay(200) is needed to give enough time to start a request, otherwise it will be cancelled immediately.
-            listOf(
-                "aaa",
-                menuBinding.etSearchApi.text.toString(),
-            ).forEach {
-                delay(200)
-                performSearch(it)
-            }
-        }
-        menuBinding.setNavigationSuggestions.setOnCheckedChangeListener { _, isChecked ->
-            layoutVM.navigationSuggestionsEnabled.value = isChecked
-        }
-        bindSwitch(menuBinding.setInjectCustomSearch, layoutVM.customSearchResults) { enabled ->
-            layoutVM.customSearchResults.value = enabled
-        }
-        menuBinding.btnCategorySearch.bindAction {
-            getDashNavigationFragment()?.openMapWithCategorySearch("cinema", "Cinema")
-            closeDrawers()
-        }
-
-        menuBinding.freeDrivePitchSlider.addOnChangeListener { _, value, fromUser ->
-            if (fromUser) {
-                Dash.applyUpdate {
-                    camera {
-                        freeDriveDefaults = FollowingDefaults(freeDriveDefaults.zoom, value.toDouble())
-                    }
-                }
-            }
-        }
-
-        val density = resources.displayMetrics.density
-        val paddingSliderChangeListener = OnChangeListener { _, _, _ ->
-            getDashNavigationFragment()?.setSafeAreaPaddings(
-                (menuBinding.leftPaddingSlider.value * density).roundToInt(),
-                (menuBinding.topPaddingSlider.value * density).roundToInt(),
-                (menuBinding.rightPaddingSlider.value * density).roundToInt(),
-                (menuBinding.bottomPaddingSlider.value * density).roundToInt(),
-            )
-        }
-        menuBinding.leftPaddingSlider.addOnChangeListener(paddingSliderChangeListener)
-        menuBinding.topPaddingSlider.addOnChangeListener(paddingSliderChangeListener)
-        menuBinding.rightPaddingSlider.addOnChangeListener(paddingSliderChangeListener)
-        menuBinding.bottomPaddingSlider.addOnChangeListener(paddingSliderChangeListener)
-
-        bindSwitch(menuBinding.toggleSidebarControls, layoutVM.overrideSidebarControls)
-
-        menuBinding.spinnerSearchPanelPosition.adapter =
-            ArrayAdapter(this, R.layout.item_spinner, SearchPanelPosition.entries.map { it.name })
-        bindSpinner(
-            menuBinding.spinnerSearchPanelPosition,
-            layoutVM.searchPanelPosition,
-        ) { name ->
-            val position = SearchPanelPosition.valueOf(name)
-            Dash.applyUpdate {
-                ui {
-                    searchPanel {
-                        this.position = when (position) {
-                            SearchPanelPosition.TopLeft -> RawSearchPanelPosition.TOP_LEFT
-                            SearchPanelPosition.BottomLeft -> RawSearchPanelPosition.BOTTOM_LEFT
-                        }
-                    }
-                }
-            }
-        }
-
-        bindSwitch(
-            menuBinding.toggleCustomSearchPanel,
-            layoutVM.overrideSearchPanelButtons,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setSearchPanel { modifier, searchPanelState ->
-                    SampleSearchPanel(modifier = modifier, state = searchPanelState, fragment = fragment)
-                }
-            } else {
-                fragment.setSearchPanel { modifier, searchPanelState ->
-                    DefaultSearchPanelView(modifier = modifier, state = searchPanelState)
-                }
-            }
-        }
-        bindSwitch(
-            menuBinding.overrideSearchAreaButton,
-            layoutVM.overrideSearchThisArea,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setSearchArea { uiState ->
-                    SampleSearchArea(uiState)
-                }
-            } else {
-                fragment.setSearchArea { uiState ->
-                    DefaultSearchAreaButton(uiState)
-                }
-            }
-        }
-        bindSwitch(
-            menuBinding.toggleCustomRecenterPill,
-            layoutVM.overrideRecenterPill,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setRecenterCamera { modifier, recenterCameraState ->
-                    Image(
-                        modifier = modifier
-                            .width(dimensionResource(id = com.mapbox.dash.theming.R.dimen.map_round_button_width))
-                            .height(dimensionResource(id = com.mapbox.dash.theming.R.dimen.map_round_button_height))
-                            .background(Color.White)
-                            .clickable(onClick = recenterCameraState.onRecenterClick)
-                            .padding(dimensionResource(id = com.mapbox.dash.theming.R.dimen.round_button_padding)),
-                        painter = painterResource(R.drawable.baseline_my_location_24),
-                        contentDescription = "Recenter button",
-                    )
-                }
-            } else {
-                fragment.setRecenterCamera { modifier, recenterCameraState ->
-                    DefaultRecenterButton(modifier, recenterCameraState)
-                }
-            }
-        }
-
-        bindSwitch(
-            menuBinding.toggleCustomStreetNameView,
-            layoutVM.setCustomStreetName,
-            dashNavigationFragmentFlow,
-        ) { fragment, enabled ->
-            if (enabled) {
-                fragment.setStreetNameLabel { modifier, uiState -> SampleStreetName(modifier, uiState) }
-            } else {
-                fragment.setStreetNameLabel { modifier, uiState -> DefaultStreetNameView(modifier, uiState) }
-            }
-        }
-
-        bindSwitch(menuBinding.toggleCustomMarkerFactory, layoutVM.setCustomMarkerFactory) { enabled ->
-            Dash.applyUpdate {
-                mapStyle {
-                    markerFactory = if (enabled) {
-                        SampleMarkerFactory(this@MainActivity)
-                    } else {
-                        null
-                    }
-                }
-            }
-        }
-        bindSwitch(menuBinding.toggleSimpleCardHeader, layoutVM.simpleCardHeader) { enabled ->
-            Dash.applyUpdate {
-                destinationPreview {
-                    titleSingleLine = enabled
-                }
-                ui {
-                    showCloseButtonInCards = !enabled
-                }
-            }
-        }
-        bindSwitch(menuBinding.toggleUpcomingLaneGuidance, layoutVM.upcomingLaneGuidance) { enabled ->
-            Dash.applyUpdate {
-                ui {
-                    maneuverView {
-                        showUpcomingLaneGuidance = enabled
-                    }
-                }
-            }
-        }
-
-        menuBinding.customSearchEnginePolicySpinner.adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_item,
-            searchVM.allPolicies,
-        ).apply {
-            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        }
-        bindSpinner(
-            menuBinding.customSearchEnginePolicySpinner,
-            searchVM.selectedPolicyName,
-        ) { name ->
-            searchVM.setPolicy(name)
-        }
-
-        menuBinding.toggleTabletLayout.isChecked = tabletLayout == true
-        menuBinding.toggleTabletLayout.setOnCheckedChangeListener { _, isChecked ->
-            if (tabletLayout != isChecked) {
-                tabletLayout = isChecked
-                recreate()
-            }
-        }
-
-        menuBinding.currentDensity.text = getString(R.string.current_density, densityDpi)
-        menuBinding.overrideDensity.setOnClickListener {
-            val editText = EditText(this)
-            editText.inputType = EditorInfo.TYPE_CLASS_NUMBER
-            editText.setText(densityDpi?.toString().orEmpty())
-            AlertDialog.Builder(this)
-                .setView(editText)
-                .setPositiveButton("OK") { _, _ ->
-                    val newDensityDpi = editText.text.toString().toIntOrNull()
-                    if (densityDpi != newDensityDpi) {
-                        densityDpi = newDensityDpi
-                        recreate()
-                    }
-                }
-                .setNeutralButton("RESET") { _, _ ->
-                    densityDpi = null
-                    recreate()
-                }
-                .setNegativeButton("CANCEL", null)
-                .show()
-        }
-
-        Dash.controller.observeExternalProfile().observeWhenStarted(lifecycleOwner = this) { profile ->
-            menuBinding.currentProfile.text = getString(R.string.current_profile, profile?.id)
-        }
-        menuBinding.switchProfile.setOnClickListener {
-            showProfileAlert { profileId ->
-                Dash.controller.setExternalProfile(profileId?.let { ExternalProfile(it) })
-            }
-        }
-        menuBinding.removeProfile.setOnClickListener {
-            showProfileAlert { profileId ->
-                lifecycleScope.launch {
-                    Dash.controller.removeExternalProfile(profileId)
-                }
-            }
-        }
-
-        menuBinding.btnShowRoutes.setOnClickListener {
-            getDashNavigationFragment()?.showRoutesOverview()
-        }
-
-        val engineTypes = settingsVM.engineTypes
-        val modeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, engineTypes)
-        modeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        menuBinding.engineType.adapter = modeAdapter
-        bindSpinner(
-            spinner = menuBinding.engineType,
-            state = settingsVM.engineType,
-            onSelected = { type ->
-                Dash.applyUpdate {
-                    engineType = type
-                }
-            },
-        )
     }
 
     private fun showProfileAlert(onDone: (String?) -> Unit) {
@@ -1072,318 +1461,6 @@ class MainActivity : DrawerActivity() {
         searchJob?.cancel()
         searchJob = lifecycleScope.launch {
             Dash.controller.search(query)
-        }
-    }
-
-    private fun configureMapLayerToggle() {
-        bindSwitch(
-            menuBinding.enableWeatherAlongRoute,
-            layoutVM.enableWeatherAlongRoute,
-            dashNavigationFragmentFlow,
-        ) { fragment, enableWeatherAlongRoute ->
-            if (enableWeatherAlongRoute) {
-                layoutVM.enableMapLayer.value = false
-                layoutVM.enableEvChargePoint.value = false
-                fragment.setMapLayer {
-                    topSlot {
-                        WeatherAlongRouteBlock(weatherController.weatherWarningsAlongRoute) { message ->
-                            Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-            } else {
-                fragment.setMapLayer(DefaultMapLayerComposer)
-            }
-        }
-
-        bindSwitch(
-            menuBinding.enableEvChargePoint,
-            layoutVM.enableEvChargePoint,
-            dashNavigationFragmentFlow,
-        ) { fragment, enableEvChargePoint ->
-            if (enableEvChargePoint) {
-                layoutVM.enableMapLayer.value = false
-                layoutVM.enableWeatherAlongRoute.value = false
-                fragment.setMapLayer {
-                    topSlot {
-                        EvChargePointBlock(evViewModel.chargePoints) { message ->
-                            Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-            } else {
-                fragment.setMapLayer(DefaultMapLayerComposer)
-            }
-        }
-
-        bindSwitch(
-            menuBinding.enableMapLayer,
-            layoutVM.enableMapLayer,
-            dashNavigationFragmentFlow,
-        ) { fragment, enableMapLayer ->
-            if (enableMapLayer) {
-                layoutVM.enableWeatherAlongRoute.value = false
-                layoutVM.enableEvChargePoint.value = false
-                fragment.setMapLayer {
-                    middleSlot {
-                        CustomLayerBlock()
-                    }
-
-                    topSlot {
-                        WeatherLayer()
-                    }
-                }
-            } else {
-                fragment.setMapLayer(DefaultMapLayerComposer)
-            }
-        }
-    }
-
-    private fun mapGptCustomizations() {
-        val avatarNames = mapGptVM.availableAvatarNames
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, avatarNames)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        menuBinding.avatarsSpinner.adapter = adapter
-        bindSpinner(
-            spinner = menuBinding.avatarsSpinner,
-            state = mapGptVM.mapGptAvatarName,
-            onSelected = { avatarName ->
-                mapGptCompose.config.value = mapGptCompose.config.value.build {
-                    avatar = mapGptVM.sampleAvatars[avatarName]
-                }
-            },
-        )
-        bindSwitch(menuBinding.enableMapGpt, mapGptVM.mapGptEnabled) { isChecked ->
-            Dash.applyUpdate {
-                mapGpt {
-                    isEnabled = isChecked
-                }
-            }
-        }
-        bindMapGptComposeConfigSwitch(
-            switch = menuBinding.showAvatar,
-            config = mapGptCompose.config,
-            getValue = { showAvatar },
-            setValue = { showAvatar = it },
-        )
-        bindMapGptComposeConfigSwitch(
-            switch = menuBinding.showKeyboardMode,
-            config = mapGptCompose.config,
-            getValue = { showKeyboardMode },
-            setValue = { showKeyboardMode = it },
-        )
-        bindMapGptComposeConfigSwitch(
-            switch = menuBinding.showCarousel,
-            config = mapGptCompose.config,
-            getValue = { showCarousel },
-            setValue = { showCarousel = it },
-        )
-        bindMapGptComposeConfigSwitch(
-            switch = menuBinding.showChatBubble,
-            config = mapGptCompose.config,
-            getValue = { showChatBubble },
-            setValue = { showChatBubble = it },
-        )
-        bindMapGptCarouselCardParams(
-            switch = menuBinding.customMapGptCarouselCardParams,
-            config = mapGptCompose.mapGptCarouselCardParams,
-            setValue = {
-                if (it) {
-                    MapGptCarouselCardParams(
-                        backgroundColor = Color.Magenta,
-                        backgroundShape = RoundedCornerShape(0.dp),
-                        paddingStart = 16.dp,
-                        paddingVertical = 8.dp,
-                        paddingEnd = 0.dp,
-                        maxWidth = Dp.Unspecified,
-                    )
-                } else {
-                    null
-                }
-            },
-        )
-        bindSwitch(menuBinding.customChatBubble, mapGptVM.mapGptCustomChatBubble)
-    }
-
-    private fun mapStyleCustomizations() {
-        bindSwitch(menuBinding.set3dMapStyle, setMap3dStyle) { enabled ->
-            Dash.applyUpdate {
-                mapStyle {
-                    map3dStyleUri = if (enabled) DEFAULT_3D_STYLE else ""
-                }
-            }
-        }
-        bindSwitch(menuBinding.setNightMapStyle, setMapNightStyle) { enabled ->
-            Dash.applyUpdate {
-                mapStyle {
-                    nightStyleUri = if (enabled) ShowcaseApp.NIGHT_MAP_STYLE else ""
-                }
-            }
-        }
-        bindSwitch(menuBinding.setSatelliteMapStyle, setMapSatelliteStyle) { enabled ->
-            Dash.applyUpdate {
-                mapStyle {
-                    satelliteStyleUri = if (enabled) ShowcaseApp.SATELLITE_MAP_STYLE else ""
-                }
-            }
-        }
-        bindSwitch(menuBinding.setReverseUiMode, layoutVM.reverseUiMode) { enabled ->
-            Dash.applyUpdate {
-                ui {
-                    uiModeMapper = if (enabled) ReversedUiModeMapper else DefaultUiModeMapper
-                }
-            }
-        }
-        menuBinding.spinnerUserInputOwnerMiddleware.adapter = ArrayAdapter(
-            this,
-            R.layout.item_spinner,
-            userInputVM.availableModels(),
-        ).apply {
-            setDropDownViewResource(R.layout.item_spinner)
-        }
-        bindSpinner(
-            menuBinding.spinnerUserInputOwnerMiddleware,
-            userInputVM.selectedModelName,
-        ) { model ->
-            val userInputMiddleware = userInputVM.getUserInputMiddleware(model)
-            if (userInputMiddleware == null) {
-                Dash.controller.setDefaultUserInputMiddleware()
-            } else {
-                Dash.controller.setUserInputMiddleware(userInputMiddleware)
-            }
-        }
-        bindSwitch(
-            menuBinding.overrideRouteCallouts,
-            overrideRouteCallouts,
-            dashNavigationFragmentFlow,
-        ) { fragment, overrideRouteCallout ->
-            fragment.setRouteCallout { state ->
-                if (overrideRouteCallout) {
-                    SampleRouteCalloutView(state, fragment)
-                } else {
-                    DefaultRouteCalloutView(state)
-                }
-            }
-        }
-        bindSwitch(menuBinding.setTtsOfflineMode, setOfflineTts) { setOfflineTts ->
-            Dash.applyUpdate {
-                voices {
-                    preferLocalTts = setOfflineTts
-                }
-            }
-        }
-        bindSwitch(
-            menuBinding.useCustomVoicePlayerMiddleware,
-            useCustomVoicePlayerMiddleware,
-        ) { useCustomVoicePlayerMiddleware ->
-            if (useCustomVoicePlayerMiddleware) {
-                Dash.controller.setVoicePlayerMiddleware(LocalVoicePlayerMiddleware())
-            } else {
-                Dash.controller.setDefaultVoicePlayerMiddleware()
-            }
-        }
-        menuBinding.spinnerRemoteTtsProvider.adapter = ArrayAdapter(
-            this,
-            R.layout.item_spinner,
-            availableTtsProviders,
-        ).apply {
-            setDropDownViewResource(R.layout.item_spinner)
-        }
-        bindSpinner(
-            menuBinding.spinnerRemoteTtsProvider,
-            voicePlayerVM.remoteTtsProviderKey,
-        ) { provider ->
-            Dash.applyUpdate {
-                voices { remoteTtsProvider = provider }
-            }
-        }
-
-        menuBinding.spinnerNavPuck.adapter = ArrayAdapter(
-            this,
-            R.layout.item_spinner,
-            CustomLocationPuck.names(),
-        ).apply {
-            setDropDownViewResource(R.layout.item_spinner)
-        }
-        bindSpinner(
-            menuBinding.spinnerNavPuck,
-            themeVM.locationPuck,
-        ) { selection ->
-            val puck = CustomLocationPuck.valueOf(selection).getLocationPuck(this)
-            Dash.applyUpdate {
-                theme {
-                    locationPuck = puck
-                }
-            }
-        }
-
-        val mapStyleModeNames = mapStyleVM.mapStyleModeNames
-        val modeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, mapStyleModeNames)
-        modeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        menuBinding.mapStyleMode.adapter = modeAdapter
-        bindSpinner(
-            spinner = menuBinding.mapStyleMode,
-            state = mapStyleVM.mapStyleMode,
-            onSelected = { mode ->
-                Dash.applyUpdate {
-                    ui {
-                        mapStyleMode = mode
-                    }
-                }
-            },
-        )
-
-        val mapStyleThemeNames = mapStyleVM.mapStyleThemeNames
-        val themeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, mapStyleThemeNames)
-        themeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        menuBinding.mapStyleTheme.adapter = themeAdapter
-        bindSpinner(
-            spinner = menuBinding.mapStyleTheme,
-            state = mapStyleVM.mapStyleTheme,
-            onSelected = { theme ->
-                Dash.applyUpdate {
-                    ui {
-                        mapStyleTheme = theme
-                    }
-                }
-            },
-        )
-
-        val uiModeNames = mapStyleVM.uiModeNames
-        val uiModeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, uiModeNames)
-        uiModeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        menuBinding.uiMode.adapter = uiModeAdapter
-        bindSpinner(
-            spinner = menuBinding.uiMode,
-            state = mapStyleVM.uiMode,
-            onSelected = { mode ->
-                Dash.applyUpdate {
-                    ui {
-                        uiModeSettings = mode
-                    }
-                }
-            },
-        )
-    }
-
-    private fun settingCustomization() {
-        bindSwitch(menuBinding.showRouteOptions, layoutVM.showRouteOptionsInSettings) { showRouteOptions ->
-            Dash.applyUpdate {
-                uiSettings {
-                    this.showRouteOptions = showRouteOptions
-                }
-            }
-        }
-
-        bindSwitch(
-            menuBinding.showSpeedLimitsOptions,
-            layoutVM.showSpeedLimitsOptionsInSettings,
-        ) { showSpeedLimitsOptions ->
-            Dash.applyUpdate {
-                uiSettings {
-                    this.showSpeedLimitsOptions = showSpeedLimitsOptions
-                }
-            }
         }
     }
 
@@ -1489,17 +1566,37 @@ class MainActivity : DrawerActivity() {
 
     private fun log(message: String) = Log.d(TAG, message)
 
+    private enum class MapLayer {
+        Default, Custom, WeatherAlongRoute, EvChargePoint,
+    }
+
     private companion object {
 
-        const val TAG = "MainActivity"
+        private const val TAG = "MainActivity"
+        private const val UNSET_VALUE = "--"
 
-        private var tabletLayout: Boolean? = null
-        private var densityDpi: Int? = null
+        @SuppressLint("RestrictToUsage", "RestrictedApi")
+        private val sampleAvatars = buildMap {
+            putAll(PrebuiltMapGptAvatars.avatarMap)
+            /**
+             * This is demonstrating the ability to add a custom avatar with your own Lottie animations.
+             */
+            val smileBoxPeteAvatar = LottieMapGptAvatar(
+                name = "SmileBoxPete",
+                listeningToUser = com.mapbox.map.gpt.R.raw.ic_mapboxy_listening_to_user,
+                userSpeaking = com.mapbox.map.gpt.R.raw.ic_petter_user_speaking,
+                aiThinking = com.mapbox.map.gpt.R.raw.ic_smiley_thinking,
+                aiSpeaking = com.mapbox.map.gpt.R.raw.ic_mapboxy_speaking,
+                aiError = com.mapbox.map.gpt.R.raw.ic_smiley_error,
+                aiIdle = com.mapbox.map.gpt.R.raw.ic_petter_listening_to_user,
+                aiSleeping = com.mapbox.map.gpt.R.raw.ic_mapboxy_sleeping,
+                noMicPermission = com.mapbox.map.gpt.R.raw.ic_smiley_no_mic_permission,
+                serviceDisconnected = com.mapbox.map.gpt.R.raw.ic_petter_listening_to_user,
+            )
+            put(smileBoxPeteAvatar.name, smileBoxPeteAvatar)
+            put(UNSET_VALUE, null)
+        }
     }
-}
-
-internal enum class SearchPanelPosition {
-    BottomLeft, TopLeft,
 }
 
 internal enum class CustomDashTheme(
