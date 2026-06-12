@@ -62,5 +62,6 @@ object ShowcaseSearchEngine : DashSearchEngine {
         override val distanceMeters = null
         override val pinCoordinate = Point.fromLngLat(-77.0342, 38.9044)
         override val metadata = mapOf("metadata2" to "value2")
+        override val routablePoints = null
     }
 }

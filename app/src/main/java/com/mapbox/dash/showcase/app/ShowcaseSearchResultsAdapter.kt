@@ -11,6 +11,7 @@ import com.mapbox.dash.sdk.search.api.DashSearchResultType
 import com.mapbox.dash.sdk.search.api.DashSearchResultsAdapter
 import com.mapbox.dash.sdk.search.api.DashSearchSuggestion
 import com.mapbox.geojson.Point
+import com.mapbox.search.common.RoutablePoint
 
 private const val TAG = "CustomSearchAdapter"
 
@@ -49,6 +50,7 @@ object ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
         override val distanceMeters = null
         override val metadata = mapOf("metadata4" to "value4")
         override val pinCoordinate = Point.fromLngLat(-77.0342, 38.9044)
+        override val routablePoints = null
     }
 
     override suspend fun searchResults(

@@ -199,6 +199,7 @@ class MainActivity : DrawerActivity() {
             "extraMetadataKey_2" to "extraValue_2",
         )
         override val pinCoordinate = Point.fromLngLat(-77.0342, 38.9044)
+        override val routablePoints = null
     }
 
     private fun getDashNavigationFragment(): DashNavigationFragment? {
