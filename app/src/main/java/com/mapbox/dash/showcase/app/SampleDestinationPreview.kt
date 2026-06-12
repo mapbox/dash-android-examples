@@ -73,7 +73,7 @@ object SampleDestinationPreview {
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
-                state.backCloseButtonState?.takeUnless { it.isFinalAction }?.let { backCloseButtonState ->
+                state.backCloseButtonState.takeUnless { it.isFinalAction }?.let { backCloseButtonState ->
                     Image(
                         modifier = Modifier
                             .size(60.dp)
@@ -94,19 +94,17 @@ object SampleDestinationPreview {
                     fontSize = 36.sp,
                     fontWeight = FontWeight.SemiBold,
                 )
-                state.backCloseButtonState?.let { backCloseButtonState ->
-                    Image(
-                        modifier = Modifier
-                            .size(60.dp)
-                            .clip(CircleShape)
-                            .background(SampleColors.primary)
-                            .clickable(onClick = backCloseButtonState.onCloseClicked)
-                            .padding(12.dp),
-                        imageVector = Icons.Default.Close,
-                        colorFilter = ColorFilter.tint(Color.White),
-                        contentDescription = null,
-                    )
-                }
+                Image(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
+                        .background(SampleColors.primary)
+                        .clickable(onClick = state.backCloseButtonState.onCloseClicked)
+                        .padding(12.dp),
+                    imageVector = Icons.Default.Close,
+                    colorFilter = ColorFilter.tint(Color.White),
+                    contentDescription = null,
+                )
             }
             state.place.content?.let { place ->
                 place.origin.description?.let {
@@ -267,7 +265,6 @@ object SampleDestinationPreview {
             }
         }
     }
-
 }
 
 @Composable

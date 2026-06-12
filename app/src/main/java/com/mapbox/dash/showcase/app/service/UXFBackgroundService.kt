@@ -110,7 +110,7 @@ internal class UXFBackgroundService : Service() {
         return NotificationCompat.Builder(this, FOREGROUND_NOTIFICATION_CHANNEL_ID)
             .setContentTitle("Navigation state:")
             .setContentText(state.title)
-            .setSmallIcon(com.mapbox.navigation.ui.maps.R.drawable.mapbox_navigation_puck_icon2)
+            .setSmallIcon(com.mapbox.navigation.ui.maps.R.drawable.mapbox_navigation_puck_icon)
             .addAction(state.action.createAction(this))
             .setSound(null)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)

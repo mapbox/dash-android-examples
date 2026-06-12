@@ -1,6 +1,7 @@
 package com.mapbox.dash.showcase.app
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import com.mapbox.dash.sdk.config.api.QUERY_SEARCH_LIMIT_MAX
 import com.mapbox.dash.sdk.search.api.DashCategorySearchOptions
 import com.mapbox.dash.sdk.search.api.DashForwardOptions
@@ -18,7 +19,7 @@ private const val TAG = "CustomSearchAdapter"
 @Suppress("MagicNumber", "ForbiddenComment")
 object ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
 
-    var enabled: Boolean = false
+    val enabled = mutableStateOf(false)
 
     private val customSuggestion = object : DashSearchSuggestion {
         override val id: String = "customSuggestionId11fse4w334455"
@@ -33,6 +34,8 @@ object ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
         override val etaMinutes = 5.0
         override val poweredByAi = false
         override val metadata = mapOf("metadata3" to "value3")
+        override val coordinate: Point? = null
+        override val routablePoints: List<RoutablePoint>? = null
     }
 
     private fun customSearchResult(index: Int = 1) = object : DashSearchResult {
@@ -58,7 +61,7 @@ object ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
         options: DashCategorySearchOptions,
         results: List<DashSearchResult>,
     ): List<DashSearchResult> {
-        if (!enabled) return results
+        if (!enabled.value) return results
 
         Log.d(TAG, "Adapt requested for $request, options: $options, search results: $results Coming soon.")
         val adaptedResults = results.toMutableList()
@@ -74,7 +77,7 @@ object ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
         options: DashForwardOptions,
         results: List<DashSearchResult>,
     ): List<DashSearchResult> {
-        if (!enabled) return results
+        if (!enabled.value) return results
 
         Log.d(TAG, "Adapt requested for $request, options: $options, search results: $results Coming soon.")
         val adaptedResults = results.toMutableList()
@@ -90,7 +93,7 @@ object ShowcaseSearchResultsAdapter : DashSearchResultsAdapter {
         options: DashSearchOptions,
         suggestions: List<DashSearchSuggestion>,
     ): List<DashSearchSuggestion> {
-        if (!enabled) return suggestions
+        if (!enabled.value) return suggestions
 
         Log.d(TAG, "Adapt requested for $request, options: $options, suggestions: $suggestions.")
         val adaptedSuggestions = suggestions.toMutableList()

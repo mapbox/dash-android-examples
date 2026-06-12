@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -36,7 +35,7 @@ class ShowcaseLeftSidebarComposer(
 
     @Composable
     override fun SidebarScope.Content() {
-        if (layoutViewModel.overrideSidebarControls.collectAsState().value) {
+        if (layoutViewModel.overrideSidebarControls.value) {
             CustomCameraButton()
             Feedback()
             VoiceFeedback()

@@ -53,7 +53,6 @@ class ShowcaseClusterActivity : AppCompatActivity() {
                 title = "Navigation state:",
                 value = when (navigationState) {
                     is NavigationState.FreeDrive -> "FreeDrive"
-                    is NavigationState.TripPlanning -> "TripPlanning"
                     is NavigationState.ActiveGuidance -> "ActiveGuidance"
                     is NavigationState.Arrival -> "Arrival"
                     else -> "-"
