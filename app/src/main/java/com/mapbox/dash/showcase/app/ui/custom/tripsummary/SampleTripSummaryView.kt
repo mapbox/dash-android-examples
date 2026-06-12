@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.mapbox.dash.driver.presentation.end.TripSummaryUiState
 import com.mapbox.dash.showcase.app.R
 import com.mapbox.dash.showcase.app.WeatherController
+import kotlin.math.roundToInt
 
 @Composable
 fun SampleTripSummaryView(
@@ -98,7 +99,7 @@ fun SampleTripSummaryView(
                 remainingDistance = model.formattedLegDistanceRemaining,
                 remainingTime = model.formattedLegTimeRemaining,
                 isOffline = model.isOffline,
-                stateOfCharge = model.legStateOfCharge,
+                stateOfCharge = model.legStateOfCharge?.roundToInt(),
                 fractionTraveled = model.fractionTraveled,
                 trafficGradientStops = model.trafficGradientStops,
                 waypointsData = model.waypointsData,
