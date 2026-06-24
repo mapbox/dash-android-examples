@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import com.mapbox.dash.driver.presentation.edittrip.EditTripItem
 import com.mapbox.dash.driver.presentation.edittrip.EditTripUiState
 import com.mapbox.dash.sdk.map.presentation.ui.BackCloseButtonState
+import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.showcase.app.theme.SampleColors
 
 @Composable
@@ -55,6 +56,7 @@ fun SampleEditTrip(state: EditTripUiState) {
     SampleEditTrip(
         state.items,
         state.onOpenFullScreenSearchClick,
+        state.onWaypointClick,
         state.onRemoveWaypoints,
         state.onDoneClick,
         state.onItemSwap,
@@ -68,6 +70,7 @@ fun SampleEditTrip(state: EditTripUiState) {
 private fun SampleEditTrip(
     items: List<EditTripItem>,
     onOpenFullScreenSearchClick: () -> Unit,
+    onWaypointClick: (DashSearchResult, Int) -> Unit,
     onRemoveWaypoints: (Set<Int>) -> Unit,
     onDoneClick: () -> Unit,
     onItemSwap: (Int, Int) -> Unit,
@@ -90,6 +93,7 @@ private fun SampleEditTrip(
             modifier = Modifier.weight(1f),
             items = items,
             onOpenFullScreenSearchClick = onOpenFullScreenSearchClick,
+            onWaypointClick = onWaypointClick,
             onRemoveWaypoints = onRemoveWaypoints,
             onItemSwap = onItemSwap,
             onAddChargers = onAddChargers,
@@ -103,6 +107,7 @@ private fun Content(
     modifier: Modifier,
     items: List<EditTripItem>,
     onOpenFullScreenSearchClick: () -> Unit,
+    onWaypointClick: (DashSearchResult, Int) -> Unit,
     onRemoveWaypoints: (Set<Int>) -> Unit,
     onItemSwap: (Int, Int) -> Unit,
     onAddChargers: () -> Unit,
@@ -147,11 +152,13 @@ private fun Content(
                         Modifier.clickable { onRemoveWaypoints(setOf(item.realTripIndex)) },
                         index + 1,
                         item.searchResult.name,
+                        onClick = { onWaypointClick(item.searchResult, item.realTripIndex) },
                     )
 
                     is EditTripItem.TransientWaypoint -> TransientWaypointItem(
                         index + 1,
                         item.searchResult.name,
+                        onClick = { onWaypointClick(item.searchResult, item.realTripIndex) },
                     )
 
                     is EditTripItem.MaxWaypointLimitHint -> Text(
@@ -179,9 +186,9 @@ private fun Content(
 private fun AddNewWaypoint(elevation: Dp, onOpenFullScreenSearchClick: () -> Unit) {
     Row(
         modifier = Modifier
+            .shadow(elevation)
             .clickable(onClick = onOpenFullScreenSearchClick)
             .padding(16.dp)
-            .shadow(elevation)
             .fillMaxWidth()
             .defaultMinSize(minHeight = 40.dp),
         horizontalArrangement = Arrangement.spacedBy(20.dp),
@@ -236,10 +243,11 @@ private fun ToggleChargingStations(text: String, onClick: () -> Unit) {
 }
 
 @Composable
-private fun WaypointItem(elevation: Dp, removeModifier: Modifier, index: Int, text: String) {
+private fun WaypointItem(elevation: Dp, removeModifier: Modifier, index: Int, text: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .shadow(elevation)
+            .clickable(onClick = onClick)
             .padding(16.dp)
             .fillMaxWidth()
             .defaultMinSize(minHeight = 40.dp),
@@ -289,9 +297,10 @@ private fun WaypointItem(elevation: Dp, removeModifier: Modifier, index: Int, te
 }
 
 @Composable
-private fun TransientWaypointItem(index: Int, text: String) {
+private fun TransientWaypointItem(index: Int, text: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
+            .clickable(onClick = onClick)
             .padding(16.dp)
             .fillMaxWidth()
             .defaultMinSize(minHeight = 40.dp),
