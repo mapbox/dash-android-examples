@@ -85,7 +85,7 @@ android {
 }
 
 dependencies {
-    val uxfVersion = "1.25.1"
+    val uxfVersion = "1.25.2"
     implementation("com.mapbox.navigationux:android:$uxfVersion")
     implementation("com.mapbox.navigationux:cluster:$uxfVersion")
     implementation("com.mapbox.navigationux:data-inputs:$uxfVersion")
