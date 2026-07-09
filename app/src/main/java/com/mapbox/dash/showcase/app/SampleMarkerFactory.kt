@@ -5,9 +5,10 @@ import android.graphics.Color
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import com.mapbox.dash.sdk.config.api.MarkerFactory
 import com.mapbox.dash.sdk.config.api.MarkerOptions
+import com.mapbox.dash.sdk.config.api.RoutePointMarkerFactory
 import com.mapbox.dash.sdk.config.api.SearchCategory
+import com.mapbox.dash.sdk.config.api.SearchSuggestionsMarkerFactory
 import com.mapbox.dash.sdk.config.api.SymbolDescriptorRoutePoint
 import com.mapbox.dash.sdk.config.api.SymbolDescriptorSearchSuggestions
 import com.mapbox.dash.sdk.ev.domain.model.DashReachabilityType.NOT_REACHABLE
@@ -17,7 +18,7 @@ private const val TEXT_OFFSET_EMS = 0.5
 
 class SampleMarkerFactory(
     private val context: Context,
-) : MarkerFactory {
+) : SearchSuggestionsMarkerFactory, RoutePointMarkerFactory {
 
     private val textOffset = listOf(0.0, TEXT_OFFSET_EMS)
 

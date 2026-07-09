@@ -99,7 +99,6 @@ import com.mapbox.dash.sdk.config.api.ui
 import com.mapbox.dash.sdk.config.api.uiSettings
 import com.mapbox.dash.sdk.config.api.voices
 import com.mapbox.dash.sdk.data.inputs.updateCompassData
-import com.mapbox.dash.sdk.map.domain.style.DefaultMapLayerComposer
 import com.mapbox.dash.sdk.map.presentation.ui.DefaultRecenterButton
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
 import com.mapbox.dash.sdk.search.api.DashNavigationSuggestion
@@ -393,30 +392,29 @@ class MainActivity : DrawerActivity() {
                 dashNavigationFragmentFlow = dashNavigationFragmentFlow,
                 onValueChange = { dashNavigationFragment, mapLayer ->
                     when (MapLayer.valueOf(mapLayer)) {
-                        MapLayer.Default -> dashNavigationFragment.setMapLayer(DefaultMapLayerComposer)
-                        MapLayer.Custom -> dashNavigationFragment.setMapLayer {
-                            middleSlot {
+                        MapLayer.Default -> dashNavigationFragment.setMapLayer()
+                        MapLayer.Custom -> dashNavigationFragment.setMapLayer(
+                            middleSlot = {
                                 CustomLayerBlock()
-                            }
-
-                            topSlot {
+                            },
+                            topSlot = {
                                 WeatherLayer()
-                            }
-                        }
-                        MapLayer.WeatherAlongRoute -> dashNavigationFragment.setMapLayer {
-                            topSlot {
+                            },
+                        )
+                        MapLayer.WeatherAlongRoute -> dashNavigationFragment.setMapLayer(
+                            topSlot = {
                                 WeatherAlongRouteBlock(weatherController.weatherWarningsAlongRoute) { message ->
                                     Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
                                 }
-                            }
-                        }
-                        MapLayer.EvChargePoint -> dashNavigationFragment.setMapLayer {
-                            topSlot {
+                            },
+                        )
+                        MapLayer.EvChargePoint -> dashNavigationFragment.setMapLayer(
+                            topSlot = {
                                 EvChargePointBlock(evViewModel.chargePoints) { message ->
                                     Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
                                 }
-                            }
-                        }
+                            },
+                        )
                     }
                 },
                 label = "Map Layer",
@@ -921,10 +919,13 @@ class MainActivity : DrawerActivity() {
                 onCheckedChange = { enabled ->
                     Dash.applyUpdate {
                         mapStyle {
-                            markerFactory = if (enabled) {
-                                SampleMarkerFactory(this@MainActivity)
+                            if (enabled) {
+                                val markerFactory = SampleMarkerFactory(this@MainActivity)
+                                searchSuggestionsMarkerFactory = markerFactory
+                                routePointMarkerFactory = markerFactory
                             } else {
-                                null
+                                searchSuggestionsMarkerFactory = null
+                                routePointMarkerFactory = null
                             }
                         }
                     }
