@@ -16,6 +16,7 @@ import com.mapbox.dash.sdk.config.api.DEFAULT_NIGHT_STYLE
 import com.mapbox.dash.sdk.config.api.DEFAULT_SATELLITE_STYLE
 import com.mapbox.dash.sdk.config.api.DashFasterRouteNotificationAcceptanceStrategy
 import com.mapbox.dash.sdk.config.api.DashFasterRouteNotificationTimeoutAction
+import com.mapbox.dash.sdk.config.api.DashFollowingCameraFramingType
 import com.mapbox.dash.sdk.config.api.DashIncidentNotificationType
 import com.mapbox.dash.sdk.config.api.EngineType
 import com.mapbox.dash.sdk.config.api.MapIncidentsVisibility
@@ -140,7 +141,7 @@ class ShowcaseApp : Application() {
                 entranceMode = SearchEntranceMode.SEARCH
             }
             camera {
-                lookAheadMeters = 1.0
+                followingCameraFramingType = DashFollowingCameraFramingType.LookAhead(distanceMeters = 1.0)
                 freeDriveDefaults = FollowingDefaults(zoom = 15.0)
                 activeGuidanceDefaults = ActiveGuidanceDefaults(defaultPitch = 45.0)
                 isShoveGestureEnabled = false
