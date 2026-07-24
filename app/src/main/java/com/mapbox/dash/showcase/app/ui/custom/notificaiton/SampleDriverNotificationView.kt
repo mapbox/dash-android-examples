@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -38,7 +39,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mapbox.dash.compose.shadow
 import com.mapbox.dash.driver.notification.presentation.BetterEvRouteType
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.BetterEvRoute
 import com.mapbox.dash.driver.notification.presentation.DashDriverNotification.BorderCrossing
@@ -264,7 +264,7 @@ private fun DriverNotificationView(
     val defaultPadding = dimensionResource(com.mapbox.dash.driver.notification.R.dimen.driver_notification_view_padding)
     Column(
         modifier = modifier
-            .shadow(shape = RoundedCornerShape(16.dp))
+            .shadow(elevation = 8.dp, shape = RoundedCornerShape(16.dp))
             .background(color = SampleColors.primary.copy(alpha = 0.3f))
             .padding(defaultPadding),
         verticalArrangement = Arrangement.spacedBy(defaultPadding),
