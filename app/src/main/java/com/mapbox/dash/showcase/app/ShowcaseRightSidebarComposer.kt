@@ -2,6 +2,7 @@ package com.mapbox.dash.showcase.app
 
 import android.content.Intent
 import android.widget.Toast
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,10 +40,15 @@ class ShowcaseRightSidebarComposer(
     override fun SidebarScope.Content() {
         if (layoutViewModel.overrideSidebarControls.value) {
             val context = LocalContext.current
+            val activity = LocalActivity.current
             WeatherAlertWidget()
             Button(
                 iconId = R.drawable.baseline_remove_red_eye_24,
-                onClick = { context.startActivity(Intent(context, RelaxedModeActivity::class.java)) },
+                onClick = {
+                    activity?.startActivity(
+                        Intent(context, RelaxedModeActivity::class.java),
+                    )
+                },
             )
             Speed()
             Spacer(modifier = Modifier.weight(1f))

@@ -1556,10 +1556,17 @@ class MainActivity : DrawerActivity() {
         Dash.controller.observeRouteWaypoints().observeWhenStarted(this) { waypoints ->
             log(">> observeRouteWaypoints. size = ${waypoints.size}")
             waypoints.forEachIndexed { index, item ->
-                log(">> observeRouteWaypoints. waypoint[$index]: category = ${item.categories}")
+                log(">> ActiveWaypoints. Active waypoint[$index]: category = ${item.categories}")
             }
         }
-
+        dashNavigationFragmentFlow
+            .flatMapLatest { it?.observeRouteWaypoints() ?: emptyFlow() }
+            .observeWhenStarted(this) { waypoints ->
+                log(">> observeRouteWaypoints. size = ${waypoints.size}")
+                waypoints.forEachIndexed { index, item ->
+                    log(">> DisplayedWaypoints. Displayed waypoint[$index]: category = ${item.categories}")
+                }
+            }
         lifecycleScope.launch {
             log(">> getOfflineRegionMetadata = ${Dash.controller.getOfflineRegionMetadata()}")
         }
