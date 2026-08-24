@@ -33,12 +33,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mapbox.dash.models.TrafficGradientStop
 import com.mapbox.dash.models.WaypointData
 import com.mapbox.dash.showcase.app.DestinationWeatherForecast
 import com.mapbox.dash.showcase.app.R
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 import com.mapbox.navigation.weather.model.toIconResId
+
+typealias TrafficGradientStop = Pair<Float, Color>
 
 @Composable
 @Suppress("MagicNumber")
@@ -50,7 +51,7 @@ internal fun SampleEtaView(
     isOffline: Boolean = false,
     stateOfCharge: Int? = null,
     fractionTraveled: Float = 0.6f,
-    trafficGradientStops: List<TrafficGradientStop> = listOf(
+    trafficGradientStops: Array<TrafficGradientStop> = arrayOf(
         TrafficGradientStop(0.150f, Color.Yellow),
         TrafficGradientStop(0.450f, Color.Red),
         TrafficGradientStop(0.650f, Color.Blue),
@@ -133,7 +134,7 @@ internal fun SampleEtaView(
 private fun SampleTripProgress(
     modifier: Modifier = Modifier,
     fractionTraveled: Float = 0.6f,
-    trafficGradientStops: List<TrafficGradientStop> = listOf(
+    trafficGradientStops: Array<TrafficGradientStop> = arrayOf(
         TrafficGradientStop(0.150f, Color.Yellow),
         TrafficGradientStop(0.450f, Color.Red),
         TrafficGradientStop(0.650f, Color.Blue),
@@ -158,10 +159,10 @@ private fun SampleTripProgress(
                         startX = 0f,
                         endX = Float.POSITIVE_INFINITY,
                         colorStops = Array(trafficGradientStops.size) { index ->
-                            val stop = trafficGradientStops[index]
-                            stop.offset to (
-                                if (stop.color == Color.Unspecified) Color.White.copy(alpha = 0.2f)
-                                else stop.color
+                            val (offset, color) = trafficGradientStops[index]
+                            offset to (
+                                if (color == Color.Unspecified) Color.White.copy(alpha = 0.2f)
+                                else color
                                 )
                         },
                     ),
