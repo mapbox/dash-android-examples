@@ -39,8 +39,6 @@ import com.mapbox.dash.showcase.app.R
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 import com.mapbox.navigation.weather.model.toIconResId
 
-typealias TrafficGradientStop = Pair<Float, Color>
-
 @Composable
 @Suppress("MagicNumber")
 internal fun SampleEtaView(
@@ -51,10 +49,10 @@ internal fun SampleEtaView(
     isOffline: Boolean = false,
     stateOfCharge: Int? = null,
     fractionTraveled: Float = 0.6f,
-    trafficGradientStops: Array<TrafficGradientStop> = arrayOf(
-        TrafficGradientStop(0.150f, Color.Yellow),
-        TrafficGradientStop(0.450f, Color.Red),
-        TrafficGradientStop(0.650f, Color.Blue),
+    trafficGradientStops: Array<Pair<Float, Color>>? = arrayOf(
+        0.150f to Color.Yellow,
+        0.450f to Color.Red,
+        0.650f to Color.Blue,
     ),
     waypointsData: List<WaypointData>,
     weatherForecast: DestinationWeatherForecast? = null,
@@ -123,7 +121,10 @@ internal fun SampleEtaView(
         SampleTripProgress(
             Modifier.padding(bottom = 8.dp),
             fractionTraveled,
-            trafficGradientStops,
+            trafficGradientStops ?: arrayOf(
+                0f to Color.Unspecified,
+                1f to Color.Unspecified,
+            ),
             waypointsData,
         )
     }
@@ -134,10 +135,10 @@ internal fun SampleEtaView(
 private fun SampleTripProgress(
     modifier: Modifier = Modifier,
     fractionTraveled: Float = 0.6f,
-    trafficGradientStops: Array<TrafficGradientStop> = arrayOf(
-        TrafficGradientStop(0.150f, Color.Yellow),
-        TrafficGradientStop(0.450f, Color.Red),
-        TrafficGradientStop(0.650f, Color.Blue),
+    trafficGradientStops: Array<Pair<Float, Color>> = arrayOf(
+        0.150f to Color.Yellow,
+        0.450f to Color.Red,
+        0.650f to Color.Blue,
     ),
     waypointsData: List<WaypointData>,
 ) {
@@ -158,15 +159,18 @@ private fun SampleTripProgress(
                     Brush.horizontalGradient(
                         startX = 0f,
                         endX = Float.POSITIVE_INFINITY,
-                        colorStops = Array(trafficGradientStops.size) { index ->
-                            val (offset, color) = trafficGradientStops[index]
-                            offset to (
-                                if (color == Color.Unspecified) Color.White.copy(alpha = 0.2f)
-                                else color
-                                )
-                        },
+                        colorStops = trafficGradientStops,
                     ),
                 ),
+        )
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .fillMaxWidth(fraction = fractionTraveled.coerceIn(0f, 1f))
+                .height(8.dp)
+                .clip(CircleShape)
+                .background(Color.Black.copy(alpha = 0.7f)),
         )
 
         for (waypointData in waypointsData) {
