@@ -100,7 +100,7 @@ fun SampleTripSummaryView(
                 isOffline = model.isOffline,
                 stateOfCharge = model.legStateOfCharge?.roundToInt(),
                 fractionTraveled = model.fractionTraveled,
-                trafficGradientStops = model.trafficGradientStops ?: emptyArray(),
+                trafficGradientStops = model.trafficGradientStops,
                 waypointsData = model.waypointsData,
                 weatherForecast = weatherForecast,
             )
