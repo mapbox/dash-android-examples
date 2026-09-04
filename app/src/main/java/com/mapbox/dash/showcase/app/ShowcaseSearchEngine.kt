@@ -1,6 +1,7 @@
 package com.mapbox.dash.showcase.app
 
 import androidx.compose.runtime.mutableStateOf
+import com.mapbox.dash.sdk.search.api.DashBrandOptions
 import com.mapbox.dash.sdk.search.api.DashCategorySearchOptions
 import com.mapbox.dash.sdk.search.api.DashForwardOptions
 import com.mapbox.dash.sdk.search.api.DashSearchEngine
@@ -41,6 +42,11 @@ object ShowcaseSearchEngine : DashSearchEngine {
         searchRequest: DashSearchRequest,
         displayName: String,
         options: DashCategorySearchOptions,
+    ): List<DashSearchResult> = listOf(customSearchResult)
+
+    override suspend fun brandSearch(
+        searchRequest: DashSearchRequest,
+        options: DashBrandOptions,
     ): List<DashSearchResult> = listOf(customSearchResult)
 
     private val customSuggestion = object : DashSearchSuggestion {
