@@ -1351,12 +1351,9 @@ class MainActivity : DrawerActivity() {
                     UiModeSettings.DAY, UiModeSettings.DUSK, UiModeSettings.NIGHT,
                 ),
                 initial = UiModeSettings.AUTO,
-                onValueChange = { mode ->
-                    Dash.applyUpdate {
-                        ui {
-                            uiModeSettings = mode
-                        }
-                    }
+                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
+                onValueChange = { dashNavigationFragment, mode ->
+                    dashNavigationFragment.setUiModeSettings(mode)
                 },
                 label = "UI mode",
             )

@@ -147,7 +147,7 @@ class ShowcaseApp : Application() {
                 isShoveGestureEnabled = false
             }
             ui {
-                uiModeSettings = UiModeSettings.AUTO
+                defaultUiModeSettings = UiModeSettings.AUTO
                 streetNameVisibility = StreetNameVisibility.ONLY_FREE_DRIVE
                 mapIncidentsVisibility = MapIncidentsVisibility.ONLY_FREE_DRIVE
                 mapTrafficLightsVisibility = MapTrafficLightsVisibility.ALWAYS
@@ -282,7 +282,11 @@ class ShowcaseApp : Application() {
             )
         }
 
-        Dash.controller.setEvDataProvider(evDataProvider)
+        Dash.applyUpdate {
+            ev {
+                this.evDataProvider = evDataProvider
+            }
+        }
     }
 
     internal companion object {
