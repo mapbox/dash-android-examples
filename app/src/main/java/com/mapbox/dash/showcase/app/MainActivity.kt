@@ -147,10 +147,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.emptyFlow
@@ -162,6 +161,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
+import com.mapbox.dash.theming.R as ThemesR
+import com.mapbox.map.gpt.R as MapGptR
 
 @Suppress("MagicNumber", "LargeClass")
 @OptIn(
@@ -261,7 +262,7 @@ class MainActivity : DrawerActivity() {
             }
         }
 
-        if (resources.getBoolean(com.mapbox.dash.theming.R.bool.is_tablet)) {
+        if (resources.getBoolean(ThemesR.bool.is_tablet)) {
             Dash.applyUpdate {
                 search {
                     keyboardSplitMode = true
@@ -728,11 +729,11 @@ class MainActivity : DrawerActivity() {
             )
             MenuButton(
                 text = "SHOW EV RANGE MAP",
-                onClick = { Dash.controller.showEvRangeMap() },
+                onClick = { getDashNavigationFragment()?.showEvRangeMap() },
             )
             MenuButton(
                 text = "HIDE EV RANGE MAP",
-                onClick = { Dash.controller.hideEvRangeMap() },
+                onClick = { getDashNavigationFragment()?.hideEvRangeMap() },
             )
             val fullScreenSearchQuery = rememberSaveable { mutableStateOf("") }
             MenuEditText(
@@ -802,16 +803,7 @@ class MainActivity : DrawerActivity() {
             )
             MenuButton(
                 text = "SEARCH QUERY",
-                onClick = {
-                    // simulate 2 sequentially requests. The first one should be canceled and
-                    // Dash.controller.observeSearchRequestStatus() should provide a valid status.
-                    // delay(200) is needed to give enough time to start a request,
-                    // otherwise it will be canceled immediately.
-                    delay(200)
-                    performSearch("aaa")
-                    delay(200)
-                    performSearch(searchApiQuery.value)
-                },
+                onClick = { performSearch(searchApiQuery.value) },
             )
             MenuButton(
                 text = "OPEN MAP WITH CINEMA",
@@ -956,11 +948,11 @@ class MainActivity : DrawerActivity() {
                         fragment.setRecenterCamera { modifier, recenterCameraState ->
                             Image(
                                 modifier = modifier
-                                    .width(dimensionResource(id = com.mapbox.dash.theming.R.dimen.map_round_button_width))
-                                    .height(dimensionResource(id = com.mapbox.dash.theming.R.dimen.map_round_button_height))
+                                    .width(dimensionResource(id = ThemesR.dimen.map_round_button_width))
+                                    .height(dimensionResource(id = ThemesR.dimen.map_round_button_height))
                                     .background(Color.White)
                                     .clickable(onClick = recenterCameraState.onRecenterClick)
-                                    .padding(dimensionResource(id = com.mapbox.dash.theming.R.dimen.round_button_padding)),
+                                    .padding(dimensionResource(id = ThemesR.dimen.round_button_padding)),
                                 painter = painterResource(R.drawable.baseline_my_location_24),
                                 contentDescription = "Recenter button",
                             )
@@ -1350,11 +1342,9 @@ class MainActivity : DrawerActivity() {
                     UiModeSettings.AUTO, UiModeSettings.SYSTEM, UiModeSettings.DAWN,
                     UiModeSettings.DAY, UiModeSettings.DUSK, UiModeSettings.NIGHT,
                 ),
-                initial = UiModeSettings.AUTO,
                 dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onValueChange = { dashNavigationFragment, mode ->
-                    dashNavigationFragment.setUiModeSettings(mode)
-                },
+                initial = UiModeSettings.AUTO,
+                onValueChange = { fragment, mode -> fragment.setUiModeSettings(mode) },
                 label = "UI mode",
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1432,12 +1422,11 @@ class MainActivity : DrawerActivity() {
             dashNavigationFragment.setRightSidebar(ShowcaseRightSidebarComposer(layoutVM, weatherController))
         }
         repeatWhenStarted(lifecycleOwner = this) {
-            combine(
-                Dash.controller.observeEvRangeMapState(),
-                dashNavigationFragmentFlow.filterNotNull(),
-            ) { state, fragment ->
-                fragment.setAdditionalPointsToFrame(state.rangeMapFramePoints)
-            }.collect()
+            dashNavigationFragmentFlow.filterNotNull().collectLatest { fragment ->
+                fragment.observeEvRangeMapState().collect { state ->
+                    fragment.setAdditionalPointsToFrame(state.rangeMapFramePoints)
+                }
+            }
         }
     }
 
@@ -1588,15 +1577,15 @@ class MainActivity : DrawerActivity() {
              */
             val smileBoxPeteAvatar = LottieMapGptAvatar(
                 name = "SmileBoxPete",
-                listeningToUser = com.mapbox.map.gpt.R.raw.ic_mapboxy_listening_to_user,
-                userSpeaking = com.mapbox.map.gpt.R.raw.ic_petter_user_speaking,
-                aiThinking = com.mapbox.map.gpt.R.raw.ic_smiley_thinking,
-                aiSpeaking = com.mapbox.map.gpt.R.raw.ic_mapboxy_speaking,
-                aiError = com.mapbox.map.gpt.R.raw.ic_smiley_error,
-                aiIdle = com.mapbox.map.gpt.R.raw.ic_petter_listening_to_user,
-                aiSleeping = com.mapbox.map.gpt.R.raw.ic_mapboxy_sleeping,
-                noMicPermission = com.mapbox.map.gpt.R.raw.ic_smiley_no_mic_permission,
-                serviceDisconnected = com.mapbox.map.gpt.R.raw.ic_petter_listening_to_user,
+                listeningToUser = MapGptR.raw.ic_mapboxy_listening_to_user,
+                userSpeaking = MapGptR.raw.ic_petter_user_speaking,
+                aiThinking = MapGptR.raw.ic_smiley_thinking,
+                aiSpeaking = MapGptR.raw.ic_mapboxy_speaking,
+                aiError = MapGptR.raw.ic_smiley_error,
+                aiIdle = MapGptR.raw.ic_petter_listening_to_user,
+                aiSleeping = MapGptR.raw.ic_mapboxy_sleeping,
+                noMicPermission = MapGptR.raw.ic_smiley_no_mic_permission,
+                serviceDisconnected = MapGptR.raw.ic_petter_listening_to_user,
             )
             put(smileBoxPeteAvatar.name, smileBoxPeteAvatar)
             put(UNSET_VALUE, null)
