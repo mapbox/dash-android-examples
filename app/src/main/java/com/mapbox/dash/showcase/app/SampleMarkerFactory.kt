@@ -63,9 +63,9 @@ class SampleMarkerFactory(
     private val SymbolDescriptorSearchSuggestions.haloColor: Int
         get() {
             val hex = when {
-                categories.contains(SearchCategory.Grocery) -> "#FF63A6E9"
-                categories.contains(SearchCategory.Coffee) -> "#FFFF9933"
-                categories.contains(SearchCategory.Food) -> "#FFFF9933"
+                categoryIds.contains(SearchCategory.Grocery.id) -> "#FF63A6E9"
+                categoryIds.contains(SearchCategory.Coffee.id) -> "#FFFF9933"
+                categoryIds.contains(SearchCategory.Food.id) -> "#FFFF9933"
                 else -> "#FFF47BCB"
             }
             return Color.parseColor(hex)
@@ -74,19 +74,19 @@ class SampleMarkerFactory(
     private val SymbolDescriptorSearchSuggestions.image: MarkerOptions.Image.Bitmap
         get() {
             val resId = when {
-                categories.contains(SearchCategory.Grocery) -> if (evReachability == NOT_REACHABLE) {
+                categoryIds.contains(SearchCategory.Grocery.id) -> if (evReachability == NOT_REACHABLE) {
                     R.drawable.ic_pin_grocery_not_reachable
                 } else {
                     R.drawable.ic_pin_grocery
                 }
 
-                categories.contains(SearchCategory.Coffee) -> if (evReachability == NOT_REACHABLE) {
+                categoryIds.contains(SearchCategory.Coffee.id) -> if (evReachability == NOT_REACHABLE) {
                     R.drawable.ic_pin_coffee_not_reachable
                 } else {
                     R.drawable.ic_pin_coffee
                 }
 
-                categories.contains(SearchCategory.Food) -> if (evReachability == NOT_REACHABLE) {
+                categoryIds.contains(SearchCategory.Food.id) -> if (evReachability == NOT_REACHABLE) {
                     R.drawable.ic_pin_food_not_reachable
                 } else {
                     R.drawable.ic_pin_food
