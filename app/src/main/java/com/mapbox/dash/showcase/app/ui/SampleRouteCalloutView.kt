@@ -82,7 +82,7 @@ fun SampleRouteCalloutView(state: RouteCalloutUiState, fragment: DashNavigationF
     val prefix = if (state.hasTollRoad) "$ " else ""
     val label = "$prefix $type".trim()
 
-    SampleRouteCalloutViewAnnotation(duration, label, state.layerId, state.isPrimary, state.onClick)
+    SampleRouteCalloutViewAnnotation(duration, label, state.layerId, state.isPrimary, state.routeId, state.onClick)
 }
 
 @Composable
@@ -91,15 +91,10 @@ private fun SampleRouteCalloutViewAnnotation(
     label: String,
     layerId: String,
     isPrimary: Boolean,
+    routeId: String,
     onClick: () -> Unit,
 ) {
-    // key prevents annotation contents from mixing
-    key(
-        duration,
-        label,
-        layerId,
-        isPrimary,
-    ) {
+    key(routeId) {
         val anchorState = remember { mutableStateOf(value = ViewAnnotationAnchor.TOP_LEFT) }
         ViewAnnotation(
             options = viewAnnotationOptions {
