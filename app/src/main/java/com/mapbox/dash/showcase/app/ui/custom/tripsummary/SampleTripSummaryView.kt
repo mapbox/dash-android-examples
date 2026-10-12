@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.sp
 import com.mapbox.dash.driver.presentation.end.TripSummaryUiState
 import com.mapbox.dash.showcase.app.WeatherController
 import kotlin.math.roundToInt
+import com.mapbox.dash.text.R as TextR
+import com.mapbox.dash.theming.R as ThemesR
 
 @Composable
 fun SampleTripSummaryView(
@@ -49,7 +51,7 @@ fun SampleTripSummaryView(
             ),
     ) {
         SampleTripOverviewItems(
-            modifier = Modifier.padding(dimensionResource(com.mapbox.dash.theming.R.dimen.default_margin)),
+            modifier = Modifier.padding(dimensionResource(ThemesR.dimen.default_margin)),
             items = tripSummaryUiState.tripOverviewItems,
             onWaypointClick = tripSummaryUiState.onWaypointClick,
             onEndOfChargeClick = tripSummaryUiState.onOpenSearchForChargeClick,
@@ -58,36 +60,36 @@ fun SampleTripSummaryView(
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(dimensionResource(com.mapbox.dash.theming.R.dimen.default_margin))
+                    .padding(dimensionResource(ThemesR.dimen.default_margin))
                     .padding(bottom = 30.dp),
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(com.mapbox.dash.theming.R.dimen.default_margin)),
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(ThemesR.dimen.default_margin)),
             ) {
                 Text(
-                    text = stringResource(id = com.mapbox.dash.text.R.string.dash_end_active_guidance_edit_trip),
+                    text = stringResource(id = TextR.string.dash_end_active_guidance_edit_trip),
                     fontSize = 36.sp,
                     lineHeight = 48.sp,
                     fontWeight = FontWeight.Normal,
                     color = Color.White,
                     modifier = Modifier
-                        .height(dimensionResource(id = com.mapbox.dash.theming.R.dimen.button_height))
+                        .height(dimensionResource(id = ThemesR.dimen.button_height))
                         .clip(shape = RoundedCornerShape(8.dp))
                         .background(Color(red = 0, green = 122, blue = 255))
                         .clickable(onClick = tripSummaryUiState.onEditTripClick)
-                        .padding(dimensionResource(com.mapbox.dash.theming.R.dimen.default_margin))
+                        .padding(dimensionResource(ThemesR.dimen.default_margin))
                         .wrapContentSize(),
                 )
                 Text(
-                    text = stringResource(id = com.mapbox.dash.text.R.string.dash_end_active_guidance),
+                    text = stringResource(id = TextR.string.dash_end_active_guidance),
                     fontSize = 36.sp,
                     lineHeight = 48.sp,
                     fontWeight = FontWeight.Normal,
                     color = Color.White,
                     modifier = Modifier
-                        .height(dimensionResource(id = com.mapbox.dash.theming.R.dimen.button_height))
+                        .height(dimensionResource(id = ThemesR.dimen.button_height))
                         .clip(shape = RoundedCornerShape(8.dp))
                         .background(Color(red = 255, green = 59, blue = 48))
                         .clickable(onClick = tripSummaryUiState.onEndActiveGuidanceClick)
-                        .padding(dimensionResource(com.mapbox.dash.theming.R.dimen.default_margin))
+                        .padding(dimensionResource(ThemesR.dimen.default_margin))
                         .wrapContentSize(),
                 )
             }

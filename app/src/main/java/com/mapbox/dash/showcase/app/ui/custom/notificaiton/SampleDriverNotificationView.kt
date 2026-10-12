@@ -61,6 +61,9 @@ import com.mapbox.dash.showcase.app.theme.SampleIcons
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
+import com.mapbox.dash.driver.notification.R as DNR
+import com.mapbox.dash.text.R as TextR
+import com.mapbox.dash.theming.R as ThemesR
 
 @Composable
 fun SampleDriverNotificationView(
@@ -72,15 +75,15 @@ fun SampleDriverNotificationView(
         is FasterAlternativeAvailable -> {
             DriverNotificationView(
                 modifier,
-                stringResource(com.mapbox.dash.text.R.string.dash_driver_notification_faster_route_available),
+                stringResource(TextR.string.dash_driver_notification_faster_route_available),
                 context.getString(
-                    com.mapbox.dash.text.R.string.dash_driver_notification_faster_save_time,
+                    TextR.string.dash_driver_notification_faster_save_time,
                     notification.diffDuration.toString(DurationUnit.MINUTES),
                 ),
-                com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_faster_route_available,
-                com.mapbox.dash.text.R.string.dash_driver_notification_show,
+                ThemesR.drawable.ic_navux_driver_notification_faster_route_available,
+                TextR.string.dash_driver_notification_show,
                 { uiState.onAcceptClick(notification) },
-                com.mapbox.dash.text.R.string.dash_driver_notification_faster_route_decline,
+                TextR.string.dash_driver_notification_faster_route_decline,
                 { uiState.onDismissClick(notification) },
             )
         }
@@ -89,16 +92,16 @@ fun SampleDriverNotificationView(
             DriverNotificationView(
                 modifier,
                 context.getString(
-                    com.mapbox.dash.text.R.string.dash_driver_notification_border_crossing_title,
+                    TextR.string.dash_driver_notification_border_crossing_title,
                 ),
                 context.getString(
-                    com.mapbox.dash.text.R.string.dash_driver_notification_border_crossing_distance,
+                    TextR.string.dash_driver_notification_border_crossing_distance,
                     notification.distanceInMeters.toInt().toString(),
                 ),
-                com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_border_crossing,
-                com.mapbox.dash.text.R.string.dash_driver_notification_show,
+                ThemesR.drawable.ic_navux_driver_notification_border_crossing,
+                TextR.string.dash_driver_notification_show,
                 null,
-                com.mapbox.dash.text.R.string.dash_driver_notification_dismiss,
+                TextR.string.dash_driver_notification_dismiss,
                 { uiState.onDismissClick(notification) },
             )
         }
@@ -106,38 +109,38 @@ fun SampleDriverNotificationView(
         is RoadCamera -> {
             val (iconRes, stringRes) = when (notification.roadCameraType) {
                 SPEED_CAMERA -> Pair(
-                    com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_speed_camera,
-                    com.mapbox.dash.text.R.string.dash_driver_notification_speed_camera,
+                    ThemesR.drawable.ic_navux_driver_notification_speed_camera,
+                    TextR.string.dash_driver_notification_speed_camera,
                 )
 
                 SPEED_CAMERA_RED_LIGHT -> Pair(
-                    com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_speed_camera_red_light,
-                    com.mapbox.dash.text.R.string.dash_driver_notification_speed_camera_red_light,
+                    ThemesR.drawable.ic_navux_driver_notification_speed_camera_red_light,
+                    TextR.string.dash_driver_notification_speed_camera_red_light,
                 )
 
                 RED_LIGHT -> Pair(
-                    com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_camera_red_light,
-                    com.mapbox.dash.text.R.string.dash_driver_notification_camera_red_light,
+                    ThemesR.drawable.ic_navux_driver_notification_camera_red_light,
+                    TextR.string.dash_driver_notification_camera_red_light,
                 )
 
                 SPEED_CONTROL_ZONE_ENTER -> Pair(
-                    com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_speed_control_zone,
-                    com.mapbox.dash.text.R.string.dash_driver_notification_speed_control_zone,
+                    ThemesR.drawable.ic_navux_driver_notification_speed_control_zone,
+                    TextR.string.dash_driver_notification_speed_control_zone,
                 )
 
                 SPEED_CONTROL_ZONE_EXIT -> Pair(
-                    com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_speed_control_zone,
-                    com.mapbox.dash.text.R.string.dash_driver_notification_speed_control_zone_exit,
+                    ThemesR.drawable.ic_navux_driver_notification_speed_control_zone,
+                    TextR.string.dash_driver_notification_speed_control_zone_exit,
                 )
 
                 DANGER_ZONE_ENTER -> Pair(
-                    com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_danger_zone,
-                    com.mapbox.dash.text.R.string.dash_driver_notification_danger_zone,
+                    ThemesR.drawable.ic_navux_driver_notification_danger_zone,
+                    TextR.string.dash_driver_notification_danger_zone,
                 )
 
                 DANGER_ZONE_EXIT -> Pair(
-                    com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_danger_zone,
-                    com.mapbox.dash.text.R.string.dash_driver_notification_danger_zone_exit,
+                    ThemesR.drawable.ic_navux_driver_notification_danger_zone,
+                    TextR.string.dash_driver_notification_danger_zone_exit,
                 )
 
                 else -> Pair(null, null)
@@ -150,7 +153,7 @@ fun SampleDriverNotificationView(
                     iconRes,
                     0,
                     null,
-                    com.mapbox.dash.text.R.string.dash_driver_notification_dismiss,
+                    TextR.string.dash_driver_notification_dismiss,
                     { uiState.onDismissClick(notification) },
                 )
             }
@@ -159,15 +162,15 @@ fun SampleDriverNotificationView(
         is SlowTraffic -> {
             DriverNotificationView(
                 modifier,
-                stringResource(com.mapbox.dash.text.R.string.dash_driver_notification_heavy_traffic),
+                stringResource(TextR.string.dash_driver_notification_heavy_traffic),
                 context.getString(
-                    com.mapbox.dash.text.R.string.dash_driver_notification_heavy_traffic_delay,
+                    TextR.string.dash_driver_notification_heavy_traffic_delay,
                     notification.diffDuration.toString(DurationUnit.MINUTES),
                 ),
-                com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_heavy_traffic,
+                ThemesR.drawable.ic_navux_driver_notification_heavy_traffic,
                 0,
                 null,
-                com.mapbox.dash.text.R.string.dash_driver_notification_dismiss,
+                TextR.string.dash_driver_notification_dismiss,
                 { uiState.onDismissClick(notification) },
             )
         }
@@ -183,10 +186,10 @@ fun SampleDriverNotificationView(
                         notification.distanceInMeters?.toInt(),
                     )
                 },
-                com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_universal,
+                ThemesR.drawable.ic_navux_driver_notification_universal,
                 0,
                 null,
-                com.mapbox.dash.text.R.string.dash_driver_notification_dismiss,
+                TextR.string.dash_driver_notification_dismiss,
                 { uiState.onDismissClick(notification) },
                 notification.timeToDismiss,
             )
@@ -198,24 +201,24 @@ fun SampleDriverNotificationView(
                 BetterEvRouteType.EXCLUDE_SERVER_DEFINED_PLANNED_CHARGING,
                 -> Triple(
                     SampleIcons.skipCharging,
-                    context.getString(com.mapbox.dash.text.R.string.dash_driver_notification_better_ev_route_skip_charging),
-                    context.getString(com.mapbox.dash.text.R.string.dash_driver_notification_better_ev_route_skip_charging),
+                    context.getString(TextR.string.dash_driver_notification_better_ev_route_skip_charging),
+                    context.getString(TextR.string.dash_driver_notification_better_ev_route_skip_charging),
                 )
 
                 BetterEvRouteType.INCLUDE_ADDITIONAL_CHARGING -> Triple(
                     SampleIcons.chargingNeeded,
-                    context.getString(com.mapbox.dash.text.R.string.dash_driver_notification_better_ev_route_need_charging),
+                    context.getString(TextR.string.dash_driver_notification_better_ev_route_need_charging),
                     context.getString(
-                        com.mapbox.dash.text.R.string.dash_driver_notification_better_ev_route_soc_details,
+                        TextR.string.dash_driver_notification_better_ev_route_soc_details,
                         notification.minDestinationSoc.toInt(),
                     ),
                 )
 
                 else -> Triple(
                     SampleIcons.fastAlternative,
-                    context.getString(com.mapbox.dash.text.R.string.dash_driver_notification_better_ev_route_general),
+                    context.getString(TextR.string.dash_driver_notification_better_ev_route_general),
                     context.getString(
-                        com.mapbox.dash.text.R.string.dash_driver_notification_better_ev_route_soc_details,
+                        TextR.string.dash_driver_notification_better_ev_route_soc_details,
                         notification.minDestinationSoc.toInt(),
                     ),
                 )
@@ -225,21 +228,21 @@ fun SampleDriverNotificationView(
                 resources.second,
                 resources.third,
                 resources.first,
-                com.mapbox.dash.text.R.string.dash_driver_notification_show,
+                TextR.string.dash_driver_notification_show,
                 { uiState.onAcceptClick(notification) },
-                com.mapbox.dash.text.R.string.dash_driver_notification_dismiss,
+                TextR.string.dash_driver_notification_dismiss,
                 { uiState.onDismissClick(notification) },
             )
         }
         is EvChargingStationBusy -> {
             DriverNotificationView(
                 modifier,
-                context.getString(com.mapbox.dash.text.R.string.dash_driver_notification_busy_station_description),
-                context.getString(com.mapbox.dash.text.R.string.dash_driver_notification_busy_station_title),
-                com.mapbox.dash.theming.R.drawable.ic_navux_driver_notification_ev_charging_station_busy,
-                com.mapbox.dash.text.R.string.dash_driver_notification_show,
+                context.getString(TextR.string.dash_driver_notification_busy_station_description),
+                context.getString(TextR.string.dash_driver_notification_busy_station_title),
+                ThemesR.drawable.ic_navux_driver_notification_ev_charging_station_busy,
+                TextR.string.dash_driver_notification_show,
                 { uiState.onAcceptClick(notification) },
-                com.mapbox.dash.text.R.string.dash_driver_notification_dismiss,
+                TextR.string.dash_driver_notification_dismiss,
                 { uiState.onDismissClick(notification) },
             )
         }
@@ -261,7 +264,7 @@ private fun DriverNotificationView(
     timeToDismiss: Duration? = null,
 ) {
 
-    val defaultPadding = dimensionResource(com.mapbox.dash.driver.notification.R.dimen.driver_notification_view_padding)
+    val defaultPadding = dimensionResource(DNR.dimen.driver_notification_view_padding)
     Column(
         modifier = modifier
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(16.dp))
@@ -297,14 +300,14 @@ private fun DriverNotificationDescription(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
-            modifier = Modifier.size(dimensionResource(com.mapbox.dash.driver.notification.R.dimen.driver_notification_icon_size)),
+            modifier = Modifier.size(dimensionResource(DNR.dimen.driver_notification_icon_size)),
             painter = painterResource(iconId),
             contentDescription = null,
         )
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(start = dimensionResource(com.mapbox.dash.driver.notification.R.dimen.driver_notification_view_padding)),
+                .padding(start = dimensionResource(DNR.dimen.driver_notification_view_padding)),
             verticalArrangement = if (description != null) Arrangement.SpaceBetween else Arrangement.Center,
         ) {
             Text(
@@ -336,7 +339,7 @@ private fun DriverNotificationButtonsContainer(
 
     Column(
         modifier = Modifier,
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(com.mapbox.dash.driver.notification.R.dimen.driver_notification_view_padding)),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(DNR.dimen.driver_notification_view_padding)),
     ) {
 
         if (onAcceptClick != null) {
@@ -393,7 +396,7 @@ fun DriverNotificationButton(
         fontSize = 32.sp,
         fontWeight = FontWeight.SemiBold,
         modifier = modifier
-            .height(dimensionResource(id = com.mapbox.dash.theming.R.dimen.button_height))
+            .height(dimensionResource(id = ThemesR.dimen.button_height))
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(

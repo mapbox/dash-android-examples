@@ -4,6 +4,7 @@ import android.app.Application
 import android.location.LocationManager
 import com.mapbox.annotation.MapboxExperimental
 import com.mapbox.common.location.Location
+import com.mapbox.dash.cluster.ClusterUiMode
 import com.mapbox.dash.cluster.cluster
 import com.mapbox.dash.cluster.mapStyle
 import com.mapbox.dash.logging.LogsExtra
@@ -246,6 +247,8 @@ class ShowcaseApp : Application() {
                     nightStyleUri = NIGHT_MAP_STYLE
                     satelliteStyleUri = SATELLITE_MAP_STYLE
                 }
+
+                uiMode = ClusterUiMode.FollowActivity(MainActivity::class)
             }
         }
 
@@ -259,32 +262,30 @@ class ShowcaseApp : Application() {
      * Interface Docs https://docs.mapbox.com/android/navigation/api/uxframework/1.0.0-beta.40/ev-api/com.mapbox.dash.ev.api/-ev-data-provider/?query=interface%20EvDataProvider
      */
     private fun configureEvProvider() {
-        val evDataProvider = object : EvDataProvider {
-            override val secondsRemainingToCharge = flowOf<Int?>(7200)
-            override val stateOfEnergy: Flow<Energy> = flowOf(60.kiloWattHours)
-            override val isCharging = flowOf(true)
-            override val maxCharge: Flow<Energy> = flowOf(100.kiloWattHours)
-            override val connectorTypes = flowOf(setOf(VehicleEvConnectorType.IEC_TYPE_1_CCS_DC))
-            override val efficiency = flowOf(5f) // 5 kilometers per kWh
-            override val energyConsumptionCurveReal = flowOf("0,300;20,160;80,140;120,180")
-            override val energyConsumptionCurveFreeflow = flowOf("0,300;20,160;80,140;120,180")
-            override val energyConsumptionCurveBlendingRatio = flowOf<String?>(null)
-            override val energyConsumptionCurveSpeedLimit = flowOf<Int?>(null)
-            override val chargingCurve = flowOf(
-                ChargingCurve(
-                    listOf(
-                        ChargingPoint(0.kiloWattHours, 100_000),
-                        ChargingPoint(40.kiloWattHours, 70_000),
-                        ChargingPoint(60.kiloWattHours, 30_000),
-                        ChargingPoint(80.kiloWattHours, 10_000),
-                    ),
-                ),
-            )
-        }
-
         Dash.applyUpdate {
             ev {
-                this.evDataProvider = evDataProvider
+                evDataProvider = object : EvDataProvider {
+                    override val secondsRemainingToCharge = flowOf<Int?>(7200)
+                    override val stateOfEnergy: Flow<Energy> = flowOf(60.kiloWattHours)
+                    override val isCharging = flowOf(true)
+                    override val maxCharge: Flow<Energy> = flowOf(100.kiloWattHours)
+                    override val connectorTypes = flowOf(setOf(VehicleEvConnectorType.IEC_TYPE_1_CCS_DC))
+                    override val efficiency = flowOf(5f) // 5 kilometers per kWh
+                    override val energyConsumptionCurveReal = flowOf("0,300;20,160;80,140;120,180")
+                    override val energyConsumptionCurveFreeflow = flowOf("0,300;20,160;80,140;120,180")
+                    override val energyConsumptionCurveBlendingRatio = flowOf<String?>(null)
+                    override val energyConsumptionCurveSpeedLimit = flowOf<Int?>(null)
+                    override val chargingCurve = flowOf(
+                        ChargingCurve(
+                            listOf(
+                                ChargingPoint(0.kiloWattHours, 100_000),
+                                ChargingPoint(40.kiloWattHours, 70_000),
+                                ChargingPoint(60.kiloWattHours, 30_000),
+                                ChargingPoint(80.kiloWattHours, 10_000),
+                            ),
+                        ),
+                    )
+                }
             }
         }
     }

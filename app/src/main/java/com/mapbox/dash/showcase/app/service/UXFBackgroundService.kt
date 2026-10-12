@@ -15,7 +15,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.event.NavigationState
-import com.mapbox.dash.showcase.app.R
 import com.mapbox.dash.showcase.app.getRandomDestinationAround
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
