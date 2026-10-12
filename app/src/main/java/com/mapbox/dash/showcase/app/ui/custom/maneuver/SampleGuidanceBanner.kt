@@ -37,6 +37,8 @@ import com.mapbox.dash.maneuver.presentation.ui.ManeuverUiState
 import com.mapbox.dash.showcase.app.R
 import com.mapbox.navigation.tripdata.maneuver.api.MapboxTurnIconsApi
 import com.mapbox.navigation.tripdata.maneuver.model.TurnIconResources
+import com.mapbox.dash.maneuver.R as ManeuverR
+import com.mapbox.dash.text.R as TextR
 
 @Composable
 fun SampleGuidanceBanner(modifier: Modifier, state: ManeuverUiState?) {
@@ -56,7 +58,7 @@ fun SampleGuidanceBanner(modifier: Modifier, state: ManeuverUiState?) {
     ) {
         if (!isWaypointArrival && maneuverInfo != null) {
             ManeuverTurnIcon(
-                modifier = Modifier.size(dimensionResource(com.mapbox.dash.maneuver.R.dimen.maneuver_view_primary_turn_icon_size)),
+                modifier = Modifier.size(dimensionResource(ManeuverR.dimen.maneuver_view_primary_turn_icon_size)),
                 iconStyle = R.style.ManeuverTurnIconStylePrimary,
                 type = maneuverInfo.maneuver.primary.type,
                 degrees = maneuverInfo.maneuver.primary.degrees,
@@ -66,7 +68,7 @@ fun SampleGuidanceBanner(modifier: Modifier, state: ManeuverUiState?) {
         }
         Text(
             text = if (isWaypointArrival || maneuverInfo == null) {
-                AnnotatedString(stringResource(id = com.mapbox.dash.text.R.string.dash_arrived_text))
+                AnnotatedString(stringResource(id = TextR.string.dash_arrived_text))
             } else {
                 buildAnnotatedString {
                     when (val stepDistance = maneuverInfo.formattedStepDistance) {

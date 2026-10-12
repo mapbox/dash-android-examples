@@ -1,4 +1,4 @@
-@file:SuppressWarnings("MagicNumber")
+@file:Suppress("MagicNumber")
 
 package com.mapbox.dash.showcase.app
 
@@ -15,6 +15,7 @@ import com.mapbox.dash.sdk.ev.domain.model.ChargeStatePoint
 import com.mapbox.dash.showcase.app.theme.SampleColors
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
+import com.mapbox.maps.MapboxDelicateApi
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMapComposable
@@ -43,13 +44,14 @@ import com.mapbox.navigation.weather.model.WeatherResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
+import kotlin.time.Duration.Companion.seconds
 
 private const val TAG = "CustomMapLayer"
 private const val ID_IMAGE_SOURCE = "image_source-id"
 
 private const val POINTS_URL = "https://opendata.arcgis.com/datasets/01d0ff375695466d93d1fa2a976e2bdd_5.geojson"
 
-@OptIn(MapboxExperimental::class)
+@OptIn(MapboxExperimental::class, MapboxDelicateApi::class)
 @SuppressLint("IncorrectNumberOfArgumentsInExpression")
 @Composable
 @MapboxMapComposable
@@ -57,8 +59,8 @@ fun CustomLayerBlock() {
     val day = rememberStyleImage(imageId = "fire-station-day", resourceId = R.drawable.ic_fire_extinguisher_day)
     val night = rememberStyleImage(imageId = "fire-station-night", resourceId = R.drawable.ic_fire_extinguisher_night)
 
-    MapEffect(Unit) {
-        it.mapboxMap.style?.let { style ->
+    MapEffect(Unit) { mapView ->
+        mapView.mapboxMap.style?.let { style ->
             style.addImage(day.imageId, day.image)
             style.addImage(night.imageId, night.image)
         }
@@ -132,13 +134,13 @@ fun WeatherLayer() {
         ImageBitmap.imageResource(R.drawable.southeast_radar_2).asAndroidBitmap(),
         ImageBitmap.imageResource(R.drawable.southeast_radar_3).asAndroidBitmap(),
     )
-    MapEffect(Unit) {
-        val imageSource: ImageSource? = it.mapboxMap.getSourceAs(ID_IMAGE_SOURCE)
+    MapEffect(Unit) { mapView ->
+        val imageSource = mapView.mapboxMap.getSourceAs<ImageSource>(ID_IMAGE_SOURCE)
         var index = 0
-        imageSource?.let {
+        if (imageSource != null) {
             while (true) {
                 imageSource.updateImage(bitmaps[index])
-                delay(1000)
+                delay(1.seconds)
                 index = (index + 1) % 4
             }
         }
@@ -155,17 +157,18 @@ fun WeatherLayer() {
     )
 }
 
-@OptIn(MapboxExperimental::class, ExperimentalPreviewMapboxNavigationAPI::class)
+@OptIn(MapboxExperimental::class, ExperimentalPreviewMapboxNavigationAPI::class, MapboxDelicateApi::class)
 @SuppressLint("IncorrectNumberOfArgumentsInExpression")
 @Composable
 @MapboxMapComposable
 fun WeatherAlongRouteBlock(weatherWarningsAlongRoute: Flow<List<WeatherResult>>, clickCallback: (String) -> Unit) {
-    val warnings = weatherWarningsAlongRoute.collectAsState(null).value?.map { result ->
+    val warnings = weatherWarningsAlongRoute.collectAsState(null).value?.flatMap { result ->
         val location = result.location
-        result.conditions.map {
-            Warning(location, it.warning.orEmpty(), it.dateTime, it.fields.weatherPhrase.orEmpty())
+        result.conditions.map { condition ->
+            val phrase = condition.fields.weatherPhrase.orEmpty()
+            Warning(location, condition.warning.orEmpty(), condition.dateTime, phrase)
         }
-    }?.flatten() ?: return
+    } ?: return
 
     if (warnings.isEmpty()) return
 
@@ -179,8 +182,8 @@ fun WeatherAlongRouteBlock(weatherWarningsAlongRoute: Flow<List<WeatherResult>>,
 
     val icon = rememberStyleImage("severe-weather-icon", com.mapbox.dash.theming.R.drawable.ic_marker_weather)
 
-    MapEffect(key1 = features.size) {
-        it.mapboxMap.getStyle { style ->
+    MapEffect(key1 = features.size) { mapView ->
+        mapView.mapboxMap.getStyle { style ->
             style.addImage(icon.imageId, icon.image)
         }
     }
@@ -204,25 +207,25 @@ fun WeatherAlongRouteBlock(weatherWarningsAlongRoute: Flow<List<WeatherResult>>,
     }
 }
 
-@OptIn(MapboxExperimental::class)
+@OptIn(MapboxExperimental::class, MapboxDelicateApi::class)
 @Composable
 @MapboxMapComposable
 fun EvChargePointBlock(chargePoints: Flow<List<ChargeStatePoint>>, clickCallback: (String) -> Unit) {
     val icon = rememberStyleImage(imageId = "charge-level-icon", resourceId = R.drawable.ic_sample_charge_point)
 
-    MapEffect(Unit) {
-        it.mapboxMap.getStyle { style ->
+    MapEffect(Unit) { mapView ->
+        mapView.mapboxMap.getStyle { style ->
             style.addImage(icon.imageId, icon.image)
         }
     }
 
-    val features = produceState<List<Feature>>(initialValue = emptyList()) {
+    val features = produceState(initialValue = emptyList()) {
         chargePoints.collect { points ->
-            value = points.map {
+            value = points.map { point ->
                 val properties = JsonObject()
-                val text = "Charge level = ${it.chargeLevel}"
+                val text = "Charge level = ${point.chargeLevel}"
                 properties.addProperty("text", text)
-                Feature.fromGeometry(it.point, properties, text)
+                Feature.fromGeometry(point.point, properties, text)
             }
         }
     }.value

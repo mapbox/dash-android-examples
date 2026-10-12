@@ -4,7 +4,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import com.mapbox.dash.showcase.app.R
 
 internal enum class UXFBackgroundServiceAction(
     private val title: String,
