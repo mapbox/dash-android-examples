@@ -133,7 +133,7 @@ object SampleDestinationPreview {
                     )
                 }
 
-                place.arrivalInformation.apply {
+                place.arrivalInformation.content?.apply {
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()

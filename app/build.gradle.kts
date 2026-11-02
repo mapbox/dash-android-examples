@@ -1,6 +1,9 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
     id("kotlin-parcelize")
 }
 
@@ -63,9 +66,6 @@ android {
         compose = true
         buildConfig = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15"
-    }
     packaging {
         resources {
             excludes.add("META-INF/DEPENDENCIES")
@@ -74,18 +74,20 @@ android {
             excludes.add("META-INF/INDEX.LIST")
         }
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
     lint {
         checkOnly += "RestrictedApi"
         error += "RestrictedApi"
     }
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
+    }
+}
+
 dependencies {
-    val uxfVersion = "1.32.3"
+    val uxfVersion = "1.34.0"
     implementation("com.mapbox.navigationux:android:$uxfVersion")
     implementation("com.mapbox.navigationux:cluster:$uxfVersion")
     implementation("com.mapbox.navigationux:data-inputs:$uxfVersion")
