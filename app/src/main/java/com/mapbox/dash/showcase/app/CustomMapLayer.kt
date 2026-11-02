@@ -59,8 +59,8 @@ fun CustomLayerBlock() {
     val day = rememberStyleImage(imageId = "fire-station-day", resourceId = R.drawable.ic_fire_extinguisher_day)
     val night = rememberStyleImage(imageId = "fire-station-night", resourceId = R.drawable.ic_fire_extinguisher_night)
 
-    MapEffect(Unit) {
-        it.mapboxMap.style?.let { style ->
+    MapEffect(Unit) { mapView ->
+        mapView.mapboxMap.style?.let { style ->
             style.addImage(day.imageId, day.image)
             style.addImage(night.imageId, night.image)
         }
@@ -134,10 +134,10 @@ fun WeatherLayer() {
         ImageBitmap.imageResource(R.drawable.southeast_radar_2).asAndroidBitmap(),
         ImageBitmap.imageResource(R.drawable.southeast_radar_3).asAndroidBitmap(),
     )
-    MapEffect(Unit) {
-        val imageSource: ImageSource? = it.mapboxMap.getSourceAs(ID_IMAGE_SOURCE)
+    MapEffect(Unit) { mapView ->
+        val imageSource = mapView.mapboxMap.getSourceAs<ImageSource>(ID_IMAGE_SOURCE)
         var index = 0
-        imageSource?.let {
+        if (imageSource != null) {
             while (true) {
                 imageSource.updateImage(bitmaps[index])
                 delay(1.seconds)
@@ -164,8 +164,9 @@ fun WeatherLayer() {
 fun WeatherAlongRouteBlock(weatherWarningsAlongRoute: Flow<List<WeatherResult>>, clickCallback: (String) -> Unit) {
     val warnings = weatherWarningsAlongRoute.collectAsState(null).value?.flatMap { result ->
         val location = result.location
-        result.conditions.map {
-            Warning(location, it.warning.orEmpty(), it.dateTime, it.fields.weatherPhrase.orEmpty())
+        result.conditions.map { condition ->
+            val phrase = condition.fields.weatherPhrase.orEmpty()
+            Warning(location, condition.warning.orEmpty(), condition.dateTime, phrase)
         }
     } ?: return
 
@@ -181,8 +182,8 @@ fun WeatherAlongRouteBlock(weatherWarningsAlongRoute: Flow<List<WeatherResult>>,
 
     val icon = rememberStyleImage("severe-weather-icon", com.mapbox.dash.theming.R.drawable.ic_marker_weather)
 
-    MapEffect(key1 = features.size) {
-        it.mapboxMap.getStyle { style ->
+    MapEffect(key1 = features.size) { mapView ->
+        mapView.mapboxMap.getStyle { style ->
             style.addImage(icon.imageId, icon.image)
         }
     }
@@ -212,19 +213,19 @@ fun WeatherAlongRouteBlock(weatherWarningsAlongRoute: Flow<List<WeatherResult>>,
 fun EvChargePointBlock(chargePoints: Flow<List<ChargeStatePoint>>, clickCallback: (String) -> Unit) {
     val icon = rememberStyleImage(imageId = "charge-level-icon", resourceId = R.drawable.ic_sample_charge_point)
 
-    MapEffect(Unit) {
-        it.mapboxMap.getStyle { style ->
+    MapEffect(Unit) { mapView ->
+        mapView.mapboxMap.getStyle { style ->
             style.addImage(icon.imageId, icon.image)
         }
     }
 
     val features = produceState(initialValue = emptyList()) {
         chargePoints.collect { points ->
-            value = points.map {
+            value = points.map { point ->
                 val properties = JsonObject()
-                val text = "Charge level = ${it.chargeLevel}"
+                val text = "Charge level = ${point.chargeLevel}"
                 properties.addProperty("text", text)
-                Feature.fromGeometry(it.point, properties, text)
+                Feature.fromGeometry(point.point, properties, text)
             }
         }
     }.value
