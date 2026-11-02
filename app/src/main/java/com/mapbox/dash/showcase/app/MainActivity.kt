@@ -911,7 +911,7 @@ class MainActivity : DrawerActivity() {
                     Dash.applyUpdate {
                         mapStyle {
                             if (enabled) {
-                                val markerFactory = SampleMarkerFactory(this@MainActivity)
+                                val markerFactory = SampleMarkerFactory()
                                 searchSuggestionsMarkerFactory = markerFactory
                                 routePointMarkerFactory = markerFactory
                             } else {
