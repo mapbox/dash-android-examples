@@ -149,7 +149,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.emptyFlow
@@ -1420,13 +1419,6 @@ class MainActivity : DrawerActivity() {
         dashNavigationFragmentFlow.filterNotNull().observeWhenStarted(lifecycleOwner = this) { dashNavigationFragment ->
             dashNavigationFragment.setLeftSidebar(ShowcaseLeftSidebarComposer(layoutVM, dashNavigationFragment))
             dashNavigationFragment.setRightSidebar(ShowcaseRightSidebarComposer(layoutVM, weatherController))
-        }
-        repeatWhenStarted(lifecycleOwner = this) {
-            dashNavigationFragmentFlow.filterNotNull().collectLatest { fragment ->
-                fragment.observeEvRangeMapState().collect { state ->
-                    fragment.setAdditionalPointsToFrame(state.rangeMapFramePoints)
-                }
-            }
         }
     }
 

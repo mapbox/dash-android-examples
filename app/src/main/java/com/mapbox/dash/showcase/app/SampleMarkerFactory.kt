@@ -1,6 +1,5 @@
 package com.mapbox.dash.showcase.app
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.util.Log
@@ -27,7 +26,7 @@ class SampleMarkerFactory(
      * Creates a marker for search suggestions symbol descriptors.
      */
     override fun create(
-        activity: Activity,
+        context: Context,
         symbolDescriptor: SymbolDescriptorSearchSuggestions,
         selected: Boolean,
     ): MarkerOptions {
@@ -48,7 +47,7 @@ class SampleMarkerFactory(
      * Creates a marker for route point symbol descriptors.
      */
     override fun create(
-        activity: Activity,
+        context: Context,
         symbolDescriptor: SymbolDescriptorRoutePoint,
         selected: Boolean,
     ): MarkerOptions {

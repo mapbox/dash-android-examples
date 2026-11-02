@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
     id("kotlin-parcelize")
 }
 
@@ -63,9 +64,6 @@ android {
         compose = true
         buildConfig = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15"
-    }
     packaging {
         resources {
             excludes.add("META-INF/DEPENDENCIES")
@@ -74,13 +72,15 @@ android {
             excludes.add("META-INF/INDEX.LIST")
         }
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
     lint {
         checkOnly += "RestrictedApi"
         error += "RestrictedApi"
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
     }
 }
 
