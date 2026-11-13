@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalPreviewMapboxNavigationAPI::class)
-
 package com.mapbox.dash.showcase.app.ui
 
 import android.content.res.Configuration
@@ -29,7 +27,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.mapbox.dash.driver.presentation.markers.RouteCalloutUiState
 import com.mapbox.dash.sdk.Dash
-import com.mapbox.dash.sdk.DashNavigationFragment
+import com.mapbox.dash.sdk.DashPresenter
 import com.mapbox.dash.sdk.event.DashCameraMode
 import com.mapbox.dash.sdk.event.NavigationState
 import com.mapbox.maps.ViewAnnotationAnchor
@@ -39,16 +37,15 @@ import com.mapbox.maps.viewannotation.OnViewAnnotationUpdatedListener
 import com.mapbox.maps.viewannotation.annotatedLayerFeature
 import com.mapbox.maps.viewannotation.annotationAnchors
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
-import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun SampleRouteCalloutView(state: RouteCalloutUiState, fragment: DashNavigationFragment) {
+fun SampleRouteCalloutView(state: RouteCalloutUiState, presenter: DashPresenter) {
     val cameraMode = produceState<Int?>(initialValue = null) {
-        fragment.observeCameraState().collect { value = it.mode }
+        presenter.observeCameraState().collect { value = it.mode }
     }.value ?: return
     val navigationState = produceState<NavigationState?>(initialValue = null) {
         Dash.controller.observeNavigationState().collect { value = it }

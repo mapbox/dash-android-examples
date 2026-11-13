@@ -19,34 +19,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mapbox.dash.sdk.DashNavigationFragment
+import com.mapbox.dash.sdk.DashPresenter
 import com.mapbox.dash.sdk.base.layer.DashMapStyleLayer
 import com.mapbox.dash.sdk.base.layer.DashMapStyleLayersConfig
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
 
 private const val TRANSIT_LAYER_ID = "transit-label"
 private const val POI_LAYER_ID = "poi-label"
 
 @Composable
-fun LayersManagerCard(dashNavigationFragmentFlow: Flow<DashNavigationFragment?>) {
+fun LayersManagerCard(dashPresenter: DashPresenter) {
     val togglesVisible = rememberSaveable { mutableStateOf(false) }
     val distractingElementsEnabled = rememberSaveable { mutableStateOf(false) }
     val transitLayerVisible = rememberSaveable { mutableStateOf(true) }
     val poiLayerVisible = rememberSaveable { mutableStateOf(true) }
     LaunchedEffect(distractingElementsEnabled.value, transitLayerVisible.value, poiLayerVisible.value) {
-        dashNavigationFragmentFlow.filterNotNull().collect { dashNavigationFragment ->
-            val layers = if (distractingElementsEnabled.value) {
-                emptyList()
-            } else {
-                listOf(
-                    getTransitLayer(visible = transitLayerVisible.value),
-                    getPoiLayer(visible = poiLayerVisible.value),
-                )
-            }
-            val mapStyleLayersConfig = DashMapStyleLayersConfig(layers)
-            dashNavigationFragment.setMapStyleLayersConfig(mapStyleLayersConfig)
+        val layers = if (distractingElementsEnabled.value) {
+            emptyList()
+        } else {
+            listOf(
+                getTransitLayer(visible = transitLayerVisible.value),
+                getPoiLayer(visible = poiLayerVisible.value),
+            )
         }
+        val mapStyleLayersConfig = DashMapStyleLayersConfig(layers)
+        dashPresenter.setMapStyleLayersConfig(mapStyleLayersConfig)
     }
     Column(
         modifier = Modifier

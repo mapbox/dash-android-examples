@@ -2,7 +2,7 @@ package com.mapbox.dash.showcase.app
 
 import android.util.Log
 import com.mapbox.dash.sdk.Dash
-import com.mapbox.dash.sdk.DashNavigationFragment
+import com.mapbox.dash.sdk.DashPresenter
 import com.mapbox.geojson.Point
 import com.mapbox.navigation.base.ExperimentalPreviewMapboxNavigationAPI
 import com.mapbox.navigation.base.route.NavigationRoute
@@ -12,13 +12,9 @@ import com.mapbox.navigation.weather.model.WeatherIconCode
 import com.mapbox.navigation.weather.model.WeatherQuery
 import com.mapbox.navigation.weather.model.WeatherSystemOfMeasurement
 import com.mapbox.turf.TurfMeasurement
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import java.util.Date
@@ -27,12 +23,12 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
 @Suppress("ComplexCondition")
-@OptIn(ExperimentalPreviewMapboxNavigationAPI::class, FlowPreview::class, ExperimentalCoroutinesApi::class)
-class WeatherController(dashNavigationFragmentFlow: Flow<DashNavigationFragment?>) {
+@OptIn(ExperimentalPreviewMapboxNavigationAPI::class, FlowPreview::class)
+class WeatherController(dashPresenter: DashPresenter) {
 
     private val weatherApi = MapboxWeatherApi()
-    private val observeCameraCenter = dashNavigationFragmentFlow
-        .flatMapLatest { it?.observeCameraState() ?: emptyFlow() }
+    private val observeCameraCenter = dashPresenter
+        .observeCameraState()
         .debounce(1.seconds)
         .mapNotNull { it.center }
         .distinctUntilChanged { old, new ->
@@ -178,7 +174,7 @@ class WeatherController(dashNavigationFragmentFlow: Flow<DashNavigationFragment?
         )
     }
 
-    companion object {
+    private companion object {
         private const val TAG = "WeatherViewModel"
         private const val MIN_DISTANCE_IN_KM = 25
     }

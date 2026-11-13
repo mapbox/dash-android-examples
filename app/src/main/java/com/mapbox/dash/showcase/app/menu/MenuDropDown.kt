@@ -22,30 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
-import com.mapbox.dash.sdk.DashNavigationFragment
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filterNotNull
-
-@Composable
-fun MenuDropDown(
-    options: List<String>,
-    initial: String,
-    dashNavigationFragmentFlow: Flow<DashNavigationFragment?>,
-    onValueChange: (DashNavigationFragment, String) -> Unit,
-    label: String,
-) {
-    MenuDropDown(
-        options = options,
-        initial = initial,
-        onValueChange = { value ->
-            dashNavigationFragmentFlow.filterNotNull().collect { dashNavigationFragment ->
-                onValueChange(dashNavigationFragment, value)
-            }
-        },
-        label = label,
-    )
-}
 
 @Composable
 fun MenuDropDown(
