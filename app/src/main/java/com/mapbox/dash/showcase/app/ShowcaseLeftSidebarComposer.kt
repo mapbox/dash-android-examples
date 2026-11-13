@@ -23,14 +23,14 @@ import androidx.compose.ui.unit.dp
 import com.mapbox.dash.driver.presentation.DefaultLeftSidebarComposer
 import com.mapbox.dash.driver.presentation.SidebarComposer
 import com.mapbox.dash.driver.presentation.SidebarScope
-import com.mapbox.dash.sdk.DashNavigationFragment
+import com.mapbox.dash.sdk.DashPresenter
 import com.mapbox.dash.sdk.event.DashCameraButtonState
 import com.mapbox.dash.sdk.event.DashCameraMode
 import com.mapbox.dash.sdk.event.DashCameraPerspective
 
 class ShowcaseLeftSidebarComposer(
     private val layoutViewModel: LayoutViewModel,
-    private val dashNavigationFragment: DashNavigationFragment,
+    private val dashPresenter: DashPresenter,
 ) : SidebarComposer by DefaultLeftSidebarComposer {
 
     @Composable
@@ -55,7 +55,7 @@ class ShowcaseLeftSidebarComposer(
     @Composable
     private fun CustomCameraButton(modifier: Modifier = Modifier) {
         val cameraButtonState = produceState<DashCameraButtonState?>(initialValue = null) {
-            dashNavigationFragment.observeCameraButtonState().collect { value = it }
+            dashPresenter.observeCameraButtonState().collect { value = it }
         }.value ?: return
         if (cameraButtonState.visible) {
             val icon = when (cameraButtonState.cameraMode) {

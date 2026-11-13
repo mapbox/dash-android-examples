@@ -2,6 +2,7 @@ package com.mapbox.dash.showcase.app
 
 import android.os.Bundle
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.setContent
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
@@ -36,25 +37,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.mapbox.dash.showcase.app.databinding.ActivityDrawerBinding
 
 abstract class DrawerActivity : AppCompatActivity() {
-
-    private val binding by lazy { ActivityDrawerBinding.inflate(layoutInflater) }
 
     private val drawerOpened = mutableStateOf(false)
 
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding.drawer.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
-        binding.drawer.setContent {
+        setContent {
             Box(contentAlignment = Alignment.CenterStart) {
+                ContainerView()
                 Image(
                     modifier = Modifier
                         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Start))
@@ -99,8 +96,10 @@ abstract class DrawerActivity : AppCompatActivity() {
                 }
             }
         }
-        setContentView(binding.root)
     }
+
+    @Composable
+    abstract fun ContainerView()
 
     @Composable
     abstract fun MenuView(modifier: Modifier)

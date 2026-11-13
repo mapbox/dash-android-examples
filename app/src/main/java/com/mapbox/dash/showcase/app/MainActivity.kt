@@ -49,9 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.mapbox.dash.destination.preview.places.DefaultPlacesPreview
 import com.mapbox.dash.destination.preview.presentation.DefaultDestinationPreview
@@ -76,7 +73,8 @@ import com.mapbox.dash.maneuver.presentation.ui.DefaultManeuverView
 import com.mapbox.dash.maneuver.presentation.ui.DefaultUpcomingManeuversView
 import com.mapbox.dash.route.restore.DefaultResumeGuidanceView
 import com.mapbox.dash.sdk.Dash
-import com.mapbox.dash.sdk.DashNavigationFragment
+import com.mapbox.dash.sdk.DashPresenter
+import com.mapbox.dash.sdk.DashScreen
 import com.mapbox.dash.sdk.config.api.DEFAULT_3D_STYLE
 import com.mapbox.dash.sdk.config.api.EngineType
 import com.mapbox.dash.sdk.config.api.MapStyleMode
@@ -101,7 +99,6 @@ import com.mapbox.dash.sdk.config.api.voices
 import com.mapbox.dash.sdk.data.inputs.updateCompassData
 import com.mapbox.dash.sdk.map.presentation.ui.DefaultRecenterButton
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
-import com.mapbox.dash.sdk.search.api.DashNavigationSuggestion
 import com.mapbox.dash.sdk.search.api.DashSearchResult
 import com.mapbox.dash.sdk.search.api.DashSearchResultType
 import com.mapbox.dash.sdk.storage.ExternalProfile
@@ -143,20 +140,10 @@ import com.mapbox.navigation.mapgpt.stopMapGptConversation
 import com.mapbox.navigation.mapgpt.ui.MapGptCarouselCardParams
 import com.mapbox.navigation.mapgpt.updateMapGptContextOverrides
 import com.mapbox.navigation.mapgpt.useroutput.PrebuiltMapGptAvatars
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
@@ -164,32 +151,16 @@ import com.mapbox.dash.theming.R as ThemesR
 import com.mapbox.map.gpt.R as MapGptR
 
 @Suppress("MagicNumber", "LargeClass")
-@OptIn(
-    ExperimentalCoroutinesApi::class, ExperimentalPreviewMapboxNavigationAPI::class,
-    MapboxExperimental::class, FlowPreview::class,
-)
+@OptIn(ExperimentalPreviewMapboxNavigationAPI::class, MapboxExperimental::class, FlowPreview::class)
 class MainActivity : DrawerActivity() {
 
     private val mapGptVM by viewModels<MapGptViewModel>()
     private val layoutVM by viewModels<LayoutViewModel>()
     private val evViewModel by viewModels<EvViewModel>()
 
-    private val fragmentFlow by lazy {
-        callbackFlow {
-            val callbacks = object : FragmentManager.FragmentLifecycleCallbacks() {
-                override fun onFragmentCreated(fm: FragmentManager, fragment: Fragment, savedInstanceState: Bundle?) {
-                    trySend(fragment)
-                }
-            }
-            supportFragmentManager.registerFragmentLifecycleCallbacks(callbacks, false)
-            awaitClose { supportFragmentManager.unregisterFragmentLifecycleCallbacks(callbacks) }
-        }.stateIn(lifecycleScope, SharingStarted.Eagerly, supportFragmentManager.findFragmentById(R.id.container))
-    }
+    private val presenter by lazy { DashPresenter(activity = this) }
 
-    private val dashNavigationFragmentFlow by lazy {
-        fragmentFlow.map { it as? DashNavigationFragment }
-    }
-    private val weatherController by lazy { WeatherController(dashNavigationFragmentFlow) }
+    private val weatherController by lazy { WeatherController(presenter) }
 
     private val searchItem = buildSearchItem()
     private var searchJob: Job? = null
@@ -197,17 +168,22 @@ class MainActivity : DrawerActivity() {
     private val sampleSensorEventManager by lazy {
         val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         val magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
-        if (accelerometer == null) {
-            Log.d(TAG, "Accelerometer is not available")
-            null
-        } else if (magnetometer == null) {
-            Log.d(TAG, "Magnetometer is not available")
-            null
-        } else if (!isLocationPermissionGranted()) {
-            Log.d(TAG, "LocationPermission is not granted")
-            null
-        } else {
-            SampleSensorEventManager(accelerometer, magnetometer)
+        when {
+            accelerometer == null -> {
+                Log.d(TAG, "Accelerometer is not available")
+                null
+            }
+            magnetometer == null -> {
+                Log.d(TAG, "Magnetometer is not available")
+                null
+            }
+            isLocationPermissionGranted() -> {
+                SampleSensorEventManager(accelerometer, magnetometer)
+            }
+            else -> {
+                Log.d(TAG, "LocationPermission is not granted")
+                null
+            }
         }
     }
 
@@ -232,21 +208,8 @@ class MainActivity : DrawerActivity() {
         override val routablePoints = null
     }
 
-    private fun getDashNavigationFragment(): DashNavigationFragment? {
-        return fragmentFlow.value as? DashNavigationFragment
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (savedInstanceState == null) {
-            val newFragment = if (BuildConfig.HEADLESS_MODE_ENABLED) {
-                HeadlessModeFragment.newInstance()
-            } else {
-                DashNavigationFragment.newInstance()
-            }
-            supportFragmentManager.commit { replace(R.id.container, newFragment) }
-        }
 
         initCustomizationMenu()
         registerEventsObservers()
@@ -291,14 +254,23 @@ class MainActivity : DrawerActivity() {
 
     override fun onPause() {
         super.onPause()
-        sampleSensorEventManager?.let {
-            sensorManager.unregisterListener(it)
+        sampleSensorEventManager?.let { listener ->
+            sensorManager.unregisterListener(listener)
         }
     }
 
     override fun onStop() {
         super.onStop()
         Dash.controller.stopMapGptConversation()
+    }
+
+    @Composable
+    override fun ContainerView() {
+        if (layoutVM.headlessMode.value) {
+            HeadlessModeScreen(mapGptVM)
+        } else {
+            DashScreen(presenter)
+        }
     }
 
     @Composable
@@ -317,19 +289,7 @@ class MainActivity : DrawerActivity() {
             )
             MenuSwitch(
                 text = "HEADLESS MODE",
-                flow = fragmentFlow,
-                transform = { it is HeadlessModeFragment },
-                onCheckedChange = { enabled ->
-                    val currentFragment = fragmentFlow.value
-                    val newFragment = if (enabled) {
-                        if (currentFragment is HeadlessModeFragment) return@MenuSwitch
-                        HeadlessModeFragment.newInstance()
-                    } else {
-                        if (currentFragment is DashNavigationFragment) return@MenuSwitch
-                        DashNavigationFragment.newInstance()
-                    }
-                    supportFragmentManager.commit { replace(R.id.container, newFragment) }
-                },
+                state = layoutVM.headlessMode,
             )
             MenuSwitch(
                 text = "SIMULATE LOCATION",
@@ -389,11 +349,10 @@ class MainActivity : DrawerActivity() {
                     MapLayer.WeatherAlongRoute.name, MapLayer.EvChargePoint.name,
                 ),
                 initial = MapLayer.Default.name,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onValueChange = { dashNavigationFragment, mapLayer ->
+                onValueChange = { mapLayer ->
                     when (MapLayer.valueOf(mapLayer)) {
-                        MapLayer.Default -> dashNavigationFragment.setMapLayer()
-                        MapLayer.Custom -> dashNavigationFragment.setMapLayer(
+                        MapLayer.Default -> presenter.setMapLayer()
+                        MapLayer.Custom -> presenter.setMapLayer(
                             middleSlot = {
                                 CustomLayerBlock()
                             },
@@ -401,14 +360,14 @@ class MainActivity : DrawerActivity() {
                                 WeatherLayer()
                             },
                         )
-                        MapLayer.WeatherAlongRoute -> dashNavigationFragment.setMapLayer(
+                        MapLayer.WeatherAlongRoute -> presenter.setMapLayer(
                             topSlot = {
                                 WeatherAlongRouteBlock(weatherController.weatherWarningsAlongRoute) { message ->
                                     Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
                                 }
                             },
                         )
-                        MapLayer.EvChargePoint -> dashNavigationFragment.setMapLayer(
+                        MapLayer.EvChargePoint -> presenter.setMapLayer(
                             topSlot = {
                                 EvChargePointBlock(evViewModel.chargePoints) { message ->
                                     Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
@@ -419,7 +378,7 @@ class MainActivity : DrawerActivity() {
                 },
                 label = "Map Layer",
             )
-            LayersManagerCard(dashNavigationFragmentFlow)
+            LayersManagerCard(presenter)
             MenuSwitch(
                 text = "ENABLE MAPGPT",
                 initial = BuildConfig.MAP_GPT_ENABLED,
@@ -648,24 +607,6 @@ class MainActivity : DrawerActivity() {
                 },
             )
             MenuSwitch(
-                text = "SET NAVIGATION SUGGESTIONS",
-                initial = false,
-                onCheckedChange = { enabled ->
-                    if (enabled) {
-                        combine(
-                            Dash.controller.observeFavorites(),
-                            Dash.controller.observeHistory(),
-                        ) { favorites, history -> favorites + history }
-                            .collect { records ->
-                                val suggestions = records.map { DashNavigationSuggestion(it) }
-                                Dash.controller.setNavigationSuggestions(suggestions)
-                            }
-                    } else {
-                        Dash.controller.setNavigationSuggestions(emptyList())
-                    }
-                },
-            )
-            MenuSwitch(
                 text = "SET REVERSE UI MODE",
                 initial = false,
                 onCheckedChange = { enabled ->
@@ -711,7 +652,7 @@ class MainActivity : DrawerActivity() {
                 onClick = {
                     val location = Dash.controller.observeRawLocation().first()
                     val destination = location.getRandomDestinationAround()
-                    getDashNavigationFragment()?.setDestination(destination)
+                    presenter.setDestination(destination)
                 },
             )
             MenuButton(
@@ -728,11 +669,11 @@ class MainActivity : DrawerActivity() {
             )
             MenuButton(
                 text = "SHOW EV RANGE MAP",
-                onClick = { getDashNavigationFragment()?.showEvRangeMap() },
+                onClick = { presenter.showEvRangeMap() },
             )
             MenuButton(
                 text = "HIDE EV RANGE MAP",
-                onClick = { getDashNavigationFragment()?.hideEvRangeMap() },
+                onClick = { presenter.hideEvRangeMap() },
             )
             val fullScreenSearchQuery = rememberSaveable { mutableStateOf("") }
             MenuEditText(
@@ -745,14 +686,14 @@ class MainActivity : DrawerActivity() {
                     closeDrawers()
                     val query = fullScreenSearchQuery.value
                     val newYork = Point.fromLngLat(-73.98200596982161, 40.72726118601179)
-                    getDashNavigationFragment()?.openSearch(query, newYork)
+                    presenter.openSearch(query, newYork)
                 },
             )
             MenuButton(
                 text = "CLOSE SEARCH",
                 onClick = {
                     closeDrawers()
-                    getDashNavigationFragment()?.closeSearch()
+                    presenter.closeSearch()
                 },
             )
             MenuButton(
@@ -760,7 +701,7 @@ class MainActivity : DrawerActivity() {
                 onClick = {
                     closeDrawers()
                     val query = fullScreenSearchQuery.value
-                    getDashNavigationFragment()?.openMapWithSearch(query)
+                    presenter.openMapWithSearch(query)
                 },
             )
             Text(
@@ -807,7 +748,7 @@ class MainActivity : DrawerActivity() {
             MenuButton(
                 text = "OPEN MAP WITH CINEMA",
                 onClick = {
-                    getDashNavigationFragment()?.openMapWithCategorySearch("cinema", "Cinema")
+                    presenter.openMapWithCategorySearch("cinema", "Cinema")
                     closeDrawers()
                 },
             )
@@ -878,12 +819,10 @@ class MainActivity : DrawerActivity() {
             val density = LocalDensity.current
             LaunchedEffect(density, leftPadding.value, topPadding.value, rightPadding.value, bottomPadding.value) {
                 with(density) {
-                    dashNavigationFragmentFlow.filterNotNull().collect { dashNavigationFragment ->
-                        dashNavigationFragment.setSafeAreaPaddings(
-                            leftPadding.value.dp.roundToPx(), topPadding.value.dp.roundToPx(),
-                            rightPadding.value.dp.roundToPx(), bottomPadding.value.dp.roundToPx(),
-                        )
-                    }
+                    presenter.setSafeAreaPaddings(
+                        leftPadding.value.dp.roundToPx(), topPadding.value.dp.roundToPx(),
+                        rightPadding.value.dp.roundToPx(), bottomPadding.value.dp.roundToPx(),
+                    )
                 }
             }
             MenuSwitch(
@@ -925,14 +864,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM SEARCH PANEL",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setSearchPanel { modifier, searchPanelState ->
-                            SampleSearchPanel(modifier, searchPanelState, fragment)
+                        presenter.setSearchPanel { modifier, searchPanelState ->
+                            SampleSearchPanel(modifier, searchPanelState, presenter)
                         }
                     } else {
-                        fragment.setSearchPanel { modifier, searchPanelState ->
+                        presenter.setSearchPanel { modifier, searchPanelState ->
                             DefaultSearchPanelView(modifier, searchPanelState)
                         }
                     }
@@ -941,10 +879,9 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM RECENTER CAMERA BUTTON",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setRecenterCamera { modifier, recenterCameraState ->
+                        presenter.setRecenterCamera { modifier, recenterCameraState ->
                             Image(
                                 modifier = modifier
                                     .width(dimensionResource(id = ThemesR.dimen.map_round_button_width))
@@ -957,7 +894,7 @@ class MainActivity : DrawerActivity() {
                             )
                         }
                     } else {
-                        fragment.setRecenterCamera { modifier, recenterCameraState ->
+                        presenter.setRecenterCamera { modifier, recenterCameraState ->
                             DefaultRecenterButton(modifier, recenterCameraState)
                         }
                     }
@@ -966,14 +903,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM PLACES LIST",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setPlacesPreview { state, modifier ->
+                        presenter.setPlacesPreview { state, modifier ->
                             SamplePlacesView(state, modifier)
                         }
                     } else {
-                        fragment.setPlacesPreview { state, modifier ->
+                        presenter.setPlacesPreview { state, modifier ->
                             DefaultPlacesPreview(state, modifier)
                         }
                     }
@@ -982,14 +918,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM DESTINATION PREVIEW",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setDestinationPreview { modifier, state ->
+                        presenter.setDestinationPreview { modifier, state ->
                             SampleDestinationPreview(modifier, state, weatherController)
                         }
                     } else {
-                        fragment.setDestinationPreview { modifier, _ ->
+                        presenter.setDestinationPreview { modifier, _ ->
                             DefaultDestinationPreview(modifier)
                         }
                     }
@@ -998,14 +933,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM GUIDANCE BANNER",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setManeuver { modifier, state ->
+                        presenter.setManeuver { modifier, state ->
                             SampleGuidanceBanner(modifier, state)
                         }
                     } else {
-                        fragment.setManeuver { modifier, state ->
+                        presenter.setManeuver { modifier, state ->
                             DefaultManeuverView(modifier, state)
                         }
                     }
@@ -1014,14 +948,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM UPCOMING MANEUVERS",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setUpcomingManeuvers { modifier, state ->
+                        presenter.setUpcomingManeuvers { modifier, state ->
                             SampleUpcomingManeuversBanner(modifier, state)
                         }
                     } else {
-                        fragment.setUpcomingManeuvers { modifier, state ->
+                        presenter.setUpcomingManeuvers { modifier, state ->
                             DefaultUpcomingManeuversView(modifier, state)
                         }
                     }
@@ -1030,14 +963,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM ROUTES OVERVIEW",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setRoutesOverview { modifier, routesOverviewState, backCloseButtonState ->
+                        presenter.setRoutesOverview { modifier, routesOverviewState, backCloseButtonState ->
                             SampleRoutesOverview(modifier, routesOverviewState, backCloseButtonState)
                         }
                     } else {
-                        fragment.setRoutesOverview { modifier, routesOverviewState, backCloseButtonState ->
+                        presenter.setRoutesOverview { modifier, routesOverviewState, backCloseButtonState ->
                             DefaultRoutesOverview(modifier, routesOverviewState, backCloseButtonState)
                         }
                     }
@@ -1046,14 +978,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM TRIP SUMMARY",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setTripSummary { modifier, tripSummaryUiState ->
+                        presenter.setTripSummary { modifier, tripSummaryUiState ->
                             SampleTripSummaryView(modifier, tripSummaryUiState, weatherController)
                         }
                     } else {
-                        fragment.setTripSummary { modifier, tripSummaryUiState ->
+                        presenter.setTripSummary { modifier, tripSummaryUiState ->
                             DefaultTripSummary(modifier, tripSummaryUiState)
                         }
                     }
@@ -1062,14 +993,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM END ACTIVE GUIDANCE",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setEndActiveGuidance { modifier, uiState ->
+                        presenter.setEndActiveGuidance { modifier, uiState ->
                             SampleEndActiveGuidance(modifier, uiState)
                         }
                     } else {
-                        fragment.setEndActiveGuidance { modifier, uiState ->
+                        presenter.setEndActiveGuidance { modifier, uiState ->
                             DefaultEndActiveGuidanceView(modifier, uiState)
                         }
                     }
@@ -1078,14 +1008,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM EDIT TRIP",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setEditTrip { _, state ->
+                        presenter.setEditTrip { _, state ->
                             SampleEditTrip(state)
                         }
                     } else {
-                        fragment.setEditTrip { modifier, state ->
+                        presenter.setEditTrip { modifier, state ->
                             DefaultEditTripCard(modifier, state)
                         }
                     }
@@ -1094,14 +1023,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM ARRIVAL FEEDBACK",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setArrivalFeedback { modifier, state ->
+                        presenter.setArrivalFeedback { modifier, state ->
                             SampleArrivalView(modifier, state)
                         }
                     } else {
-                        fragment.setArrivalFeedback { modifier, state ->
+                        presenter.setArrivalFeedback { modifier, state ->
                             DefaultArrivalFeedbackView(modifier, state)
                         }
                     }
@@ -1110,14 +1038,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM CONTINUE NAVIGATION",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setContinueNavigation { modifier, state ->
+                        presenter.setContinueNavigation { modifier, state ->
                             SampleContinueNavigation(modifier, state)
                         }
                     } else {
-                        fragment.setContinueNavigation { modifier, state ->
+                        presenter.setContinueNavigation { modifier, state ->
                             DefaultContinueNavigationView(modifier, state)
                         }
                     }
@@ -1126,14 +1053,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM DRIVER NOTIFICATION",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setDriverNotification { modifier, uiState ->
+                        presenter.setDriverNotification { modifier, uiState ->
                             SampleDriverNotificationView(modifier, uiState)
                         }
                     } else {
-                        fragment.setDriverNotification { modifier, uiState ->
+                        presenter.setDriverNotification { modifier, uiState ->
                             DefaultDriverNotificationView(modifier, uiState)
                         }
                     }
@@ -1142,26 +1068,25 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM SEARCH SCREEN",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setFullScreenSearch { modifier, setFullScreenSearch ->
+                        presenter.setFullScreenSearch { modifier, setFullScreenSearch ->
                             SampleFullScreenSearch(modifier, setFullScreenSearch)
                         }
-                        fragment.setFavoritesScreen { modifier, favoritesScreenState ->
+                        presenter.setFavoritesScreen { modifier, favoritesScreenState ->
                             SampleFavoritesScreen(modifier, favoritesScreenState)
                         }
-                        fragment.setEditFavoriteScreen { modifier, editFavoriteScreenState ->
+                        presenter.setEditFavoriteScreen { modifier, editFavoriteScreenState ->
                             SampleEditFavoriteScreen(modifier, editFavoriteScreenState)
                         }
                     } else {
-                        fragment.setFullScreenSearch { modifier, fullScreenSearchState ->
+                        presenter.setFullScreenSearch { modifier, fullScreenSearchState ->
                             DefaultFullScreenSearch(modifier, fullScreenSearchState)
                         }
-                        fragment.setFavoritesScreen { modifier, favoritesScreenState ->
+                        presenter.setFavoritesScreen { modifier, favoritesScreenState ->
                             DefaultFavoritesScreen(modifier, favoritesScreenState)
                         }
-                        fragment.setEditFavoriteScreen { modifier, editFavoriteScreenState ->
+                        presenter.setEditFavoriteScreen { modifier, editFavoriteScreenState ->
                             DefaultEditFavoriteScreen(modifier, editFavoriteScreenState)
                         }
                     }
@@ -1170,14 +1095,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM OFFLINE ALERT",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setOfflineRouteAlert { modifier, offlineRouteAlertState ->
+                        presenter.setOfflineRouteAlert { modifier, offlineRouteAlertState ->
                             SampleOfflineRouteAlert(modifier, offlineRouteAlertState)
                         }
                     } else {
-                        fragment.setOfflineRouteAlert { modifier, offlineRouteAlertState ->
+                        presenter.setOfflineRouteAlert { modifier, offlineRouteAlertState ->
                             DefaultOfflineRouteAlert(modifier, offlineRouteAlertState)
                         }
                     }
@@ -1186,14 +1110,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM RESUME GUIDANCE VIEW",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setResumeGuidanceView { modifier, resumeGuidanceViewState ->
+                        presenter.setResumeGuidanceView { modifier, resumeGuidanceViewState ->
                             SampleResumeGuidanceView(modifier, resumeGuidanceViewState)
                         }
                     } else {
-                        fragment.setResumeGuidanceView { modifier, resumeGuidanceViewState ->
+                        presenter.setResumeGuidanceView { modifier, resumeGuidanceViewState ->
                             DefaultResumeGuidanceView(modifier, resumeGuidanceViewState)
                         }
                     }
@@ -1202,14 +1125,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM STREET NAME LABEL",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setStreetNameLabel { modifier, uiState ->
+                        presenter.setStreetNameLabel { modifier, uiState ->
                             SampleStreetName(modifier, uiState)
                         }
                     } else {
-                        fragment.setStreetNameLabel { modifier, uiState ->
+                        presenter.setStreetNameLabel { modifier, uiState ->
                             DefaultStreetNameView(modifier, uiState)
                         }
                     }
@@ -1218,14 +1140,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "SET CUSTOM RANGE MAP INFO VIEW",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setRangeMapInfoView { modifier, state ->
+                        presenter.setRangeMapInfoView { modifier, state ->
                             SampleRangeMapInfoView(modifier, state)
                         }
                     } else {
-                        fragment.setRangeMapInfoView { modifier, state ->
+                        presenter.setRangeMapInfoView { modifier, state ->
                             DefaultRangeMapInfoView(modifier, state)
                         }
                     }
@@ -1234,11 +1155,10 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "OVERRIDE ROUTE CALLOUTS",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, overrideRouteCallout ->
-                    fragment.setRouteCallout { state ->
-                        if (overrideRouteCallout) {
-                            SampleRouteCalloutView(state, fragment)
+                onCheckedChange = { enabled ->
+                    presenter.setRouteCallout { state ->
+                        if (enabled) {
+                            SampleRouteCalloutView(state, presenter)
                         } else {
                             DefaultRouteCalloutView(state)
                         }
@@ -1248,14 +1168,13 @@ class MainActivity : DrawerActivity() {
             MenuSwitch(
                 text = "OVERRIDE SEARCH THIS AREA",
                 initial = false,
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
-                onCheckedChange = { fragment, enabled ->
+                onCheckedChange = { enabled ->
                     if (enabled) {
-                        fragment.setSearchArea { uiState ->
+                        presenter.setSearchArea { uiState ->
                             SampleSearchArea(uiState)
                         }
                     } else {
-                        fragment.setSearchArea { uiState ->
+                        presenter.setSearchArea { uiState ->
                             DefaultSearchAreaButton(uiState)
                         }
                     }
@@ -1341,9 +1260,8 @@ class MainActivity : DrawerActivity() {
                     UiModeSettings.AUTO, UiModeSettings.SYSTEM, UiModeSettings.DAWN,
                     UiModeSettings.DAY, UiModeSettings.DUSK, UiModeSettings.NIGHT,
                 ),
-                dashNavigationFragmentFlow = dashNavigationFragmentFlow,
                 initial = UiModeSettings.AUTO,
-                onValueChange = { fragment, mode -> fragment.setUiModeSettings(mode) },
+                onValueChange = { presenter.setUiModeSettings(it) },
                 label = "UI mode",
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1378,7 +1296,7 @@ class MainActivity : DrawerActivity() {
             )
             MenuButton(
                 text = "SHOW CURRENT ROUTES",
-                onClick = { getDashNavigationFragment()?.showRoutesOverview() },
+                onClick = { presenter.showRoutesOverview() },
             )
             MenuDropDown(
                 options = listOf(
@@ -1416,10 +1334,8 @@ class MainActivity : DrawerActivity() {
     }
 
     private fun initCustomizationMenu() {
-        dashNavigationFragmentFlow.filterNotNull().observeWhenStarted(lifecycleOwner = this) { dashNavigationFragment ->
-            dashNavigationFragment.setLeftSidebar(ShowcaseLeftSidebarComposer(layoutVM, dashNavigationFragment))
-            dashNavigationFragment.setRightSidebar(ShowcaseRightSidebarComposer(layoutVM, weatherController))
-        }
+        presenter.setLeftSidebar(ShowcaseLeftSidebarComposer(layoutVM, presenter))
+        presenter.setRightSidebar(ShowcaseRightSidebarComposer(layoutVM, weatherController))
     }
 
     private fun showProfileAlert(onDone: (String?) -> Unit) {
@@ -1444,62 +1360,56 @@ class MainActivity : DrawerActivity() {
     }
 
     private fun registerEventsObservers() {
-        dashNavigationFragmentFlow
-            .flatMapLatest { it?.observeMapEvents() ?: emptyFlow() }
-            .observeWhenStarted(lifecycleOwner = this) { log(">> DashMapEvent | event = $it") }
+        presenter.observeMapEvents().observeWhenStarted(lifecycleOwner = this) { event ->
+            log(">> DashMapEvent | event = $event")
+        }
         Dash.controller.observeGenericEvents().observeWhenStarted(this) { event ->
             log(">> DashGenericEvent | event = $event")
         }
         Dash.controller.observeRouteProgress().observeWhenStarted(this) { progress ->
-            progress.apply {
-                log(">> RouteProgress | distance: $distanceRemaining duration: $durationRemaining")
-            }
+            log(">> RouteProgress | distance: ${progress.distanceRemaining} duration: ${progress.durationRemaining}")
         }
-        Dash.controller.observeRawLocation().observeWhenStarted(this) {
-            log(">> Location | location = $it")
+        Dash.controller.observeRawLocation().observeWhenStarted(this) { location ->
+            log(">> Location | location = $location")
         }
-        Dash.controller.observeLocationMatcherResult().observeWhenStarted(this) {
-            log(">> Location | locationMatcherResult = $it")
+        Dash.controller.observeLocationMatcherResult().observeWhenStarted(this) { locationMatcherResult ->
+            log(">> Location | locationMatcherResult = $locationMatcherResult")
         }
         Dash.controller.observeRoutes().observeWhenStarted(this) { event ->
             val routes = event.routes
             val activeRoute = routes.firstOrNull()?.id
             log(">> ActiveRoutes | routes = ${routes.map { it.id }}; activeRoute = $activeRoute")
         }
-        dashNavigationFragmentFlow
-            .flatMapLatest { it?.observeRoutes() ?: emptyFlow() }
-            .observeWhenStarted(this) { event ->
-                val routes = event.routes
-                val displayedRoute = routes.firstOrNull()?.id
-                log(">> DisplayedRoutes | routes = ${routes.map { it.id }}; displayedRoute = $displayedRoute")
-            }
-        Dash.controller.observeNavigationState().observeWhenStarted(this) {
-            log(">> NavigationState | $it")
+        presenter.observeRoutes().observeWhenStarted(this) { event ->
+            val routes = event.routes
+            val displayedRoute = routes.firstOrNull()?.id
+            log(">> DisplayedRoutes | routes = ${routes.map { it.id }}; displayedRoute = $displayedRoute")
         }
-        dashNavigationFragmentFlow
-            .flatMapLatest { it?.observeUiState() ?: emptyFlow() }
-            .observeWhenStarted(this) {
-                log(">> UiState | $it")
-            }
-        Dash.controller.observeNextManeuver().observeWhenStarted(this) {
-            log(">> Maneuver | $it")
+        Dash.controller.observeNavigationState().observeWhenStarted(this) { navigationState ->
+            log(">> NavigationState | $navigationState")
         }
-        Dash.controller.observeNavigationEvents().observeWhenStarted(this) {
-            log(">> NavigationEvent | $it")
+        presenter.observeUiState().observeWhenStarted(this) { uiState ->
+            log(">> UiState | $uiState")
         }
-        Dash.controller.observeRoadInfoEvents().observeWhenStarted(this) {
-            log(">> DashRoadInfoEvent | $it")
+        Dash.controller.observeNextManeuver().observeWhenStarted(this) { maneuver ->
+            log(">> Maneuver | $maneuver")
+        }
+        Dash.controller.observeNavigationEvents().observeWhenStarted(this) { navigationEvent ->
+            log(">> NavigationEvent | $navigationEvent")
+        }
+        Dash.controller.observeRoadInfoEvents().observeWhenStarted(this) { dashRoadInfoEvent ->
+            log(">> DashRoadInfoEvent | $dashRoadInfoEvent")
         }
         Dash.controller.observeHistory().observeWhenStarted(this) { history ->
-            val list = history.map {
-                "(${it.name} | ${it.address?.toString()} | ${it.metadata})"
+            val list = history.map { result ->
+                "(${result.name} | ${result.address?.toString()} | ${result.metadata})"
             }
             log(">> History. Items count = ${history.size} | $list")
         }
         Dash.controller.observeFavorites().observeWhenStarted(this) { favorites ->
-            val list = favorites.joinToString("\n") {
-                val address = it.address?.toString()
-                "(${it.name} | $address | ${it.favoriteType} | ${it.metadata})"
+            val list = favorites.joinToString("\n") { result ->
+                val address = result.address?.toString()
+                "(${result.name} | $address | ${result.favoriteType} | ${result.metadata})"
             }
             log(">> Favorites. Items count = ${favorites.size} | $list")
         }
@@ -1514,20 +1424,17 @@ class MainActivity : DrawerActivity() {
             val list = suggestions.joinToString("\n") { "(${it.name} | ${it.address?.toString()})" }
             log(">> Search suggestions. Items count = ${suggestions.size} | $list")
         }
-        dashNavigationFragmentFlow
-            .flatMapLatest { it?.observeCameraState() ?: emptyFlow() }
+        presenter.observeCameraState()
             .debounce(2.seconds)
-            .observeWhenStarted(this) {
-                log(">> DashCameraState | state= $it")
+            .observeWhenStarted(this) { state ->
+                log(">> DashCameraState | state = $state")
             }
         Dash.controller.observeSearchRequestState().observeWhenStarted(this) {
             log(">> DashSearchRequestStatus | $it")
         }
-        dashNavigationFragmentFlow
-            .flatMapLatest { it?.observeMapMarkers() ?: emptyFlow() }
-            .observeWhenStarted(this) { markers ->
-                log(">> Map markers. Items count = ${markers.size}")
-            }
+        presenter.observeMapMarkers().observeWhenStarted(this) { markers ->
+            log(">> Map markers. Items count = ${markers.size}")
+        }
         Dash.controller.observeDebugBundleReady().observeWhenStarted(this) { file ->
             log(">> Debug bundle ${file.absolutePath} is ready")
         }
@@ -1537,14 +1444,12 @@ class MainActivity : DrawerActivity() {
                 log(">> ActiveWaypoints. Active waypoint[$index]: category = ${item.categories}")
             }
         }
-        dashNavigationFragmentFlow
-            .flatMapLatest { it?.observeRouteWaypoints() ?: emptyFlow() }
-            .observeWhenStarted(this) { waypoints ->
-                log(">> observeRouteWaypoints. size = ${waypoints.size}")
-                waypoints.forEachIndexed { index, item ->
-                    log(">> DisplayedWaypoints. Displayed waypoint[$index]: category = ${item.categories}")
-                }
+        presenter.observeRouteWaypoints().observeWhenStarted(this) { waypoints ->
+            log(">> observeRouteWaypoints. size = ${waypoints.size}")
+            waypoints.forEachIndexed { index, item ->
+                log(">> DisplayedWaypoints. Displayed waypoint[$index]: category = ${item.categories}")
             }
+        }
         lifecycleScope.launch {
             log(">> getOfflineRegionMetadata = ${Dash.controller.getOfflineRegionMetadata()}")
         }

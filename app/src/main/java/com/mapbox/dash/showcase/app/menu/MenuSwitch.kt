@@ -15,30 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
-import com.mapbox.dash.sdk.DashNavigationFragment
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filterNotNull
 
 private const val SCALE = 5f / 6f
-
-@Composable
-fun MenuSwitch(
-    text: String,
-    initial: Boolean,
-    dashNavigationFragmentFlow: Flow<DashNavigationFragment?>,
-    onCheckedChange: (DashNavigationFragment, Boolean) -> Unit,
-) {
-    MenuSwitch(
-        text = text,
-        initial = initial,
-        onCheckedChange = { checked ->
-            dashNavigationFragmentFlow.filterNotNull().collect { dashNavigationFragment ->
-                onCheckedChange(dashNavigationFragment, checked)
-            }
-        },
-    )
-}
 
 @Composable
 fun MenuSwitch(
