@@ -43,6 +43,7 @@ import com.mapbox.navigation.magpt.ui.cards.GenericCardView
 import com.mapbox.navigation.mapgpt.MapGptCompose
 import com.mapbox.navigation.mapgpt.core.api.SessionFrame
 import com.mapbox.navigation.mapgpt.ui.screen.ChatItem
+import com.mapbox.dash.theming.R as ThemesR
 
 @Composable
 internal fun ShowcaseChatMessages(
@@ -186,7 +187,7 @@ private fun Modifier.maxChatItemWidth(align: Alignment.Horizontal): Modifier = c
 @Composable
 @ReadOnlyComposable
 private fun isTablet(): Boolean {
-    return booleanResource(id = R.bool.is_tablet)
+    return booleanResource(id = ThemesR.bool.is_tablet)
 }
 
 @Preview

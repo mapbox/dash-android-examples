@@ -109,6 +109,7 @@ class ShowcaseApp : Application() {
 
             voices {
                 selectedVoice = PersonaVoice.voice1
+                isSettingsMenuEnabled = true
             }
             mapGpt {
                 isEnabled = BuildConfig.MAP_GPT_ENABLED
