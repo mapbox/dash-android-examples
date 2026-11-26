@@ -17,8 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.mapbox.dash.driver.R
 import com.mapbox.dash.driver.presentation.waypoint.ContinueNavigationUiState
+import com.mapbox.dash.text.R
 
 @Composable
 fun SampleContinueNavigation(

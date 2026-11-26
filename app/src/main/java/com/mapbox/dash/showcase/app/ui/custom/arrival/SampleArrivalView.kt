@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.mapbox.dash.driver.presentation.ArrivalFeedbackUiState
-import com.mapbox.dash.sdk.feedback.R
+import com.mapbox.dash.text.R
 
 @Composable
 fun SampleArrivalView(
