@@ -1,4 +1,4 @@
-@file:SuppressWarnings("MagicNumber")
+@file:Suppress("MagicNumber")
 
 package com.mapbox.dash.showcase.app
 
@@ -8,7 +8,9 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import com.mapbox.common.location.LocationServiceFactory
+import com.mapbox.dash.sdk.Dash
 import com.mapbox.dash.sdk.data.inputs.model.DashCompassData
+import com.mapbox.dash.sdk.data.inputs.updateCompassData
 import com.mapbox.navigation.base.geometry.Angle.Companion.degrees
 import com.mapbox.navigation.base.geometry.Point3D
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,14 +21,17 @@ internal class SampleSensorEventManager(
     val magnetometer: Sensor,
 ) : SensorEventListener {
 
-    private val _compassData = MutableSharedFlow<DashCompassData>(extraBufferCapacity = 1)
-    val compassData = _compassData.distinctUntilChanged()
-
-    private var currentCompassData: DashCompassData? = null
+    private val compassData = MutableSharedFlow<DashCompassData>(extraBufferCapacity = 1)
 
     private var gravity: FloatArray? = null
     private var geomagnetic: FloatArray? = null
     private var azimuth = 0f
+
+    suspend fun collectCompassData() {
+        compassData.distinctUntilChanged().collect { compassData ->
+            Dash.controller.updateCompassData(compassData)
+        }
+    }
 
     override fun onSensorChanged(event: SensorEvent) {
         if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
@@ -67,8 +72,7 @@ internal class SampleSensorEventManager(
                         rawGeomagneticData = rawGeomagneticData,
                         monotonicTimestampNanoseconds = System.nanoTime(),
                     )
-                    _compassData.tryEmit(newCompassData)
-                    currentCompassData = newCompassData
+                    compassData.tryEmit(newCompassData)
                 }
             }
         }

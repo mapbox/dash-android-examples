@@ -96,7 +96,6 @@ import com.mapbox.dash.sdk.config.api.theme
 import com.mapbox.dash.sdk.config.api.ui
 import com.mapbox.dash.sdk.config.api.uiSettings
 import com.mapbox.dash.sdk.config.api.voices
-import com.mapbox.dash.sdk.data.inputs.updateCompassData
 import com.mapbox.dash.sdk.map.presentation.ui.DefaultRecenterButton
 import com.mapbox.dash.sdk.search.api.DashFavoriteType
 import com.mapbox.dash.sdk.search.api.DashSearchResult
@@ -1224,9 +1223,7 @@ class MainActivity : DrawerActivity() {
                 initial = false,
                 onCheckedChange = { enabled ->
                     if (enabled) {
-                        sampleSensorEventManager?.compassData?.collect { compassData ->
-                            Dash.controller.updateCompassData(compassData)
-                        }
+                        sampleSensorEventManager?.collectCompassData()
                     }
                 },
                 enabled = sampleSensorEventManager != null,

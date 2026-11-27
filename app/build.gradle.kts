@@ -18,32 +18,26 @@ android {
         versionCode = 1
         versionName = "1.0"
         vectorDrawables.useSupportLibrary = true
-        buildConfigField("Boolean", "HEADLESS_MODE_ENABLED", "false")
-        buildConfigField("Boolean", "MAP_GPT_ENABLED", "true")
+        buildConfigField(
+            "Boolean", "HEADLESS_MODE_ENABLED",
+            providers.gradleProperty("APP_SHOWCASE_HEADLESS_MODE_ENABLED").getOrElse("false"),
+        )
+        buildConfigField(
+            "Boolean", "MAP_GPT_ENABLED",
+            providers.gradleProperty("APP_SHOWCASE_MAP_GPT_MODE_ENABLED").getOrElse("true"),
+        )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    flavorDimensions.add("devMenuDefaults")
+    flavorDimensions.add("sdkType")
     productFlavors {
         create("Default") {
-            dimension = "devMenuDefaults"
+            dimension = "sdkType"
             isDefault = true
         }
-        create("Headless") {
-            dimension = "devMenuDefaults"
-            buildConfigField("Boolean", "HEADLESS_MODE_ENABLED", "true")
-            buildConfigField("Boolean", "MAP_GPT_ENABLED", "true")
-        }
-
-        create("WithoutMapGpt") {
-            dimension = "devMenuDefaults"
-            buildConfigField("Boolean", "HEADLESS_MODE_ENABLED", "false")
-            buildConfigField("Boolean", "MAP_GPT_ENABLED", "false")
-        }
-
-        create("CustomCluster") {
-            dimension = "devMenuDefaults"
+        create("PrivateSdk") {
+            dimension = "sdkType"
         }
     }
     buildTypes {
@@ -86,14 +80,22 @@ kotlin {
     }
 }
 
+androidComponents {
+    onVariants { variant ->
+        if (providers.gradleProperty("APP_SHOWCASE_CUSTOM_CLUSTER").orNull.toBoolean()) {
+            variant.sources.manifests.addStaticManifestFile("src/CustomCluster/AndroidManifest.xml")
+        }
+    }
+}
+
 dependencies {
     val uxfVersion = "1.36.0"
     implementation("com.mapbox.navigationux:android:$uxfVersion")
     implementation("com.mapbox.navigationux:cluster:$uxfVersion")
-    implementation("com.mapbox.navigationux:data-inputs:$uxfVersion")
-    implementation("com.mapbox.navigationux:ev-rangemap:$uxfVersion")
+    privateSdkImplementation("com.mapbox.navigationux:data-inputs:$uxfVersion")
+    privateSdkImplementation("com.mapbox.navigationux:ev-rangemap:$uxfVersion")
     implementation("com.mapbox.navigationux:map-gpt:${uxfVersion}")
-    implementation("com.mapbox.navigationux:ev-driver-notification:$uxfVersion")
+    privateSdkImplementation("com.mapbox.navigationux:ev-driver-notification:$uxfVersion")
     implementation("com.mapbox.navigationux:voice-feedback:$uxfVersion")
 
     implementation("androidx.core:core-ktx:1.18.0")
@@ -107,4 +109,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
     testImplementation("junit:junit:4.13.2")
+}
+
+fun DependencyHandler.privateSdkImplementation(dependencyNotation: String) {
+    add("PrivateSdkImplementation", dependencyNotation)
 }
